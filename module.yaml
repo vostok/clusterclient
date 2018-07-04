@@ -1,0 +1,19 @@
+sdk *default:
+  build:
+    target: Vostok.ClusterClient.sln
+    configuration: NoTests
+    tool:
+      name: dotnet
+
+  install:
+	  - Vostok.ClusterClient/bin/Release/netstandard2.0/Vostok.ClusterClient.dll
+
+  deps:
+    - vostok.commons@dev
+    - vostok.logging@dev
+    - vostok.context@dev
+
+full-build > sdk:
+  build:
+    target: Vostok.ClusterClient.sln
+    configuration: Release
