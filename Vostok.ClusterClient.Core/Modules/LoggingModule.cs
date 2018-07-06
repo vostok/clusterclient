@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.Context;
 
 namespace Vostok.ClusterClient.Core.Modules
 {
     internal class LoggingModule : IRequestModule
     {
-        // private static long currentOperationId;
+        private static long currentOperationId;
 
         private readonly bool addPrefix;
         private readonly bool logRequests;
@@ -24,10 +25,9 @@ namespace Vostok.ClusterClient.Core.Modules
 
         public async Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
-            // todo(Mansiper): fix it: ContextualLogPrefix
-            /*if (addPrefix)
+            if (addPrefix)
                 using (new ContextualLogPrefix("CC-" + Interlocked.Increment(ref currentOperationId)))
-                    return await ExecuteInternalAsync(context, next).ConfigureAwait(false);*/
+                    return await ExecuteInternalAsync(context, next).ConfigureAwait(false);
 
             return await ExecuteInternalAsync(context, next).ConfigureAwait(false);
         }

@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <Reference Include="Vostok.Logging.Abstractions">
-      <HintPath>..\..\vostok.logging\Vostok.Logging.Abstractions\bin\Release\netstandard2.0\Vostok.Logging.Abstractions.dll</HintPath>
+      <HintPath>..\..\vostok.logging\Vostok.Logging.ConsoleLog\bin\Release\netstandard2.0\Vostok.Logging.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Vostok.Logging.ConsoleLog">
       <HintPath>..\..\vostok.logging\Vostok.Logging.ConsoleLog\bin\Release\netstandard2.0\Vostok.Logging.ConsoleLog.dll</HintPath>

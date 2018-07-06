@@ -7,6 +7,7 @@ using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Topology;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.Context;
 
 namespace Vostok.ClusterClient.Core
 {
@@ -44,7 +45,7 @@ namespace Vostok.ClusterClient.Core
         /// <exception cref="ClusterClientException">Configuration was incomplete or invalid.</exception>
         public ClusterClient(ILog log, ClusterClientSetup setup)
         {
-            configuration = new ClusterClientConfiguration((log ?? new SilentLog())/*.WithContextualPrefix()*/); // todo(Mansiper): fix it: log.WithContextualPrefix
+            configuration = new ClusterClientConfiguration((log ?? new SilentLog()).WithContextualPrefix());
 
             setup(configuration);
 
