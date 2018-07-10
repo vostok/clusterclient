@@ -6,7 +6,7 @@ sdk *default:
       name: dotnet
 
   install:
-	  - Vostok.ClusterClient/bin/Release/netstandard2.0/Vostok.ClusterClient.dll
+	  - Vostok.ClusterClient.Core/bin/Release/netstandard2.0/Vostok.ClusterClient.Core.dll
 
   deps:
     - vostok.commons@dev
