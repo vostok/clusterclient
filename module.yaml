@@ -12,6 +12,7 @@ sdk *default:
     - vostok.commons@dev
     - vostok.logging@dev
     - vostok.context@dev
+    - vostok.logging.context@dev
 
 full-build > sdk:
   build:
