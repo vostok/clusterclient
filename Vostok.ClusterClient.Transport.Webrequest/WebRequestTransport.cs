@@ -36,6 +36,9 @@ namespace Vostok.ClusterClient.Transport.Webrequest
 
             connectTimeLimiter = new ConnectTimeLimiter(settings, log);
             threadPoolMonitor = ThreadPoolMonitor.Instance;
+
+            // (razboynikov): if not initialize in the beginning first of the requests will have differences in settings
+            WebRequestTuner.Init();
         }
 
         public WebRequestTransport(ILog log)

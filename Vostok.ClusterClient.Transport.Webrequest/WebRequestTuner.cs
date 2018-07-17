@@ -13,12 +13,16 @@ namespace Vostok.ClusterClient.Transport.Webrequest
         {
             if (!IsMono)
             {
-                HttpWebRequest.DefaultMaximumErrorResponseLength = -1;
-                HttpWebRequest.DefaultMaximumResponseHeadersLength = -1;
+                HttpWebRequest.DefaultMaximumErrorResponseLength = -1;  // (razboynikov): potential bug here in future. Just remember
+                HttpWebRequest.DefaultMaximumResponseHeadersLength = int.MaxValue;  // (razboynikov): here was one with value -1
 
                 ServicePointManager.CheckCertificateRevocationList = false;
                 ServicePointManager.ServerCertificateValidationCallback = (_, __, ___, ____) => true;
             }
+        }
+
+        public static void Init()
+        {
         }
 
         public static void Tune(HttpWebRequest request, TimeSpan timeout, WebRequestTransportSettings settings)

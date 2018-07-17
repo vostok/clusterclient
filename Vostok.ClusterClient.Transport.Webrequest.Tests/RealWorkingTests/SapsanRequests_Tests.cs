@@ -31,7 +31,7 @@ namespace Vostok.ClusterClient.Transport.Webrequest.Tests.RealWorkingTests
                 });
         }
 
-        [Test]
+        [Test, Order(1)]
         public async Task Create_report()
         {
             var newReportJson = $@"{{
@@ -60,7 +60,7 @@ namespace Vostok.ClusterClient.Transport.Webrequest.Tests.RealWorkingTests
         }
 
 
-        [Test]
+        [Test, Order(2)]
         public void Get_reports()
         {
             var request = new Request(RequestMethods.Get, new Uri("https://sapsan.dev.kontur/api/reports"));
@@ -70,7 +70,7 @@ namespace Vostok.ClusterClient.Transport.Webrequest.Tests.RealWorkingTests
             result.Response.Content.ToString().Should().Contain(Guid);
         }
 
-        [Test]
+        [Test, Order(3)]
         public void Delete_report()
         {
             var request = new Request(RequestMethods.Delete, new Uri($"https://sapsan.dev.kontur/api/report/{Guid}"));
