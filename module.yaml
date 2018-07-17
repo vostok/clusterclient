@@ -6,12 +6,13 @@ sdk *default:
       name: dotnet
 
   install:
-	  - Vostok.ClusterClient.Core/bin/Release/netstandard2.0/Vostok.ClusterClient.Core.dll
+      - Vostok.ClusterClient.Core/bin/Release/netstandard2.0/Vostok.ClusterClient.Core.dll
+      - Vostok.ClusterClient.Transport.Webrequest\bin\Release\netstandard2.0/Vostok.ClusterClient.Transport.Webrequest.dll
 
   deps:
     - vostok.commons@dev
-    - vostok.logging@dev
     - vostok.context@dev
+    - vostok.logging.abstractions@dev
     - vostok.logging.context@dev
 
 full-build > sdk:

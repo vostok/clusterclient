@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
+    <LangVersion>7.2</LangVersion>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.4.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+    <PackageReference Include="NUnit" Version="3.10.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Vostok.ClusterClient.Transport.Webrequest\Vostok.ClusterClient.Transport.Webrequest.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.ServiceModel.Internals">
+      <HintPath>..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\System.ServiceModel.Internals\v4.0_4.0.0.0__31bf3856ad364e35\System.ServiceModel.Internals.dll</HintPath>
+    </Reference>
+    <Reference Include="Vostok.Commons">
+      <HintPath>..\..\vostok.commons\Vostok.Commons\bin\Release\netstandard2.0\Vostok.Commons.dll</HintPath>
+    </Reference>
+    <Reference Include="Vostok.Logging.Abstractions">
+      <HintPath>..\..\vostok.logging.context\Vostok.Logging.Context\bin\Release\netstandard2.0\Vostok.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Vostok.Logging.ConsoleLog">
+      <HintPath>..\..\vostok.logging\Vostok.Logging.ConsoleLog\bin\Release\netstandard2.0\Vostok.Logging.ConsoleLog.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

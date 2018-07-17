@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Configurations>Debug;Release;NoTests</Configurations>
@@ -10,25 +10,25 @@
     <Copyright>Copyright (c) 2017-2018 SKB Kontur</Copyright>
     <PackageProjectUrl>https://github.com/vostok/configuration</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/vostok/configuration/blob/master/LICENSE</PackageLicenseUrl>
-    <Description>ClusterClient library for microservice toolkit http://vostok.tools/</Description>
+    <Description>ClusterClient transport webrequest library for microservice toolkit http://vostok.tools/</Description>
     <LangVersion>7.2</LangVersion>
-	  <NuspecFile>Vostok.ClusterClient.Core.nuspec</NuspecFile>
+    <NuspecFile>Vostok.ClusterClient.Transport.Webrequest.nuspec</NuspecFile>
   </PropertyGroup>
-  
+
+  <ItemGroup>
+    <ProjectReference Include="..\Vostok.ClusterClient.Core\Vostok.ClusterClient.Core.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
     <Reference Include="Vostok.Commons">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\vostok.commons\Vostok.Commons\bin\Release\netstandard2.0\Vostok.Commons.dll</HintPath>
-    </Reference>
-    <Reference Include="Vostok.Context">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\vostok.context\Vostok.Context\bin\Release\netstandard2.0\Vostok.Context.dll</HintPath>
     </Reference>
     <Reference Include="Vostok.Logging.Abstractions">
       <HintPath>..\..\vostok.logging.abstractions\Vostok.Logging.Abstractions\bin\Release\netstandard2.0\Vostok.Logging.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Vostok.Logging.Context">
-      <HintPath>..\..\vostok.logging.context\Vostok.Logging.Context\bin\Release\netstandard2.0\Vostok.Logging.Context.dll</HintPath>
+      <HintPath>..\..\vostok.logging.context\Vostok.Logging.Context\bin\Release\netstandard2.0\Merged\Vostok.Logging.Context.dll</HintPath>
     </Reference>
   </ItemGroup>
+
 </Project>
