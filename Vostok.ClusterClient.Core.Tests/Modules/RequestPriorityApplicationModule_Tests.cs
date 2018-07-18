@@ -4,6 +4,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
+using Vostok.Context;
 
 namespace Vostok.ClusterClient.Core.Tests.Modules
 {
@@ -54,11 +55,13 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         [TestCase(RequestPriority.Critical)]
         public void Should_add_a_priority_header_if_priority_is_null_but_there_is_a_value_in_context(RequestPriority priority)
         {
-            // FlowingContextProvider.Set(priority as RequestPriority?);    // todo(Mansiper): fix it
+            FlowingContext.Set("request.priority", priority as RequestPriority?);
 
             Execute();
 
             context.Received().Request = Arg.Is<Request>(r => r.Headers[HeaderNames.XKonturRequestPriority] == priority.ToString());
+
+            FlowingContext.Remove("request.priority");
         }
 
         private void Execute()

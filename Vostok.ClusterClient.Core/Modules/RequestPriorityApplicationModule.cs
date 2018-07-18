@@ -9,7 +9,7 @@ namespace Vostok.ClusterClient.Core.Modules
     {
         public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
-            var priority = context.Priority ?? FlowingContext.Get<RequestPriority?>(""); // todo(Mansiper): fix it: what string do we need?
+            var priority = context.Priority ?? FlowingContext.Get<RequestPriority?>("request.priority");
             if (priority.HasValue)
                 context.Request = context.Request.WithHeader(HeaderNames.XKonturRequestPriority, priority.Value);
 
