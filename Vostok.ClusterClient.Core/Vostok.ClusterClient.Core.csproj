@@ -12,9 +12,8 @@
     <PackageLicenseUrl>https://github.com/vostok/configuration/blob/master/LICENSE</PackageLicenseUrl>
     <Description>ClusterClient library for microservice toolkit http://vostok.tools/</Description>
     <LangVersion>7.2</LangVersion>
-	  <NuspecFile>Vostok.ClusterClient.Core.nuspec</NuspecFile>
+    <NuspecFile>Vostok.ClusterClient.Core.nuspec</NuspecFile>
   </PropertyGroup>
-  
   <ItemGroup>
     <Reference Include="Vostok.Commons">
       <SpecificVersion>False</SpecificVersion>
@@ -28,7 +27,8 @@
       <HintPath>..\..\vostok.logging.abstractions\Vostok.Logging.Abstractions\bin\Release\netstandard2.0\Vostok.Logging.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Vostok.Logging.Context">
-      <HintPath>..\..\vostok.logging.context\Vostok.Logging.Context\bin\Release\netstandard2.0\Vostok.Logging.Context.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vostok.logging.context\Vostok.Logging.Context\bin\Release\netstandard2.0\Merged\Vostok.Logging.Context.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
