@@ -1,13 +1,12 @@
 notests *default:
   build:
-    target: Vostok.ClusterClient.sln
+    target: Vostok.ClusterClient.Core.sln
     configuration: NoTests
     tool:
       name: dotnet
 
   install:
       - Vostok.ClusterClient.Core/bin/Release/netstandard2.0/Vostok.ClusterClient.Core.dll
-      - Vostok.ClusterClient.Transport.Webrequest\bin\Release\netstandard2.0/Vostok.ClusterClient.Transport.Webrequest.dll
 
   deps:
     - vostok.commons@dev
@@ -20,5 +19,5 @@ full-build > notests:
   deps:
     - vostok.logging@dev
   build:
-    target: Vostok.ClusterClient.sln
+    target: Vostok.ClusterClient.Core.sln
     configuration: Release
