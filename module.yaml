@@ -17,7 +17,7 @@ sdk *default:
 
 full-build > sdk:
   deps:
-    - vostok.logging
+    - vostok.logging@dev
   build:
     target: Vostok.ClusterClient.sln
     configuration: Release
