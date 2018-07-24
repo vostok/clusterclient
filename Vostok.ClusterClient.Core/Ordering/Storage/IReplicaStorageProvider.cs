@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-using Vostok.ClusterClient.Core.Annotations;
+using JetBrains.Annotations;
 
 namespace Vostok.ClusterClient.Core.Ordering.Storage
 {

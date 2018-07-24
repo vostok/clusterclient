@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Vostok.ClusterClient.Core.Annotations;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Transforms

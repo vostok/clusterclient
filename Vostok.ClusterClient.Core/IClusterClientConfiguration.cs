@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Vostok.ClusterClient.Core.Annotations;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Criteria;
 using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Model;

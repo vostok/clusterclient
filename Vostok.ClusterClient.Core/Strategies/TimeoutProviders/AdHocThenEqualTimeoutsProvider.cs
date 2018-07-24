@@ -1,5 +1,5 @@
 ﻿using System;
-using Vostok.ClusterClient.Core.Annotations;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders

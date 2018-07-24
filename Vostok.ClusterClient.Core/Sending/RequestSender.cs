@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Annotations;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Criteria;
 using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Model;

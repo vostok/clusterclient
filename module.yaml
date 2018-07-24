@@ -1,4 +1,4 @@
-sdk *default:
+notests *default:
   build:
     target: Vostok.ClusterClient.sln
     configuration: NoTests
@@ -14,8 +14,9 @@ sdk *default:
     - vostok.context@dev
     - vostok.logging.abstractions@dev
     - vostok.logging.context@dev
+    - vostok.devtools
 
-full-build > sdk:
+full-build > notests:
   deps:
     - vostok.logging
   build:

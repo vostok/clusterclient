@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Vostok.ClusterClient.Core.Annotations;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Model;
 

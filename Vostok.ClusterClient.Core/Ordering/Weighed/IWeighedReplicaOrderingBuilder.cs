@@ -1,4 +1,4 @@
-﻿using Vostok.ClusterClient.Core.Annotations;
+﻿using JetBrains.Annotations;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Ordering.Weighed

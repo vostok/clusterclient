@@ -3,7 +3,7 @@ using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
-using Vostok.ClusterClient.Core.Annotations;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Helpers;
 
 namespace Vostok.ClusterClient.Core.Model

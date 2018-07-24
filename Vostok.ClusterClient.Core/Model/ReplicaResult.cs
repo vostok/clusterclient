@@ -1,5 +1,5 @@
 ﻿using System;
-using Vostok.ClusterClient.Core.Annotations;
+using JetBrains.Annotations;
 
 namespace Vostok.ClusterClient.Core.Model
 {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using Vostok.ClusterClient.Core.Annotations;
+using JetBrains.Annotations;
 
 namespace Vostok.ClusterClient.Core.Model
 {

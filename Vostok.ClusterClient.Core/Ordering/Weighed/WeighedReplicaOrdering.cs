@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Vostok.ClusterClient.Core.Annotations;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Ordering.Storage;
