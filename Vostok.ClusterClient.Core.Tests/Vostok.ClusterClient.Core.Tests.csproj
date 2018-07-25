@@ -23,6 +23,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\vostok.logging.abstractions\Vostok.Logging.Abstractions\bin\Release\netstandard2.0\Vostok.Logging.Abstractions.dll</HintPath>
     </Reference>
+    <Reference Include="Vostok.Logging.Console">
+      <HintPath>..\..\vostok.logging.console\Vostok.Logging.Console\bin\Release\netstandard2.0\Vostok.Logging.Console.dll</HintPath>
+    </Reference>
     <Reference Include="Vostok.Logging.ConsoleLog">
       <HintPath>..\..\vostok.logging\Vostok.Logging.ConsoleLog\bin\Release\netstandard2.0\Vostok.Logging.ConsoleLog.dll</HintPath>
     </Reference>
