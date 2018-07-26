@@ -6,7 +6,7 @@ using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Tests.Helpers;
-using Vostok.Logging.Console;
+using Vostok.Logging.ConsoleLog;
 
 namespace Vostok.ClusterClient.Core.Tests.Sending
 {

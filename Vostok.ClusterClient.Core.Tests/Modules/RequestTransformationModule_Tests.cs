@@ -10,7 +10,7 @@ using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Tests.Helpers;
 using Vostok.ClusterClient.Core.Transforms;
-using Vostok.Logging.Console;
+using Vostok.Logging.ConsoleLog;
 
 // ReSharper disable PossibleNullReferenceException
 

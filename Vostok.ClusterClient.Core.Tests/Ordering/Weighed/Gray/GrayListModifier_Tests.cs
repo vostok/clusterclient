@@ -9,7 +9,7 @@ using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.ClusterClient.Core.Ordering.Weighed.Gray;
-using Vostok.Logging.Console;
+using Vostok.Logging.ConsoleLog;
 
 namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
 {

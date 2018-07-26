@@ -3,7 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Sending;
-using Vostok.Logging.Console;
+using Vostok.Logging.ConsoleLog;
 
 namespace Vostok.ClusterClient.Core.Tests.Sending
 {
