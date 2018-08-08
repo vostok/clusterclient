@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  
   <Import Project="..\..\vostok.devtools\git-commit-to-assembly-title\Vostok.Tools.GitCommit2AssemblyTitle.props" />
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Configurations>Debug;Release</Configurations>
@@ -11,19 +9,17 @@
     <IncludeSymbols>true</IncludeSymbols>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-
   <PropertyGroup>
     <VersionPrefix>0.0.1</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <VersionSuffix>
+    </VersionSuffix>
   </PropertyGroup>
-
   <PropertyGroup>
     <FileVersion>$(Version)</FileVersion>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <PackageVersion>$(Version)</PackageVersion>
     <PackageReleaseNotes>TODO</PackageReleaseNotes>
   </PropertyGroup>
-
   <PropertyGroup>
     <Authors>Vostok team</Authors>
     <Company>SKB Kontur</Company>
@@ -32,7 +28,6 @@
     <Title>Vostok ClusterClient core library</Title>
     <Description>ClusterClient core library for microservice toolkit http://vostok.tools/</Description>
   </PropertyGroup>
-
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/vostok/clusterclient.core</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/vostok/clusterclient.core/blob/master/LICENSE</PackageLicenseUrl>
@@ -41,7 +36,6 @@
     <RepositoryUrl>https://github.com/vostok/clusterclient.core</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="..\..\vostok.devtools\jetbrains-annotations\JetBrainsAnnotations.cs" Link="Annotations\JetBrainsAnnotations.cs" />
   </ItemGroup>
@@ -53,9 +47,6 @@
     </Reference>
     <Reference Include="Vostok.Logging.Abstractions">
       <HintPath>..\..\vostok.logging.abstractions\Vostok.Logging.Abstractions\bin\Release\netstandard2.0\Vostok.Logging.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Vostok.Logging.Console">
-      <HintPath>..\..\vostok.logging.console\Vostok.Logging.ConsoleLog\bin\Release\netstandard2.0\Vostok.Logging.ConsoleLog.dll</HintPath>
     </Reference>
     <Reference Include="Vostok.Logging.Context">
       <SpecificVersion>False</SpecificVersion>
