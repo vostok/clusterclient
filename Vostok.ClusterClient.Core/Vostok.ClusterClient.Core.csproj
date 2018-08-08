@@ -43,10 +43,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Vostok.Commons">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\vostok.commons\Vostok.Commons\bin\Release\netstandard2.0\Vostok.Commons.dll</HintPath>
-    </Reference>
+    <Compile Include="..\..\vostok.devtools\jetbrains-annotations\JetBrainsAnnotations.cs" Link="Annotations\JetBrainsAnnotations.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Vostok.Context">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\vostok.context\Vostok.Context\bin\Release\netstandard2.0\Vostok.Context.dll</HintPath>
@@ -61,5 +61,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\vostok.logging.context\Vostok.Logging.Context\bin\Release\netstandard2.0\Vostok.Logging.Context.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Annotations\" />
   </ItemGroup>
 </Project>

@@ -329,3 +329,4 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 Vostok.ClusterClient.Core/Properties/AssemblyTitle.cs
+AssemblyTitle.cs

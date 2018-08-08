@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using Vostok.Commons.Utilities;
+using Vostok.ClusterClient.Core.Utilities;
 
 namespace Vostok.ClusterClient.Core.Net
 {

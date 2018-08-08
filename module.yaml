@@ -9,15 +9,13 @@ notests *default:
       - Vostok.ClusterClient.Core/bin/Release/netstandard2.0/Vostok.ClusterClient.Core.dll
 
   deps:
-    - vostok.commons@dev
     - vostok.context@dev
     - vostok.logging.abstractions@dev
+    - vostok.logging.console@dev
     - vostok.logging.context@dev
     - vostok.devtools
 
 full-build > notests:
-  deps:
-    - vostok.logging.console@dev
   build:
     target: Vostok.ClusterClient.Core.sln
     configuration: Release
