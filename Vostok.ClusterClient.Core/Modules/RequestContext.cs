@@ -16,15 +16,15 @@ namespace Vostok.ClusterClient.Core.Modules
         private readonly object resultsLock = new object();
         private List<ReplicaResult> results;
 
-        public RequestContext(
-            Request request,
+        public RequestContext(Request request,
             IRequestStrategy strategy,
             IRequestTimeBudget budget,
             ILog log,
             ITransport transport,
-            CancellationToken cancellationToken,
             RequestPriority? priority,
-            int maximumReplicasToUse)
+            int maximumReplicasToUse,
+            IReadOnlyDictionary<string, object> properties = null,
+            CancellationToken cancellationToken = default)
         {
             Request = request;
             Strategy = strategy;
@@ -34,6 +34,7 @@ namespace Vostok.ClusterClient.Core.Modules
             Priority = priority;
             CancellationToken = cancellationToken;
             MaximumReplicasToUse = maximumReplicasToUse;
+            Properties = properties;
 
             ResetReplicaResults();
         }
@@ -53,6 +54,8 @@ namespace Vostok.ClusterClient.Core.Modules
         public RequestPriority? Priority { get; }
 
         public int MaximumReplicasToUse { get; set; }
+        
+        public IReadOnlyDictionary<string, object> Properties { get; }
 
         public void SetReplicaResult(ReplicaResult result)
         {

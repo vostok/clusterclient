@@ -16,7 +16,7 @@ namespace Vostok.ClusterClient.Core.Modules
     {
         public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
-            if (!context.Request.IsValid)
+            if (!context.Request.IsValid())
                 return OnInvalidRequest(context, context.Request.Validate());
 
             if (HasStreamUnsupportedByTransport(context))

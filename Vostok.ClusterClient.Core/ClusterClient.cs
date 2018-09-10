@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Vostok.ClusterClient.Abstractions;
@@ -14,6 +15,7 @@ using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Topology;
+using Vostok.Commons.Collections;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core
@@ -73,39 +75,19 @@ namespace Vostok.ClusterClient.Core
 
         public IReplicaStorageProvider ReplicaStorageProvider { get; }
 
-        public Task<ClusterResult> SendAsync(
-            Request request,
-            TimeSpan? timeout = null,
-            IRequestStrategy strategy = null,
-            CancellationToken cancellationToken = default,
-            RequestPriority? priority = null)
-        {
-            return pipelineDelegate(
-                CreateContext(
-                    request,
-                    timeout ?? configuration.DefaultTimeout,
-                    strategy ?? configuration.DefaultRequestStrategy,
-                    cancellationToken,
-                    priority ?? configuration.DefaultPriority,
-                    configuration.MaxReplicasUsedPerRequest)
-            );
-        }
-
-        private RequestContext CreateContext(Request request, TimeSpan timeout, IRequestStrategy strategy, CancellationToken cancellationToken, RequestPriority? priority, int maxReplicasToUse) =>
-            new RequestContext(
-                request,
-                strategy,
-                RequestTimeBudget.StartNew(timeout, BudgetPrecision),
-                configuration.Log,
-                configuration.Transport,
-                cancellationToken,
-                priority,
-                maxReplicasToUse);
-
         public Task<ClusterResult> SendAsync(Request request, RequestParameters parameters, TimeSpan? timeout = null,
             CancellationToken cancellationToken = new CancellationToken())
         {
-            throw new NotImplementedException();
+            return pipelineDelegate(new RequestContext(
+                request,
+                parameters?.Strategy ?? configuration.DefaultRequestStrategy,
+                RequestTimeBudget.StartNew(timeout ?? configuration.DefaultTimeout, BudgetPrecision),
+                configuration.Log,
+                configuration.Transport,
+                parameters?.Priority ?? configuration.DefaultPriority,
+                configuration.MaxReplicasUsedPerRequest,
+                parameters?.Properties ?? ImmutableArrayDictionary<string, object>.Empty,
+                cancellationToken));
         }
     }
 }

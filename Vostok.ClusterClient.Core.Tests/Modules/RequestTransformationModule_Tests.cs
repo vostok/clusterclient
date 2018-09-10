@@ -38,7 +38,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             request2 = Request.Get("/2");
             request3 = Request.Get("/3");
 
-            context = new RequestContext(request1, Strategy.SingleReplica, Budget.Infinite, new ConsoleLog(), null, CancellationToken.None, null, int.MaxValue);
+            context = new RequestContext(request1, Strategy.SingleReplica, Budget.Infinite, new ConsoleLog(), null, null, int.MaxValue);
 
             transform1 = Substitute.For<IRequestTransform>();
             transform1.Transform(Arg.Any<Request>()).Returns(_ => request2);

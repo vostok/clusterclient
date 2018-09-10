@@ -13,6 +13,7 @@ using Vostok.ClusterClient.Core.Sending;
 using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Tests.Helpers;
 using Vostok.ClusterClient.Core.Transport;
+using Vostok.Commons.Collections;
 using Vostok.Logging.Console;
 
 namespace Vostok.ClusterClient.Core.Tests.Sending
@@ -43,7 +44,7 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
             baseSender = Substitute.For<IRequestSenderInternal>();
             baseSender.SendToReplicaAsync(null, null, null, TimeSpan.Zero, CancellationToken.None).ReturnsForAnyArgs(_ => resultSource.Task);
 
-            context = new RequestContext(request, Strategy.SingleReplica, Budget.WithRemaining(timeout), new ConsoleLog(), Substitute.For<ITransport>(), CancellationToken.None, null, int.MaxValue);
+            context = new RequestContext(request, Strategy.SingleReplica, Budget.WithRemaining(timeout), new ConsoleLog(), Substitute.For<ITransport>(), null, int.MaxValue, ImmutableArrayDictionary<string, object>.Empty, CancellationToken.None);
             contextualSender = new ContextualRequestSender(baseSender, context);
         }
 

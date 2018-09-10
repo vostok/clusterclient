@@ -39,5 +39,8 @@
     <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\UnboundedObjectPool.cs">
       <Link>Collections\UnboundedObjectPool.cs</Link>
     </Compile>
+    <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ImmutableArrayDictionary.cs">
+      <Link>Collections\ImmutableArrayDictionary.cs</Link>
+    </Compile>
   </ItemGroup>
 </Project>
