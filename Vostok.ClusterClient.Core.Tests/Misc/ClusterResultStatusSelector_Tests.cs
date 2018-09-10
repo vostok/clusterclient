@@ -25,7 +25,7 @@ namespace Vostok.ClusterClient.Core.Tests.Misc
         {
             var status = selector.Select(Group(Result(ResponseVerdict.Reject), Result(ResponseVerdict.Accept)), Budget.Infinite);
 
-            AssertionExtensions.Should((object)status).Be(ClusterResultStatus.Success);
+            status.Should().Be(ClusterResultStatus.Success);
         }
 
         [Test]
@@ -33,7 +33,7 @@ namespace Vostok.ClusterClient.Core.Tests.Misc
         {
             var status = selector.Select(Group(Result(ResponseVerdict.Reject), Result(ResponseVerdict.Reject)), Budget.Infinite);
 
-            AssertionExtensions.Should((object)status).Be(ClusterResultStatus.ReplicasExhausted);
+            status.Should().Be(ClusterResultStatus.ReplicasExhausted);
         }
 
         [Test]
@@ -41,7 +41,7 @@ namespace Vostok.ClusterClient.Core.Tests.Misc
         {
             var status = selector.Select(Group(Result(ResponseVerdict.Reject), Result(ResponseVerdict.Reject)), Budget.Expired);
 
-            AssertionExtensions.Should((object)status).Be(ClusterResultStatus.TimeExpired);
+            status.Should().Be(ClusterResultStatus.TimeExpired);
         }
 
         private IList<ReplicaResult> Group(params ReplicaResult[] results)

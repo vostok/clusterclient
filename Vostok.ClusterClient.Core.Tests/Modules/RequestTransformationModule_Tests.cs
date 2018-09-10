@@ -58,7 +58,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             Execute();
 
-            AssertionExtensions.Should((object)context.Request).BeSameAs(request1);
+            context.Request.Should().BeSameAs(request1);
         }
 
         [Test]
@@ -68,7 +68,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             Execute();
 
-            AssertionExtensions.Should((object)context.Request).BeSameAs(request1);
+            context.Request.Should().BeSameAs(request1);
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             Execute();
 
-            AssertionExtensions.Should((object)context.Request).BeSameAs(request3);
+            context.Request.Should().BeSameAs(request3);
 
             Received.InOrder(() =>
             {
@@ -92,9 +92,9 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             Execute();
 
-            AssertionExtensions.Should((object)context.Request.StreamContent).BeOfType<SingleUseStreamContent>();
-            AssertionExtensions.Should((object)context.Request.StreamContent.Stream).BeSameAs(Stream.Null);
-            AssertionExtensions.Should((long?)context.Request.StreamContent.Length).Be(123L);
+            context.Request.StreamContent.Should().BeOfType<SingleUseStreamContent>();
+            context.Request.StreamContent.Stream.Should().BeSameAs(Stream.Null);
+            context.Request.StreamContent.Length.Should().Be(123L);
         }
 
         private void Execute()
@@ -103,7 +103,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             var task = taskSource.Task;
 
-            AssertionExtensions.Should((object)module.ExecuteAsync(context, _ => task)).BeSameAs(task);
+            module.ExecuteAsync(context, _ => task).Should().BeSameAs(task);
         }
     }
 }

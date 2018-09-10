@@ -10,7 +10,8 @@ using Vostok.ClusterClient.Abstractions.Transport;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Strategies;
-using Vostok.Logging.Console;
+using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Tests.Modules
 {
@@ -18,18 +19,20 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
     internal class RequestValidationModule_Tests
     {
         private IRequestContext context;
-        private ConsoleLog log;
+        private ILog log;
         private RequestValidationModule module;
 
         [SetUp]
         public void TestSetup()
         {
             context = Substitute.For<IRequestContext>();
-            context.Log.Returns(log = new ConsoleLog());
+            context.Log.Returns(log = Substitute.For<ILog>());
             context.Transport.Returns(Substitute.For<ITransport>());
             context.Strategy.Returns(new SingleReplicaRequestStrategy());
+            
+            log.IsEnabledFor(default).ReturnsForAnyArgs(true);
 
-            module = new RequestValidationModule();
+            module = new RequestValidationModule(true);
         }
 
         [Test]
@@ -47,7 +50,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             module.ExecuteAsync(context, _ => null).GetAwaiter().GetResult();
 
-            // log.CallsErrorCount.Should().Be(1);  // todo(Mansiper): fix it
+            log.Received(1, LogLevel.Error);
         }
 
         [Test]
@@ -101,6 +104,19 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             ShouldPassChecks();
         }
+
+        [Test]
+        public void Should_delegate_to_next_module_when_request_method_is_not_valid_but_validateHttpMetod_are_false()
+        {
+            context.Request.Returns(CreateIncorrectRequest());
+
+            var task = Task.FromResult(ClusterResultFactory.UnexpectedException(context.Request));
+
+            var moduleWithoutHttpMethodValidation = new RequestValidationModule(false);
+
+            moduleWithoutHttpMethodValidation.ExecuteAsync(context, _ => task).Should().BeSameAs(task);
+        }
+
 
         private void ShouldPassChecks()
         {

@@ -67,7 +67,8 @@ namespace Vostok.ClusterClient.Core.Sending
             if (baseUrlEndsWithSlash && appendedUrlStartsWithSlash)
                 appendedUrl = appendedUrl.Substring(1);
 
-            if (!baseUrlEndsWithSlash && !appendedUrlStartsWithSlash)
+            if (!baseUrlEndsWithSlash && !appendedUrlStartsWithSlash && !string.IsNullOrEmpty(appendedUrl)) 
+                // (deniaa): If appendedUrl is empty, we should not add slash to the end of the Uri. In RFC Uri's with a slash on the end are not equals to Uris without it.
                 appendedUrl = "/" + appendedUrl;
 
             return new Uri(baseUrl + appendedUrl, UriKind.Absolute);
@@ -96,10 +97,16 @@ namespace Vostok.ClusterClient.Core.Sending
                     {
                         lastMatchingSegment = requestSegments.Current;
 
-                        if (!requestSegments.MoveNext())
-                            break;
+                        if (requestSegments.MoveNext())
+                            continue;
+
+                        if (!replicaSegments.MoveNext())
+                            seenAllReplicaSegments = true;
+
+                        break;
                     }
-                    else if (lastMatchingSegment.HasValue)
+
+                    if (lastMatchingSegment.HasValue)
                         return;
                 }
             }

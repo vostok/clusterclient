@@ -37,7 +37,7 @@ namespace Vostok.ClusterClient.Core.Modules
             modules.Add(new LoggingModule(config.Logging.LogPrefixEnabled, config.Logging.LogRequestDetails, config.Logging.LogResultDetails));
             modules.Add(new ResponseTransformationModule(config.ResponseTransforms));
             modules.Add(new ErrorCatchingModule());
-            modules.Add(new RequestValidationModule());
+            modules.Add(new RequestValidationModule(config.ValidateHttpMethod));
             modules.Add(new TimeoutValidationModule());
             modules.Add(new RequestRetryModule(config.RetryPolicy, config.RetryStrategy));
             var adaptiveThrottling = config.Modules?.FirstOrDefault(x => x is AdaptiveThrottlingModule);

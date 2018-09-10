@@ -14,10 +14,17 @@ namespace Vostok.ClusterClient.Core.Modules
 {
     internal class RequestValidationModule : IRequestModule
     {
+        private readonly bool validateHttpMethod;
+
+        public RequestValidationModule(bool validateHttpMethod)
+        {
+            this.validateHttpMethod = validateHttpMethod;
+        }
+        
         public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
-            if (!context.Request.IsValid())
-                return OnInvalidRequest(context, context.Request.Validate());
+            if (!context.Request.IsValidCustomizable(validateHttpMethod))
+                return OnInvalidRequest(context, context.Request.Validate(validateHttpMethod));
 
             if (HasStreamUnsupportedByTransport(context))
                 return OnInvalidRequest(context, "Request has a body stream, which is not supported by transport implementation.");

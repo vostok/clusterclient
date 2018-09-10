@@ -55,9 +55,9 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
 
             var defaultResult = context.FreezeReplicaResults().Should().ContainSingle().Which;
 
-            AssertionExtensions.Should((object)defaultResult.Replica).BeSameAs(replica);
-            AssertionExtensions.Should((object)defaultResult.Response).BeSameAs(Responses.Unknown);
-            AssertionExtensions.Should((object)defaultResult.Verdict).Be(ResponseVerdict.DontKnow);
+            defaultResult.Replica.Should().BeSameAs(replica);
+            defaultResult.Response.Should().BeSameAs(Responses.Unknown);
+            defaultResult.Verdict.Should().Be(ResponseVerdict.DontKnow);
 
             CompleteSending();
 
@@ -73,7 +73,7 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
 
             sendTask.GetAwaiter().GetResult();
 
-            AssertionExtensions.Should((object)context.FreezeReplicaResults().Should().ContainSingle().Which).BeSameAs(result);
+            context.FreezeReplicaResults().Should().ContainSingle().Which.Should().BeSameAs(result);
         }
 
         [Test]
@@ -83,7 +83,7 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
 
             CompleteSending();
 
-            AssertionExtensions.Should((object)sendTask.GetAwaiter().GetResult()).BeSameAs(result);
+            sendTask.GetAwaiter().GetResult().Should().BeSameAs(result);
         }
 
         [Test]
@@ -123,9 +123,9 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
 
             var replicaResult = context.FreezeReplicaResults().Should().ContainSingle().Which;
 
-            AssertionExtensions.Should((object)replicaResult.Replica).BeSameAs(replica);
-            AssertionExtensions.Should((object)replicaResult.Response).BeSameAs(Responses.Canceled);
-            AssertionExtensions.Should((object)replicaResult.Verdict).Be(ResponseVerdict.DontKnow);
+            replicaResult.Replica.Should().BeSameAs(replica);
+            replicaResult.Response.Should().BeSameAs(Responses.Canceled);
+            replicaResult.Verdict.Should().Be(ResponseVerdict.DontKnow);
         }
 
         private void CompleteSending()

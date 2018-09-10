@@ -6,6 +6,7 @@ using Vostok.ClusterClient.Abstractions.Criteria;
 using Vostok.ClusterClient.Abstractions.Modules;
 using Vostok.ClusterClient.Abstractions.Transforms;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.Console;
 
 namespace Vostok.ClusterClient.Core.Tests
 {
@@ -17,7 +18,7 @@ namespace Vostok.ClusterClient.Core.Tests
         [SetUp]
         public void TestSetup()
         {
-            configuration = new ClusterClientConfiguration(new SilentLog());
+            configuration = new ClusterClientConfiguration(new ConsoleLog());
         }
 
         [Test]

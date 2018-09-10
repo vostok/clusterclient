@@ -57,6 +57,8 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
             });
             configuration.ReplicaOrdering.Returns(Substitute.For<IReplicaOrdering>());
             configuration.Log.Returns(log = Substitute.For<ILog>());
+            
+            log.IsEnabledFor(default).ReturnsForAnyArgs(true);
 
             storageProvider = Substitute.For<IReplicaStorageProvider>();
 
@@ -112,10 +114,10 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
         public void Should_return_unknown_failure_response_when_transport_throws_an_exception()
         {
             transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Throws(new Exception("Fail!"));
-
+            
             Send().Response.Should().BeSameAs(Responses.UnknownFailure);
 
-            // log.CallsErrorCount.Should().Be(1);  // todo(Mansiper): fix it
+            log.Received(1, LogLevel.Error);
         }
 
         [Test]
@@ -180,7 +182,7 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
         {
             Send();
 
-            // log.CallsInfoCount.Should().Be(2);   // todo(Mansiper): fix it
+            log.Received(2).Log(Arg.Any<LogEvent>());
         }
 
         [Test]
@@ -194,7 +196,7 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
 
             Send();
 
-            log.Received(0).Log(Arg.Any<LogEvent>());   // todo(Mansiper): fix it
+            log.Received(0).Log(Arg.Any<LogEvent>());
         }
 
         [Test]
@@ -207,7 +209,7 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
             Send().Response.Code.Should().Be(ResponseCode.StreamReuseFailure);
         }
 
-        private ReplicaResult Send(CancellationToken token = default(CancellationToken))
+        private ReplicaResult Send(CancellationToken token = default)
         {
             return sender.SendToReplicaAsync(transport, replica, relativeRequest, timeout, token).GetAwaiter().GetResult();
         }

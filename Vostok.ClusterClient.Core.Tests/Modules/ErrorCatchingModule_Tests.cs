@@ -7,6 +7,7 @@ using Vostok.ClusterClient.Abstractions.Model;
 using Vostok.ClusterClient.Abstractions.Modules;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
+using Vostok.ClusterClient.Core.Tests.Helpers;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Tests.Modules
@@ -15,15 +16,16 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
     internal class ErrorCatchingModule_Tests
     {
         private IRequestContext context;
-        private SilentLog log;
+        private ILog log;
         private ErrorCatchingModule module;
 
         [SetUp]
         public void TestSetup()
         {
             context = Substitute.For<IRequestContext>();
-            context.Log.Returns(log = new SilentLog());
+            context.Log.Returns(log = Substitute.For<ILog>());
             context.Request.Returns(Request.Get("foo/bar"));
+            log.IsEnabledFor(default).ReturnsForAnyArgs(true);
             module = new ErrorCatchingModule();
         }
 
@@ -44,16 +46,15 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             module.ExecuteAsync(context, _ => { throw new Exception(); }).GetAwaiter().GetResult();
 
-            // todo(Mansiper): fix it in many places: CallsErrorCount for logs is absent
-            // log.CallsErrorCount.Should().Be(1);  // todo(Mansiper): fix it
+            log.Received(1, LogLevel.Error);
         }
 
         [Test]
         public void Should_not_log_an_error_message_if_next_module_throws_a_cancellation_error()
         {
-            module.ExecuteAsync(context, _ => { throw new OperationCanceledException(); }).GetAwaiter().GetResult();
+            module.ExecuteAsync(context, _ => throw new OperationCanceledException()).GetAwaiter().GetResult();
 
-            // log.CallsErrorCount.Should().Be(0);  // todo(Mansiper): fix it
+            log.Received(0, LogLevel.Error);
         }
 
         [Test]
