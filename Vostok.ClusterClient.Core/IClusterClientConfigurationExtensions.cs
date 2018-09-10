@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.ClusterClient.Abstractions;
+using Vostok.ClusterClient.Abstractions.Criteria;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
+using Vostok.ClusterClient.Abstractions.Transforms;
 using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Ordering.Weighed;
 using Vostok.ClusterClient.Core.Topology;
@@ -22,40 +25,16 @@ namespace Vostok.ClusterClient.Core
         }
 
         /// <summary>
-        /// Initializes configuration's <see cref="IClusterClientConfiguration.ResponseCriteria"/> list with given <paramref name="criteria"/>.
-        /// </summary>
-        public static void SetupResponseCriteria(this IClusterClientConfiguration configuration, params IResponseCriterion[] criteria) =>
-            configuration.ResponseCriteria = new List<IResponseCriterion>(criteria);
-
-        /// <summary>
         /// Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.Modules"/> list.
         /// </summary>
         public static void AddRequestModule(this IClusterClientConfiguration configuration, IRequestModule module) =>
             (configuration.Modules ?? (configuration.Modules = new List<IRequestModule>())).Add(module);
 
         /// <summary>
-        /// Adds given <paramref name="transform"/> to configuration's <see cref="IClusterClientConfiguration.RequestTransforms"/> list.
-        /// </summary>
-        public static void AddRequestTransform(this IClusterClientConfiguration configuration, IRequestTransform transform) =>
-            (configuration.RequestTransforms ?? (configuration.RequestTransforms = new List<IRequestTransform>())).Add(transform);
-
-        /// <summary>
-        /// Adds an <see cref="AdHocRequestTransform"/> with given <paramref name="transform"/> function to configuration's <see cref="IClusterClientConfiguration.RequestTransforms"/> list.
-        /// </summary>
-        public static void AddRequestTransform(this IClusterClientConfiguration configuration, Func<Request, Request> transform) =>
-            AddRequestTransform(configuration, new AdHocRequestTransform(transform));
-
-        /// <summary>
-        /// Adds given <paramref name="transform"/> to configuration's <see cref="IClusterClientConfiguration.ResponseTransforms"/> list.
-        /// </summary>
-        public static void AddResponseTransform(this IClusterClientConfiguration configuration, IResponseTransform transform) =>
-            (configuration.ResponseTransforms ?? (configuration.ResponseTransforms = new List<IResponseTransform>())).Add(transform);
-
-        /// <summary>
         /// Adds an <see cref="AdHocResponseTransform"/> with given <paramref name="transform"/> function to configuration's <see cref="IClusterClientConfiguration.ResponseTransforms"/> list.
         /// </summary>
         public static void AddResponseTransform(this IClusterClientConfiguration configuration, Func<Response, Response> transform) =>
-            AddResponseTransform(configuration, new AdHocResponseTransform(transform));
+            Abstractions.IClusterClientConfigurationExtensions.AddResponseTransform(configuration, new AdHocResponseTransform(transform));
 
         /// <summary>
         /// Modifies configuration's <see cref="IClusterClientConfiguration.ClusterProvider"/> to repeat all of its replicas <paramref name="repeatCount"/> times.
@@ -85,7 +64,14 @@ namespace Vostok.ClusterClient.Core
             double criticalRatio = ClusterClientDefaults.AdaptiveThrottlingCriticalRatio,
             double maximumRejectProbability = ClusterClientDefaults.AdaptiveThrottlingRejectProbabilityCap)
         {
-            configuration.AdaptiveThrottling = new AdaptiveThrottlingOptions(storageKey, minutesToTrack, minimumRequests, criticalRatio, maximumRejectProbability);
+            var options = new AdaptiveThrottlingOptions(
+                storageKey,
+                minutesToTrack,
+                minimumRequests,
+                criticalRatio,
+                maximumRejectProbability);
+            
+            configuration.AddRequestModule(new AdaptiveThrottlingModule(options));
         }
 
         /// <summary>
@@ -103,7 +89,8 @@ namespace Vostok.ClusterClient.Core
             double criticalRatio = ClusterClientDefaults.AdaptiveThrottlingCriticalRatio,
             double maximumRejectProbability = ClusterClientDefaults.AdaptiveThrottlingRejectProbabilityCap)
         {
-            configuration.AdaptiveThrottling = new AdaptiveThrottlingOptions(configuration.ServiceName, minutesToTrack, minimumRequests, criticalRatio, maximumRejectProbability);
+            var options = new AdaptiveThrottlingOptions(configuration.ServiceName, minutesToTrack, minimumRequests, criticalRatio, maximumRejectProbability);
+            configuration.AddRequestModule(new AdaptiveThrottlingModule(options));
         }
 
         /// <summary>
@@ -121,7 +108,8 @@ namespace Vostok.ClusterClient.Core
             int minimumRequests = ClusterClientDefaults.ReplicaBudgetingMinimumRequests,
             double criticalRatio = ClusterClientDefaults.ReplicaBudgetingCriticalRatio)
         {
-            configuration.ReplicaBudgeting = new ReplicaBudgetingOptions(storageKey, minutesToTrack, minimumRequests, criticalRatio);
+            var options = new ReplicaBudgetingOptions(storageKey, minutesToTrack, minimumRequests, criticalRatio);
+            configuration.AddRequestModule(new ReplicaBudgetingModule(options));
         }
 
         /// <summary>
@@ -137,7 +125,8 @@ namespace Vostok.ClusterClient.Core
             int minimumRequests = ClusterClientDefaults.ReplicaBudgetingMinimumRequests,
             double criticalRatio = ClusterClientDefaults.ReplicaBudgetingCriticalRatio)
         {
-            configuration.ReplicaBudgeting = new ReplicaBudgetingOptions(configuration.ServiceName, minutesToTrack, minimumRequests, criticalRatio);
+            var options = new ReplicaBudgetingOptions(configuration.ServiceName, minutesToTrack, minimumRequests, criticalRatio);
+            configuration.AddRequestModule(new ReplicaBudgetingModule(options));
         }
     }
 }

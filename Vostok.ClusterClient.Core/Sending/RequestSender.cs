@@ -3,6 +3,10 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Vostok.ClusterClient.Abstractions;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Ordering.Storage;
+using Vostok.ClusterClient.Abstractions.Transport;
 using Vostok.ClusterClient.Core.Criteria;
 using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Model;
@@ -33,7 +37,7 @@ namespace Vostok.ClusterClient.Core.Sending
 
         public async Task<ReplicaResult> SendToReplicaAsync(ITransport transport, Uri replica, Request request, TimeSpan timeout, CancellationToken cancellationToken)
         {
-            if (configuration.LogReplicaRequests)
+            if (configuration.Logging.LogReplicaRequests)
                 LogRequest(replica, timeout);
 
             var watch = Stopwatch.StartNew();
@@ -46,7 +50,7 @@ namespace Vostok.ClusterClient.Core.Sending
 
             var result = new ReplicaResult(replica, response, responseVerdict, watch.Elapsed);
 
-            if (configuration.LogReplicaResults)
+            if (configuration.Logging.LogReplicaResults)
                 LogResult(result);
 
             configuration.ReplicaOrdering.Learn(result, storageProvider);
@@ -63,7 +67,7 @@ namespace Vostok.ClusterClient.Core.Sending
             {
                 var response = await transport.SendAsync(request, timeout, cancellationToken).ConfigureAwait(false);
                 if (response.Code == ResponseCode.Canceled)
-                    throw new OperationCanceledException();
+                    throw new OperationCanceledByServerException();
 
                 return response;
             }

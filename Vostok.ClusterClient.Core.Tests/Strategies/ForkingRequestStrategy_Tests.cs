@@ -8,6 +8,8 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Sending;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Sending;
 using Vostok.ClusterClient.Core.Strategies;

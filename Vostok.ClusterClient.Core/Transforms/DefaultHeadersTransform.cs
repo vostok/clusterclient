@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Transforms;
 using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Transforms
@@ -10,12 +12,13 @@ namespace Vostok.ClusterClient.Core.Transforms
     {
         public DefaultHeadersTransform([CanBeNull] IEnumerable<Header> defaultHeaders = null)
         {
+            DefaultHeaders = Headers.Empty;
             if (defaultHeaders == null)
-                DefaultHeaders = Headers.Empty;
-            else
+                return;
+            
+            foreach (var header in defaultHeaders)
             {
-                var headersArray = defaultHeaders.ToArray();
-                DefaultHeaders = new Headers(headersArray, headersArray.Length);
+                DefaultHeaders = DefaultHeaders.Set(header.Name, header.Value);
             }
         }
 

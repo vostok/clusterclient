@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Vostok.ClusterClient.Abstractions.Misc;
+using Vostok.ClusterClient.Abstractions.Model;
 using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Misc
@@ -24,8 +26,7 @@ namespace Vostok.ClusterClient.Core.Misc
         private static Response GetLastKnownResponse(IList<ReplicaResult> results) =>
             results.LastOrDefault(
                 result => result.Response.Code != ResponseCode.Unknown &&
-                          result.Response.Code != ResponseCode.StreamReuseFailure)
-            ?.Response;
+                          result.Response.Code != ResponseCode.StreamReuseFailure)?.Response;
 
         private static Response GetLastResponse(IList<ReplicaResult> results) =>
             results.LastOrDefault()?.Response;

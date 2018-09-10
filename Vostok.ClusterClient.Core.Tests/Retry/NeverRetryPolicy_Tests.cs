@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
+using Vostok.ClusterClient.Abstractions.Model;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Retry;
 

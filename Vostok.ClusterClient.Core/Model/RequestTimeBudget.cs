@@ -1,14 +1,12 @@
-﻿using System;
+using System;
 using System.Diagnostics;
+using Vostok.ClusterClient.Abstractions.Model;
 using Vostok.ClusterClient.Core.Helpers;
 
 namespace Vostok.ClusterClient.Core.Model
 {
     internal class RequestTimeBudget : IRequestTimeBudget
     {
-        public static RequestTimeBudget StartNew(TimeSpan total, TimeSpan precision) =>
-            new RequestTimeBudget(total, precision);
-
         private readonly Stopwatch watch;
 
         private RequestTimeBudget(TimeSpan total, TimeSpan precision)
@@ -18,6 +16,11 @@ namespace Vostok.ClusterClient.Core.Model
 
             watch = new Stopwatch();
             watch.Start();
+        }
+
+        public static RequestTimeBudget StartNew(TimeSpan total, TimeSpan precision)
+        {
+            return new RequestTimeBudget(total, precision);
         }
 
         public TimeSpan Total { get; }

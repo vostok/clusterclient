@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
+using Vostok.ClusterClient.Abstractions.Transport;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Transport;
@@ -32,7 +35,7 @@ namespace Vostok.ClusterClient.Core.Modules
         {
             LogValidationErrors(context, errors);
 
-            return Task.FromResult(ClusterResult.IncorrectArguments(context.Request));
+            return Task.FromResult(ClusterResultFactory.IncorrectArguments(context.Request));
         }
 
         private static bool HasStreamUnsupportedByTransport(IRequestContext context) =>

@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using Vostok.ClusterClient.Abstractions.Model;
 using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive

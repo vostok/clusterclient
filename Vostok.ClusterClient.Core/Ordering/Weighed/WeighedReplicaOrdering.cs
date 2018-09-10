@@ -2,9 +2,14 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Ordering;
+using Vostok.ClusterClient.Abstractions.Ordering.Storage;
 using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Ordering.Storage;
+using Vostok.Commons.Collections;
+using Vostok.Commons.Threading;
 
 namespace Vostok.ClusterClient.Core.Ordering.Weighed
 {
@@ -23,7 +28,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
     {
         private const int PooledArraySize = 50;
 
-        private static readonly Pool<TreeNode[]> TreeArrays = new Pool<TreeNode[]>(() => new TreeNode[PooledArraySize]);
+        private static readonly UnboundedObjectPool<TreeNode[]> TreeArrays = new UnboundedObjectPool<TreeNode[]>(() => new TreeNode[PooledArraySize]);
 
         private readonly IList<IReplicaWeightModifier> modifiers;
         private readonly IReplicaWeightCalculator weightCalculator;
@@ -65,7 +70,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
 
         private IEnumerable<Uri> OrderUsingPooledArray(IList<Uri> replicas, IReplicaStorageProvider storageProvider, Request request)
         {
-            using (var treeArray = TreeArrays.AcquireHandle())
+            using (TreeArrays.Acquire(out var treeArray))
                 foreach (var replica in OrderInternal(replicas, storageProvider, request, treeArray))
                     yield return replica;
         }

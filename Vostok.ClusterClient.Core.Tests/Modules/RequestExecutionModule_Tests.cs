@@ -5,6 +5,14 @@ using System.Threading;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
+using Vostok.ClusterClient.Abstractions.Misc;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Ordering;
+using Vostok.ClusterClient.Abstractions.Ordering.Storage;
+using Vostok.ClusterClient.Abstractions.Sending;
+using Vostok.ClusterClient.Abstractions.Strategies;
+using Vostok.ClusterClient.Abstractions.Topology;
+using Vostok.ClusterClient.Abstractions.Transport;
 using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
@@ -15,7 +23,7 @@ using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Tests.Helpers;
 using Vostok.ClusterClient.Core.Topology;
 using Vostok.ClusterClient.Core.Transport;
-using Vostok.Logging.ConsoleLog;
+using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Tests.Modules
 {
@@ -52,7 +60,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             result1 = new ReplicaResult(replica1, response1, ResponseVerdict.DontKnow, TimeSpan.Zero);
             result2 = new ReplicaResult(replica2, response2, ResponseVerdict.DontKnow, TimeSpan.Zero);
 
-            context = new RequestContext(Request.Get("foo/bar"), Substitute.For<IRequestStrategy>(), Budget.Infinite, new ConsoleLog(), null, CancellationToken.None, null, int.MaxValue);
+            context = new RequestContext(Request.Get("foo/bar"), Substitute.For<IRequestStrategy>(), Budget.Infinite, new SilentLog(), null, CancellationToken.None, null, int.MaxValue);
             context.Strategy.SendAsync(null, null, null, null, 0, default(CancellationToken)).ReturnsForAnyArgs(async info =>
             {
                 var replicas = info.Arg<IEnumerable<Uri>>();

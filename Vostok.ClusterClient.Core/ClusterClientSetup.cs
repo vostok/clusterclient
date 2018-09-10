@@ -1,4 +1,6 @@
-﻿namespace Vostok.ClusterClient.Core
+﻿using Vostok.ClusterClient.Abstractions;
+
+namespace Vostok.ClusterClient.Core
 {
     public delegate void ClusterClientSetup(IClusterClientConfiguration configuration);
 }

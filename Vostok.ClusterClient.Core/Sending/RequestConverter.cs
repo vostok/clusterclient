@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vostok.ClusterClient.Abstractions.Model;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.Logging.Abstractions;
 

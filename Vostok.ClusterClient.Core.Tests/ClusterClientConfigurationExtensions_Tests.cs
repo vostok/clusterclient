@@ -1,10 +1,11 @@
 ﻿using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Transforms;
-using Vostok.Logging.ConsoleLog;
+using Vostok.ClusterClient.Abstractions;
+using Vostok.ClusterClient.Abstractions.Criteria;
+using Vostok.ClusterClient.Abstractions.Modules;
+using Vostok.ClusterClient.Abstractions.Transforms;
+using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Tests
 {
@@ -16,7 +17,7 @@ namespace Vostok.ClusterClient.Core.Tests
         [SetUp]
         public void TestSetup()
         {
-            configuration = new ClusterClientConfiguration(new ConsoleLog());
+            configuration = new ClusterClientConfiguration(new SilentLog());
         }
 
         [Test]

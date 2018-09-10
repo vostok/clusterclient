@@ -3,9 +3,11 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
-using Vostok.Logging.ConsoleLog;
+using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Tests.Modules
 {
@@ -13,14 +15,14 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
     internal class ErrorCatchingModule_Tests
     {
         private IRequestContext context;
-        private ConsoleLog log;
+        private SilentLog log;
         private ErrorCatchingModule module;
 
         [SetUp]
         public void TestSetup()
         {
             context = Substitute.For<IRequestContext>();
-            context.Log.Returns(log = new ConsoleLog());
+            context.Log.Returns(log = new SilentLog());
             context.Request.Returns(Request.Get("foo/bar"));
             module = new ErrorCatchingModule();
         }
@@ -57,7 +59,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         [Test]
         public void Should_delegate_to_next_module_if_no_exceptions_arise()
         {
-            var task = Task.FromResult(ClusterResult.ReplicasNotFound(context.Request));
+            var task = Task.FromResult(ClusterResultFactory.ReplicasNotFound(context.Request));
 
             module.ExecuteAsync(context, _ => task).Result.Should().BeSameAs(task.Result);
         }

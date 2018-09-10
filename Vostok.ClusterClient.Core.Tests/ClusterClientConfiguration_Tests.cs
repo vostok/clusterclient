@@ -3,17 +3,17 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
+using Vostok.ClusterClient.Abstractions;
+using Vostok.ClusterClient.Abstractions.Misc;
+using Vostok.ClusterClient.Abstractions.Ordering;
+using Vostok.ClusterClient.Abstractions.Retry;
+using Vostok.ClusterClient.Abstractions.Strategies;
+using Vostok.ClusterClient.Abstractions.Topology;
+using Vostok.ClusterClient.Abstractions.Transforms;
+using Vostok.ClusterClient.Abstractions.Transport;
 using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Misc;
-using Vostok.ClusterClient.Core.Ordering;
-using Vostok.ClusterClient.Core.Retry;
-using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Tests.Helpers;
-using Vostok.ClusterClient.Core.Topology;
-using Vostok.ClusterClient.Core.Transforms;
-using Vostok.ClusterClient.Core.Transport;
 using Vostok.Logging.Abstractions;
-using Vostok.Logging.ConsoleLog;
 
 namespace Vostok.ClusterClient.Core.Tests
 {
@@ -26,7 +26,7 @@ namespace Vostok.ClusterClient.Core.Tests
         [SetUp]
         public void TestSetup()
         {
-            log = new ConsoleLog();
+            log = new SilentLog();
 
             configuration = new ClusterClientConfiguration(log)
             {
@@ -126,10 +126,10 @@ namespace Vostok.ClusterClient.Core.Tests
         [Test]
         public void Should_initially_have_all_logging_options_enabled()
         {
-            configuration.LogRequestDetails.Should().BeTrue();
-            configuration.LogResultDetails.Should().BeTrue();
-            configuration.LogReplicaRequests.Should().BeTrue();
-            configuration.LogReplicaResults.Should().BeTrue();
+            configuration.Logging.LogRequestDetails.Should().BeTrue();
+            configuration.Logging.LogResultDetails.Should().BeTrue();
+            configuration.Logging.LogReplicaRequests.Should().BeTrue();
+            configuration.Logging.LogReplicaResults.Should().BeTrue();
         }
 
         [Test]

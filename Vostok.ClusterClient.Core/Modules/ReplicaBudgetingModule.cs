@@ -3,7 +3,8 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Modules

@@ -1,5 +1,9 @@
 using System.Collections.Generic;
 using System.Threading;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
+using Vostok.ClusterClient.Abstractions.Strategies;
+using Vostok.ClusterClient.Abstractions.Transport;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Transport;

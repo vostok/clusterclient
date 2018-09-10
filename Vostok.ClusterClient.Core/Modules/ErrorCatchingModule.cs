@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.Logging.Abstractions;
 
@@ -15,12 +17,12 @@ namespace Vostok.ClusterClient.Core.Modules
             }
             catch (OperationCanceledException)
             {
-                return ClusterResult.Canceled(context.Request);
+                return ClusterResultFactory.Canceled(context.Request);
             }
             catch (Exception error)
             {
-                context.Log.Error(error, "Unexpected failure during request execution.");
-                return ClusterResult.UnexpectedException(context.Request);
+                context.Log.Error(error, "Unexpected failure during request execution.", error);
+                return ClusterResultFactory.UnexpectedException(context.Request);
             }
         }
     }

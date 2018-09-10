@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
 using Vostok.ClusterClient.Core.Helpers;
-using Vostok.ClusterClient.Core.Model;
 using Vostok.Logging.Abstractions;
-using Vostok.Logging.Context;
 
 namespace Vostok.ClusterClient.Core.Modules
 {
@@ -25,9 +24,7 @@ namespace Vostok.ClusterClient.Core.Modules
 
         public async Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
-            if (addPrefix)
-                using (new ContextualLogPrefix("CC-" + Interlocked.Increment(ref currentOperationId)))
-                    return await ExecuteInternalAsync(context, next).ConfigureAwait(false);
+            //TODO: contextual log prefix
 
             return await ExecuteInternalAsync(context, next).ConfigureAwait(false);
         }

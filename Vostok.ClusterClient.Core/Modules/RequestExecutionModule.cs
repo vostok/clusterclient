@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Vostok.ClusterClient.Abstractions.Misc;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
+using Vostok.ClusterClient.Abstractions.Ordering;
+using Vostok.ClusterClient.Abstractions.Ordering.Storage;
+using Vostok.ClusterClient.Abstractions.Topology;
 using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Ordering;
@@ -42,7 +48,7 @@ namespace Vostok.ClusterClient.Core.Modules
             if (replicas == null || replicas.Count == 0)
             {
                 LogReplicasNotFound(context);
-                return ClusterResult.ReplicasNotFound(context.Request);
+                return ClusterResultFactory.ReplicasNotFound(context.Request);
             }
 
             var contextImpl = (RequestContext)context;

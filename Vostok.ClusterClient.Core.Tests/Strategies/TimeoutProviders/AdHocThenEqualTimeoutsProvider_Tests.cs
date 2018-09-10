@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
+using Vostok.ClusterClient.Abstractions.Model;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Strategies.TimeoutProviders;
 using Vostok.ClusterClient.Core.Tests.Helpers;

@@ -1,9 +1,10 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
+using Vostok.ClusterClient.Abstractions.Model;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Sending;
-using Vostok.Logging.ConsoleLog;
+using Vostok.Logging.Console;
 
 namespace Vostok.ClusterClient.Core.Tests.Sending
 {

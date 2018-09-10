@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Vostok.ClusterClient.Abstractions.Topology;
+using Vostok.ClusterClient.Abstractions.Transforms;
 using Vostok.ClusterClient.Core.Transforms;
 
 namespace Vostok.ClusterClient.Core.Topology

@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Ordering;
+using Vostok.ClusterClient.Abstractions.Ordering.Storage;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Ordering.Storage;
 

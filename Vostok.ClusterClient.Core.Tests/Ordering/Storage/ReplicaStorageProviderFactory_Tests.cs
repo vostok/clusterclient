@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using Vostok.ClusterClient.Abstractions.Ordering.Storage;
 using Vostok.ClusterClient.Core.Ordering.Storage;
 
 namespace Vostok.ClusterClient.Core.Tests.Ordering.Storage

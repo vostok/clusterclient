@@ -2,6 +2,8 @@
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
+using Vostok.ClusterClient.Abstractions.Criteria;
+using Vostok.ClusterClient.Abstractions.Model;
 using Vostok.ClusterClient.Core.Criteria;
 using Vostok.ClusterClient.Core.Model;
 

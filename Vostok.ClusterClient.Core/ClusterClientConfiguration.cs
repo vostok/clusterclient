@@ -2,17 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Vostok.ClusterClient.Abstractions;
+using Vostok.ClusterClient.Abstractions.Criteria;
+using Vostok.ClusterClient.Abstractions.Logging;
+using Vostok.ClusterClient.Abstractions.Misc;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
+using Vostok.ClusterClient.Abstractions.Ordering;
+using Vostok.ClusterClient.Abstractions.Ordering.Storage;
+using Vostok.ClusterClient.Abstractions.Retry;
+using Vostok.ClusterClient.Abstractions.Strategies;
+using Vostok.ClusterClient.Abstractions.Topology;
+using Vostok.ClusterClient.Abstractions.Transforms;
+using Vostok.ClusterClient.Abstractions.Transport;
 using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Misc;
-using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Ordering;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Retry;
-using Vostok.ClusterClient.Core.Strategies;
-using Vostok.ClusterClient.Core.Topology;
-using Vostok.ClusterClient.Core.Transforms;
-using Vostok.ClusterClient.Core.Transport;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core
@@ -28,11 +32,14 @@ namespace Vostok.ClusterClient.Core
             Modules = new List<IRequestModule>();
             ReplicaStorageScope = ClusterClientDefaults.ReplicaStorageScope;
             DefaultTimeout = ClusterClientDefaults.Timeout;
-            LogRequestDetails = ClusterClientDefaults.LogRequestDetails;
-            LogResultDetails = ClusterClientDefaults.LogResultDetails;
-            LogReplicaRequests = ClusterClientDefaults.LogReplicaRequests;
-            LogReplicaResults = ClusterClientDefaults.LogReplicaResults;
-            LogPrefixEnabled = ClusterClientDefaults.LogPrefixEnabled;
+            Logging = new LoggingOptions
+            {
+                LogRequestDetails = ClusterClientDefaults.LogRequestDetails,
+                LogResultDetails = ClusterClientDefaults.LogResultDetails,
+                LogReplicaRequests = ClusterClientDefaults.LogReplicaRequests,
+                LogReplicaResults = ClusterClientDefaults.LogReplicaResults,
+                LogPrefixEnabled = ClusterClientDefaults.LogPrefixEnabled
+            };
             MaxReplicasUsedPerRequest = ClusterClientDefaults.MaxReplicasUsedPerRequest;
             DeduplicateRequestUrl = ClusterClientDefaults.DeduplicateRequestUrl;
         }
@@ -70,24 +77,20 @@ namespace Vostok.ClusterClient.Core
         public RequestPriority? DefaultPriority { get; set; }
 
         public int MaxReplicasUsedPerRequest { get; set; }
+        
+        public LoggingOptions Logging { get; set; }
 
         public AdaptiveThrottlingOptions AdaptiveThrottling { get; set; }
 
         public ReplicaBudgetingOptions ReplicaBudgeting { get; set; }
 
-        public bool LogRequestDetails { get; set; }
-
-        public bool LogResultDetails { get; set; }
-
-        public bool LogReplicaRequests { get; set; }
-
-        public bool LogReplicaResults { get; set; }
-
-        public bool LogPrefixEnabled { get; set; }
-
         public string ServiceName { get; set; }
+        
+        public string Environment { get; set; }
 
         public bool DeduplicateRequestUrl { get; set; }
+
+        public bool ValidateHttpMethod { get; set; }
 
         public bool IsValid => !Validate().Any();
 

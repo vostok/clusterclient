@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Vostok.ClusterClient.Abstractions.Criteria;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
 using Vostok.ClusterClient.Core.Criteria;
 using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Model;
@@ -36,7 +39,7 @@ namespace Vostok.ClusterClient.Core.Modules
             var elapsedBefore = context.Budget.Elapsed;
             var response = await context.Transport.SendAsync(context.Request, context.Budget.Remaining, context.CancellationToken).ConfigureAwait(false);
             if (response.Code == ResponseCode.Canceled)
-                return ClusterResult.Canceled(context.Request);
+                return ClusterResultFactory.Canceled(context.Request);
 
             var responseVerdict = responseClassifier.Decide(response, responseCriteria);
             var replicaResult = new ReplicaResult(context.Request.Url, response, responseVerdict, context.Budget.Elapsed - elapsedBefore);

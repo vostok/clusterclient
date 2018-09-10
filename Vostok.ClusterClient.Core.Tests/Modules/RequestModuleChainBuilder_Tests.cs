@@ -5,6 +5,11 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
+using Vostok.ClusterClient.Abstractions;
+using Vostok.ClusterClient.Abstractions.Logging;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
+using Vostok.ClusterClient.Abstractions.Ordering.Storage;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Ordering.Storage;
@@ -52,7 +57,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             module4.ExecuteAsync(null, null).ReturnsForAnyArgs(_ =>
             {
                 calledModules.Add(module4);
-                return Task.FromResult(ClusterResult.UnexpectedException(context.Request));
+                return Task.FromResult(ClusterResultFactory.UnexpectedException(context.Request));
             });
 
             context = Substitute.For<IRequestContext>();
@@ -92,6 +97,8 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             configuration.Modules.Returns(new List<IRequestModule> {module1, module2});
 
+            configuration.Logging.Returns(new LoggingOptions());
+
             var storageProvider = Substitute.For<IReplicaStorageProvider>();
 
             var modules = RequestModuleChainBuilder.BuildChain(configuration, storageProvider);
@@ -119,9 +126,14 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             var configuration = Substitute.For<IClusterClientConfiguration>();
 
+            configuration.Logging.Returns(new LoggingOptions());
+            
             configuration.Modules.Returns(null as List<IRequestModule>);
-            configuration.AdaptiveThrottling.Returns(new AdaptiveThrottlingOptions("foo"));
-            configuration.ReplicaBudgeting.Returns(new ReplicaBudgetingOptions("foo"));
+            configuration.Modules.Returns(new List<IRequestModule>
+            {
+                new AdaptiveThrottlingModule(new AdaptiveThrottlingOptions("foo")),
+                new ReplicaBudgetingModule(new ReplicaBudgetingOptions("foo"))
+            });
 
             var storageProvider = Substitute.For<IReplicaStorageProvider>();
 

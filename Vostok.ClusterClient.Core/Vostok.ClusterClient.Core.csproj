@@ -1,45 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <Import Project="..\..\vostok.devtools\library-common-props\Main-Project.props" />
   <Import Project="..\..\vostok.devtools\git-commit-to-assembly-title\Vostok.Tools.GitCommit2AssemblyTitle.props" />
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Configurations>Debug;Release</Configurations>
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
-
   <PropertyGroup>
     <VersionPrefix>0.0.1</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
   </PropertyGroup>
-
   <PropertyGroup>
     <PackageReleaseNotes>TODO</PackageReleaseNotes>
   </PropertyGroup>
-
   <PropertyGroup>
     <Title>Vostok ClusterClient core library</Title>
     <Description>ClusterClient core library for microservice toolkit http://vostok.tools/</Description>
   </PropertyGroup>
-
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/vostok/clusterclient.core</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/vostok/clusterclient.core/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>vostok vostok.clusterclient.core</PackageTags>
     <RepositoryUrl>https://github.com/vostok/clusterclient.core</RepositoryUrl>
   </PropertyGroup>
-
   <ItemGroup>
-    <Reference Include="Vostok.Context">
-      <HintPath>..\..\vostok.context\Vostok.Context\bin\Release\netstandard2.0\Vostok.Context.dll</HintPath>
-    </Reference>
     <Reference Include="Vostok.Logging.Abstractions">
       <HintPath>..\..\vostok.logging.abstractions\Vostok.Logging.Abstractions\bin\Release\netstandard2.0\Vostok.Logging.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Vostok.Logging.Context">
-      <HintPath>..\..\vostok.logging.context\Vostok.Logging.Context\bin\Release\netstandard2.0\Vostok.Logging.Context.dll</HintPath>
+    <Reference Include="Vostok.ClusterClient.Abstractions">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vostok.clusterclient.abstractions\Vostok.ClusterClient.Abstractions\bin\Release\netstandard2.0\Vostok.ClusterClient.Abstractions.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\ThreadSafeRandom.cs">
+      <Link>Threading\ThreadSafeRandom.cs</Link>
+    </Compile>
+    <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\UnboundedObjectPool.cs">
+      <Link>Collections\UnboundedObjectPool.cs</Link>
+    </Compile>
   </ItemGroup>
 </Project>

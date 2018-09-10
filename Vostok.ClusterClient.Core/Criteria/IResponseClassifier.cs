@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.ClusterClient.Abstractions.Criteria;
+using Vostok.ClusterClient.Abstractions.Model;
 
 namespace Vostok.ClusterClient.Core.Criteria
 {

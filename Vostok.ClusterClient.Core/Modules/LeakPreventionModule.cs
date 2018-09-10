@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Transport;
 

@@ -6,14 +6,18 @@ using FluentAssertions.Extensions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Vostok.ClusterClient.Abstractions;
+using Vostok.ClusterClient.Abstractions.Criteria;
+using Vostok.ClusterClient.Abstractions.Logging;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Ordering;
+using Vostok.ClusterClient.Abstractions.Ordering.Storage;
+using Vostok.ClusterClient.Abstractions.Transport;
 using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering;
-using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.ClusterClient.Core.Sending;
 using Vostok.ClusterClient.Core.Tests.Helpers;
-using Vostok.ClusterClient.Core.Transport;
-using Vostok.Logging.ConsoleLog;
+using Vostok.Logging.Abstractions;
+using Vostok.Logging.Console;
 
 namespace Vostok.ClusterClient.Core.Tests.Sending
 {
@@ -31,7 +35,7 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
         private IResponseClassifier responseClassifier;
         private IRequestConverter requestConverter;
         private ITransport transport;
-        private ConsoleLog log;
+        private ILog log;
 
         private RequestSender sender;
 
@@ -46,10 +50,13 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
 
             configuration = Substitute.For<IClusterClientConfiguration>();
             configuration.ResponseCriteria.Returns(new List<IResponseCriterion> {Substitute.For<IResponseCriterion>()});
-            configuration.LogReplicaRequests.Returns(true);
-            configuration.LogReplicaResults.Returns(true);
+            configuration.Logging.Returns(new LoggingOptions
+            {
+                LogReplicaRequests = true,
+                LogReplicaResults = true
+            });
             configuration.ReplicaOrdering.Returns(Substitute.For<IReplicaOrdering>());
-            configuration.Log.Returns(log = new ConsoleLog());
+            configuration.Log.Returns(log = Substitute.For<ILog>());
 
             storageProvider = Substitute.For<IReplicaStorageProvider>();
 
@@ -179,12 +186,15 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
         [Test]
         public void Should_not_log_requests_and_results_if_not_asked_to()
         {
-            configuration.LogReplicaRequests.Returns(false);
-            configuration.LogReplicaResults.Returns(false);
+            configuration.Logging.Returns(new LoggingOptions
+            {
+                LogReplicaResults = false,
+                LogReplicaRequests = false
+            });
 
             Send();
 
-            // log.CallsInfoCount.Should().Be(0);   // todo(Mansiper): fix it
+            log.Received(0).Log(Arg.Any<LogEvent>());   // todo(Mansiper): fix it
         }
 
         [Test]

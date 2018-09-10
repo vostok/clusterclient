@@ -2,11 +2,12 @@
 using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
+using Vostok.ClusterClient.Abstractions.Model;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Tests.Helpers;
-using Vostok.Logging.ConsoleLog;
+using Vostok.Logging.Console;
 
 namespace Vostok.ClusterClient.Core.Tests.Sending
 {

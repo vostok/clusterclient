@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
 using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.Logging.Abstractions;
@@ -13,13 +15,13 @@ namespace Vostok.ClusterClient.Core.Modules
             if (context.Budget.Total < TimeSpan.Zero)
             {
                 LogNegativeTimeout(context);
-                return Task.FromResult(ClusterResult.IncorrectArguments(context.Request));
+                return Task.FromResult(ClusterResultFactory.IncorrectArguments(context.Request));
             }
 
             if (context.Budget.HasExpired)
             {
                 LogExpiredTimeout(context);
-                return Task.FromResult(ClusterResult.TimeExpired(context.Request));
+                return Task.FromResult(ClusterResultFactory.TimeExpired(context.Request));
             }
 
             return next(context);

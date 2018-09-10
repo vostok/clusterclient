@@ -1,4 +1,5 @@
 ﻿using System;
+using Vostok.ClusterClient.Abstractions.Transforms;
 
 namespace Vostok.ClusterClient.Core.Transforms
 {

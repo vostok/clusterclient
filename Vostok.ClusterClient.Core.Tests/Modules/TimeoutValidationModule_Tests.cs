@@ -3,10 +3,12 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Tests.Helpers;
-using Vostok.Logging.ConsoleLog;
+using Vostok.Logging.Console;
 
 namespace Vostok.ClusterClient.Core.Tests.Modules
 {
@@ -77,7 +79,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             context.Budget.Returns(budget);
 
-            var task = Task.FromResult(ClusterResult.UnexpectedException(context.Request));
+            var task = Task.FromResult(ClusterResultFactory.UnexpectedException(context.Request));
 
             module.ExecuteAsync(context, _ => task).Should().BeSameAs(task);
         }

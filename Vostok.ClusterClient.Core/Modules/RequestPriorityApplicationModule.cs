@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.Context;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
 
 namespace Vostok.ClusterClient.Core.Modules
 {
@@ -9,9 +9,11 @@ namespace Vostok.ClusterClient.Core.Modules
     {
         public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
-            var priority = context.Priority ?? FlowingContext.Properties.Get<RequestPriority?>("request.priority");
-            if (priority.HasValue)
-                context.Request = context.Request.WithHeader(HeaderNames.XKonturRequestPriority, priority.Value);
+            //TODO: priority from context
+            var priority = context.Priority;
+            //TODO: set priority in headers
+            //if (priority.HasValue)
+            //    context.Request = context.Request.WithHeader(HeaderNames.XKonturRequestPriority, priority.Value);
 
             return next(context);
         }

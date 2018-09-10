@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Vostok.ClusterClient.Abstractions;
+using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Abstractions.Modules;
+using Vostok.ClusterClient.Abstractions.Ordering.Storage;
 using Vostok.ClusterClient.Core.Criteria;
 using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Model;
@@ -27,20 +32,22 @@ namespace Vostok.ClusterClient.Core.Modules
             };
 
             if (config.Modules != null)
-                modules.AddRange(config.Modules);
+                modules.AddRange(config.Modules.Where(x => !IsWellKnownModule(x)));
 
-            modules.Add(new LoggingModule(config.LogPrefixEnabled, config.LogRequestDetails, config.LogResultDetails));
+            modules.Add(new LoggingModule(config.Logging.LogPrefixEnabled, config.Logging.LogRequestDetails, config.Logging.LogResultDetails));
             modules.Add(new ResponseTransformationModule(config.ResponseTransforms));
             modules.Add(new ErrorCatchingModule());
             modules.Add(new RequestValidationModule());
             modules.Add(new TimeoutValidationModule());
             modules.Add(new RequestRetryModule(config.RetryPolicy, config.RetryStrategy));
+            var adaptiveThrottling = config.Modules?.FirstOrDefault(x => x is AdaptiveThrottlingModule);
+            var replicaBudgeting = config.Modules?.FirstOrDefault(x => x is ReplicaBudgetingModule);
+            
+            if (adaptiveThrottling != null)
+                modules.Add(adaptiveThrottling);
 
-            if (config.AdaptiveThrottling != null)
-                modules.Add(new AdaptiveThrottlingModule(config.AdaptiveThrottling));
-
-            if (config.ReplicaBudgeting != null)
-                modules.Add(new ReplicaBudgetingModule(config.ReplicaBudgeting));
+            if (replicaBudgeting != null)
+                modules.Add(replicaBudgeting);
 
             modules.Add(new AbsoluteUrlSenderModule(responseClassifier, config.ResponseCriteria, resultStatusSelector));
             modules.Add(
@@ -65,11 +72,14 @@ namespace Vostok.ClusterClient.Core.Modules
                 var currentResult = result;
 
                 result = ctx => ctx.CancellationToken.IsCancellationRequested
-                    ? Task.FromResult(ClusterResult.Canceled(ctx.Request))
+                    ? Task.FromResult(ClusterResultFactory.Canceled(ctx.Request))
                     : currentModule.ExecuteAsync(ctx, currentResult);
             }
 
             return result;
         }
+
+        private static bool IsWellKnownModule(IRequestModule module)
+            => module is AdaptiveThrottlingModule || module is ReplicaBudgetingModule;
     }
 }
