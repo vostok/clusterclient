@@ -43,6 +43,8 @@ namespace Vostok.ClusterClient.Core
         public const bool LogPrefixEnabled = true;
 
         public const bool DeduplicateRequestUrl = false;
+        
+        public const bool ValidateHttpMethod = true;
 
         public const int MaxReplicasUsedPerRequest = 3;
 

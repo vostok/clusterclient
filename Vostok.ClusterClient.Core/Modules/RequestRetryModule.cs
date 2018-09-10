@@ -6,6 +6,7 @@ using Vostok.ClusterClient.Abstractions.Retry;
 using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Retry;
+using Vostok.Commons.Helpers.Extensions;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Modules

@@ -12,6 +12,7 @@ using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.ClusterClient.Core.Transport;
+using Vostok.Commons.Helpers.Extensions;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Sending

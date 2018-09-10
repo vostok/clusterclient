@@ -10,6 +10,7 @@ using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Sending;
 using Vostok.ClusterClient.Core.Strategies.TimeoutProviders;
+using Vostok.Commons.Helpers.Extensions;
 
 namespace Vostok.ClusterClient.Core.Strategies
 {
