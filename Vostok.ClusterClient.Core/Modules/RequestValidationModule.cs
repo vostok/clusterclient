@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Abstractions.Modules;
-using Vostok.ClusterClient.Abstractions.Transport;
 using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Transport;
+using Vostok.ClusterClient.Core.Strategies;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Modules

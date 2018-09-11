@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Vostok.ClusterClient.Abstractions.Criteria;
-using Vostok.ClusterClient.Abstractions.Misc;
-using Vostok.ClusterClient.Abstractions.Ordering;
-using Vostok.ClusterClient.Abstractions.Ordering.Storage;
-using Vostok.ClusterClient.Abstractions.Retry;
-using Vostok.ClusterClient.Abstractions.Strategies;
 using Vostok.ClusterClient.Core.Criteria;
 using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Ordering;
 using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Ordering.Weighed;
 using Vostok.ClusterClient.Core.Retry;
 using Vostok.ClusterClient.Core.Strategies;
+using Vostok.ClusterClient.Core.Ordering.Weighed;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core

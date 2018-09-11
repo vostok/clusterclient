@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Abstractions.Modules;
-using Vostok.ClusterClient.Abstractions.Transforms;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Transforms;
 

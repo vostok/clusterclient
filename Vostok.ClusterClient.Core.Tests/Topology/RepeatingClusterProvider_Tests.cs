@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Abstractions.Topology;
 using Vostok.ClusterClient.Core.Topology;
 
 namespace Vostok.ClusterClient.Core.Tests.Topology

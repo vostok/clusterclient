@@ -1,5 +1,3 @@
-using Vostok.ClusterClient.Abstractions.Ordering.Storage;
-
 namespace Vostok.ClusterClient.Core.Ordering.Storage
 {
     internal static class ReplicaStorageProviderFactory

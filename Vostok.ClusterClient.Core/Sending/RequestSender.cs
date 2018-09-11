@@ -3,15 +3,11 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Abstractions;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Abstractions.Ordering.Storage;
-using Vostok.ClusterClient.Abstractions.Transport;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.ClusterClient.Core.Transport;
+using Vostok.ClusterClient.Core.Criteria;
+using Vostok.ClusterClient.Core.Helpers;
 using Vostok.Commons.Helpers.Extensions;
 using Vostok.Logging.Abstractions;
 

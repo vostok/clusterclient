@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Abstractions.Transforms;
 using Vostok.ClusterClient.Core.Model;
+using Vostok.ClusterClient.Core.Transforms;
 using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Tests.Helpers;
-using Vostok.ClusterClient.Core.Transforms;
 using Vostok.Logging.Console;
 
 // ReSharper disable PossibleNullReferenceException

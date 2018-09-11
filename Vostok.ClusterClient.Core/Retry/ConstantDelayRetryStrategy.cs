@@ -1,5 +1,4 @@
 ﻿using System;
-using Vostok.ClusterClient.Abstractions.Retry;
 
 namespace Vostok.ClusterClient.Core.Retry
 {

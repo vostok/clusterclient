@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Vostok.ClusterClient.Abstractions.Topology;
 
 namespace Vostok.ClusterClient.Core.Topology
 {

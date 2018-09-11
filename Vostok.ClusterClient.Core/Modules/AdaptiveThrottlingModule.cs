@@ -4,10 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Abstractions.Modules;
-using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Model;
+using Vostok.ClusterClient.Core.Helpers;
 using Vostok.Commons.Threading;
 using Vostok.Logging.Abstractions;
 

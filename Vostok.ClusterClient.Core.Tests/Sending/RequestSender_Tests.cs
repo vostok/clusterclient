@@ -6,18 +6,15 @@ using FluentAssertions.Extensions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Abstractions;
-using Vostok.ClusterClient.Abstractions.Criteria;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Abstractions.Ordering;
-using Vostok.ClusterClient.Abstractions.Ordering.Storage;
-using Vostok.ClusterClient.Abstractions.Transport;
 using Vostok.ClusterClient.Core.Criteria;
+using Vostok.ClusterClient.Core.Model;
+using Vostok.ClusterClient.Core.Ordering;
+using Vostok.ClusterClient.Core.Ordering.Storage;
+using Vostok.ClusterClient.Core.Transport;
 using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Sending;
 using Vostok.ClusterClient.Core.Tests.Helpers;
 using Vostok.Logging.Abstractions;
-using Vostok.Logging.Console;
 
 namespace Vostok.ClusterClient.Core.Tests.Sending
 {

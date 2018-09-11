@@ -1,6 +1,4 @@
 ﻿using System;
-using Vostok.ClusterClient.Abstractions.Retry;
-using Vostok.ClusterClient.Core.Helpers;
 using Vostok.Commons.Helpers.Extensions;
 using Vostok.Commons.Threading;
 

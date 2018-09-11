@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Abstractions.Criteria;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Abstractions.Modules;
 using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Model;
+using Vostok.ClusterClient.Core.Misc;
 
 namespace Vostok.ClusterClient.Core.Modules
 {

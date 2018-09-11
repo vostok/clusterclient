@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Abstractions.Sending;
-using Vostok.ClusterClient.Abstractions.Strategies;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Sending;
 

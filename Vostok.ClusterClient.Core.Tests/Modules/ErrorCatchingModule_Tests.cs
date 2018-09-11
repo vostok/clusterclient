@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Abstractions.Modules;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Tests.Helpers;

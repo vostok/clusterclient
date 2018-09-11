@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using FluentAssertions;
-using NSubstitute;
+﻿using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Abstractions.Model;
 using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Tests.Model

@@ -1,5 +1,3 @@
-using Vostok.ClusterClient.Abstractions.Model;
-
 namespace Vostok.ClusterClient.Core.Model
 {
     internal static class RequestMiscExtensions

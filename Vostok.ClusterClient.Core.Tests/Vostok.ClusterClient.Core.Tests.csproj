@@ -17,9 +17,6 @@
     <ProjectReference Include="..\Vostok.ClusterClient.Core\Vostok.ClusterClient.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Vostok.ClusterClient.Abstractions, Version=0.0.1.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\vostok.clusterclient.abstractions\Vostok.ClusterClient.Abstractions\bin\Release\netstandard2.0\Vostok.ClusterClient.Abstractions.dll</HintPath>
-    </Reference>
     <Reference Include="Vostok.Context">
       <HintPath>..\..\vostok.context\Vostok.Context\bin\Release\netstandard2.0\Vostok.Context.dll</HintPath>
     </Reference>

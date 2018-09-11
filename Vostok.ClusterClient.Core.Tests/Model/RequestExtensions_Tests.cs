@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Abstractions.Model;
 using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Tests.Model

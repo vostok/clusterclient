@@ -5,19 +5,16 @@ using System.Threading;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Abstractions.Misc;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Abstractions.Ordering;
-using Vostok.ClusterClient.Abstractions.Ordering.Storage;
-using Vostok.ClusterClient.Abstractions.Sending;
-using Vostok.ClusterClient.Abstractions.Strategies;
-using Vostok.ClusterClient.Abstractions.Topology;
-using Vostok.ClusterClient.Abstractions.Transport;
 using Vostok.ClusterClient.Core.Misc;
-using Vostok.ClusterClient.Core.Modules;
+using Vostok.ClusterClient.Core.Model;
+using Vostok.ClusterClient.Core.Ordering;
+using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.ClusterClient.Core.Sending;
+using Vostok.ClusterClient.Core.Strategies;
+using Vostok.ClusterClient.Core.Topology;
+using Vostok.ClusterClient.Core.Transport;
+using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Tests.Helpers;
-using Vostok.Commons.Collections;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Tests.Modules

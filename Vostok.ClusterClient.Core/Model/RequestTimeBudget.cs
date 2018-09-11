@@ -1,7 +1,4 @@
 using System;
-using System.Diagnostics;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Core.Helpers;
 using Vostok.Commons.Helpers;
 
 namespace Vostok.ClusterClient.Core.Model

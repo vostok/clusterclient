@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Abstractions.Ordering;
-using Vostok.ClusterClient.Abstractions.Ordering.Storage;
-using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Ordering.Storage;
+using Vostok.ClusterClient.Core.Helpers;
 using Vostok.Commons.Collections;
 using Vostok.Commons.Threading;
 

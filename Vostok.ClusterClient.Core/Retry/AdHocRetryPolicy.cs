@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Abstractions.Retry;
 using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Retry

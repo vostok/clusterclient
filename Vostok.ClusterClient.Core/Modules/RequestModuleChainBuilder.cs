@@ -2,14 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Abstractions;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Abstractions.Modules;
-using Vostok.ClusterClient.Abstractions.Ordering.Storage;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Ordering.Storage;
+using Vostok.ClusterClient.Core.Criteria;
+using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Sending;
 
 namespace Vostok.ClusterClient.Core.Modules

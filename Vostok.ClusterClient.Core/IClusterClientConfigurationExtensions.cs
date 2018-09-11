@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Vostok.ClusterClient.Abstractions;
-using Vostok.ClusterClient.Abstractions.Criteria;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Abstractions.Modules;
-using Vostok.ClusterClient.Abstractions.Transforms;
+using Vostok.ClusterClient.Core.Criteria;
+using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
+using Vostok.ClusterClient.Core.Transforms;
 using Vostok.ClusterClient.Core.Ordering.Weighed;
 using Vostok.ClusterClient.Core.Topology;
-using Vostok.ClusterClient.Core.Transforms;
 
 namespace Vostok.ClusterClient.Core
 {

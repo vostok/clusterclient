@@ -2,13 +2,10 @@
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Abstractions.Topology;
-using Vostok.ClusterClient.Abstractions.Transforms;
-using Vostok.ClusterClient.Abstractions.Transport;
-using Vostok.ClusterClient.Core.Tests.Helpers;
 using Vostok.ClusterClient.Core.Topology;
 using Vostok.ClusterClient.Core.Transforms;
 using Vostok.ClusterClient.Core.Transport;
+using Vostok.ClusterClient.Core.Tests.Helpers;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Console;
 

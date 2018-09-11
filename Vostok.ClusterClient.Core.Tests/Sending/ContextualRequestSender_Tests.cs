@@ -5,14 +5,12 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Abstractions.Model;
-using Vostok.ClusterClient.Abstractions.Transport;
 using Vostok.ClusterClient.Core.Model;
+using Vostok.ClusterClient.Core.Transport;
 using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Sending;
 using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Tests.Helpers;
-using Vostok.ClusterClient.Core.Transport;
 using Vostok.Commons.Collections;
 using Vostok.Logging.Console;
 

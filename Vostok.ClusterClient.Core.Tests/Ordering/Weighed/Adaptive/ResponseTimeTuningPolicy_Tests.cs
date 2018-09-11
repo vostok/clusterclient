@@ -2,7 +2,7 @@
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Abstractions.Model;
+using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive;
 
 namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
