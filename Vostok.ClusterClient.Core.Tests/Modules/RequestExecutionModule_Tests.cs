@@ -78,7 +78,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             replicaOrdering.Order(null, null, null).ReturnsForAnyArgs(info => info.Arg<IList<Uri>>().Reverse());
 
             responseSelector = Substitute.For<IResponseSelector>();
-            responseSelector.Select(null).ReturnsForAnyArgs(_ => selectedResponse);
+            responseSelector.Select(null, null).ReturnsForAnyArgs(_ => selectedResponse);
 
             resultStatusSelector = Substitute.For<IClusterResultStatusSelector>();
             resultStatusSelector.Select(null, null).ReturnsForAnyArgs(ClusterResultStatus.Success);
@@ -151,7 +151,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             Execute();
 
-            responseSelector.Received().Select(Arg.Is<IList<ReplicaResult>>(results => results.SequenceEqual(new[] {result2, result1})));
+            responseSelector.Received().Select(Arg.Any<Request>(), Arg.Is<IList<ReplicaResult>>(results => results.SequenceEqual(new[] {result2, result1})));
         }
 
         [Test]

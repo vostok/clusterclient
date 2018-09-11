@@ -71,7 +71,7 @@ namespace Vostok.ClusterClient.Core.Modules
 
             var replicaResults = contextImpl.FreezeReplicaResults();
 
-            var selectedResponse = responseSelector.Select(replicaResults);
+            var selectedResponse = responseSelector.Select(contextImpl.Request, replicaResults);
 
             var resultStatus = resultStatusSelector.Select(replicaResults, contextImpl.Budget);
 

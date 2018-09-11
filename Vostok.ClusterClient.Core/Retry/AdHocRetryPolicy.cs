@@ -18,6 +18,6 @@ namespace Vostok.ClusterClient.Core.Retry
             this.criterion = criterion;
         }
 
-        public bool NeedToRetry(IList<ReplicaResult> results) => criterion(results);
+        public bool NeedToRetry(Request request, IList<ReplicaResult> results) => criterion(results);
     }
 }

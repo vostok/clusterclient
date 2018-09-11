@@ -43,7 +43,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             context.Request.Returns(request);
 
             retryPolicy = Substitute.For<IRetryPolicy>();
-            retryPolicy.NeedToRetry(Arg.Any<IList<ReplicaResult>>()).Returns(true);
+            retryPolicy.NeedToRetry(Arg.Any<Request>(), Arg.Any<IList<ReplicaResult>>()).Returns(true);
 
             retryStrategy = Substitute.For<IRetryStrategy>();
             retryStrategy.AttemptsCount.Returns(MaxAttempts);
@@ -65,7 +65,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             Execute();
 
-            retryPolicy.Received(4).NeedToRetry(result.ReplicaResults);
+            retryPolicy.Received(4).NeedToRetry(Arg.Any<Request>(), result.ReplicaResults);
         }
 
         [Test]
@@ -132,7 +132,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         [Test]
         public void Should_not_retry_if_retry_policy_forbids_it()
         {
-            retryPolicy.NeedToRetry(Arg.Any<IList<ReplicaResult>>()).Returns(false);
+            retryPolicy.NeedToRetry(Arg.Any<Request>(), Arg.Any<IList<ReplicaResult>>()).Returns(false);
 
             Execute().Should().BeSameAs(result);
 

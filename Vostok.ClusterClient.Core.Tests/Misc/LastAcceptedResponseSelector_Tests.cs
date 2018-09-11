@@ -25,7 +25,7 @@ namespace Vostok.ClusterClient.Core.Tests.Misc
         [Test]
         public void Should_return_null_when_there_are_no_results()
         {
-            selector.Select(results).Should().BeNull();
+            selector.Select(null, results).Should().BeNull();
         }
 
         [Test]
@@ -37,7 +37,7 @@ namespace Vostok.ClusterClient.Core.Tests.Misc
             results.Add(CreateResult(ResponseVerdict.Accept));
             results.Add(CreateResult(ResponseVerdict.Reject));
 
-            selector.Select(results).Should().BeSameAs(results[3].Response);
+            selector.Select(null, results).Should().BeSameAs(results[3].Response);
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace Vostok.ClusterClient.Core.Tests.Misc
             results.Add(CreateResult(ResponseVerdict.Reject));
             results.Add(CreateResult(ResponseVerdict.Reject, ResponseCode.Unknown));
 
-            selector.Select(results).Should().BeSameAs(results[3].Response);
+            selector.Select(null, results).Should().BeSameAs(results[3].Response);
         }
 
         [Test]
@@ -59,7 +59,7 @@ namespace Vostok.ClusterClient.Core.Tests.Misc
             results.Add(CreateResult(ResponseVerdict.Reject, ResponseCode.Unknown));
             results.Add(CreateResult(ResponseVerdict.Reject, ResponseCode.Unknown));
 
-            selector.Select(results).Should().BeSameAs(results.Last().Response);
+            selector.Select(null, results).Should().BeSameAs(results.Last().Response);
         }
 
         [Test]
@@ -69,7 +69,7 @@ namespace Vostok.ClusterClient.Core.Tests.Misc
             results.Add(CreateResult(ResponseVerdict.Reject));
             results.Add(CreateResult(ResponseVerdict.Reject, ResponseCode.StreamReuseFailure));
 
-            selector.Select(results).Should().BeSameAs(results[1].Response);
+            selector.Select(null, results).Should().BeSameAs(results[1].Response);
         }
 
         private static ReplicaResult CreateResult(ResponseVerdict verdict, ResponseCode code = ResponseCode.Ok)

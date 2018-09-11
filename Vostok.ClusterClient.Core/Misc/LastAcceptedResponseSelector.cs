@@ -17,7 +17,7 @@ namespace Vostok.ClusterClient.Core.Misc
     /// </summary>
     public class LastAcceptedResponseSelector : IResponseSelector
     {
-        public Response Select(IList<ReplicaResult> results) =>
+        public Response Select(Request request, IList<ReplicaResult> results) =>
             GetLastAcceptedResponse(results) ?? GetLastKnownResponse(results) ?? GetLastResponse(results);
 
         private static Response GetLastAcceptedResponse(IList<ReplicaResult> results) =>

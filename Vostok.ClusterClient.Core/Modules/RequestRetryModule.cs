@@ -43,7 +43,7 @@ namespace Vostok.ClusterClient.Core.Modules
                 if (++attemptsUsed >= retryStrategy.AttemptsCount)
                     return result;
 
-                if (!retryPolicy.NeedToRetry(result.ReplicaResults))
+                if (!retryPolicy.NeedToRetry(context.Request, result.ReplicaResults))
                     return result;
 
                 var retryDelay = retryStrategy.GetRetryDelay(attemptsUsed);
