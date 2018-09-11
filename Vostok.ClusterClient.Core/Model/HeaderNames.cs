@@ -68,5 +68,9 @@ namespace Vostok.ClusterClient.Core.Model
         public const string Via = "Via";
 
         public const string DontRetry = "Dont-Retry"; // think about name
+        public const string RequestTimeout = "Request-Timeout";
+        public const string RequestPriority = "Request-Priority";
+        public const string ClientApplication = "Client-Application";
+        
     }
 }
