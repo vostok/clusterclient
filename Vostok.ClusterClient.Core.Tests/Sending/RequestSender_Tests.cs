@@ -14,7 +14,6 @@ using Vostok.ClusterClient.Abstractions.Ordering.Storage;
 using Vostok.ClusterClient.Abstractions.Transport;
 using Vostok.ClusterClient.Core.Criteria;
 using Vostok.ClusterClient.Core.Misc;
-using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Sending;
 using Vostok.ClusterClient.Core.Tests.Helpers;
 using Vostok.Logging.Abstractions;
