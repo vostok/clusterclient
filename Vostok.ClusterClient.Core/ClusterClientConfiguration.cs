@@ -29,7 +29,9 @@ namespace Vostok.ClusterClient.Core
             RequestTransforms = new List<IRequestTransform>();
             ResponseTransforms = new List<IResponseTransform>();
             ResponseCriteria = new List<IResponseCriterion>();
-            Modules = new List<IRequestModule>();
+            Modules = new Dictionary<RequestModule, List<IRequestModule>>();
+            foreach (var value in (RequestModule[])Enum.GetValues(typeof(RequestModule)))
+                Modules[value] = new List<IRequestModule>();
             ReplicaStorageScope = ClusterClientDefaults.ReplicaStorageScope;
             DefaultTimeout = ClusterClientDefaults.Timeout;
             Logging = new LoggingOptions
@@ -63,7 +65,7 @@ namespace Vostok.ClusterClient.Core
 
         public List<IResponseCriterion> ResponseCriteria { get; set; }
 
-        public List<IRequestModule> Modules { get; set; }
+        public Dictionary<RequestModule, List<IRequestModule>> Modules { get; set; }
 
         public IRetryPolicy RetryPolicy { get; set; }
 
@@ -119,7 +121,10 @@ namespace Vostok.ClusterClient.Core
             if (ResponseTransforms != null && ResponseTransforms.Any(transform => transform == null))
                 yield return "One of provided response transforms is null";
 
-            if (Modules != null && Modules.Any(module => module == null))
+            if (Modules != null && Modules.Any(module => module.Value == null))
+                yield return "One of provided request modules lists is null";
+
+            if (Modules != null && Modules.SelectMany(x => x.Value).Any(module => module == null))
                 yield return "One of provided request modules is null";
 
             if (DefaultTimeout <= TimeSpan.Zero)

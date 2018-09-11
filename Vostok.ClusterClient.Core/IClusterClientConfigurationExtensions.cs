@@ -27,8 +27,14 @@ namespace Vostok.ClusterClient.Core
         /// <summary>
         /// Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.Modules"/> list.
         /// </summary>
-        public static void AddRequestModule(this IClusterClientConfiguration configuration, IRequestModule module) =>
-            (configuration.Modules ?? (configuration.Modules = new List<IRequestModule>())).Add(module);
+        public static void AddRequestModule(this IClusterClientConfiguration configuration, IRequestModule module, RequestModule insertAfter = RequestModule.Default)
+        {
+            if (configuration.Modules == null)
+                configuration.Modules = new Dictionary<RequestModule, List<IRequestModule>>();
+            if (!configuration.Modules.ContainsKey(insertAfter))
+                configuration.Modules[insertAfter] = new List<IRequestModule>();
+            configuration.Modules[insertAfter].Add(module);
+        }
 
         /// <summary>
         /// Adds an <see cref="AdHocResponseTransform"/> with given <paramref name="transform"/> function to configuration's <see cref="IClusterClientConfiguration.ResponseTransforms"/> list.
@@ -71,7 +77,7 @@ namespace Vostok.ClusterClient.Core
                 criticalRatio,
                 maximumRejectProbability);
             
-            configuration.AddRequestModule(new AdaptiveThrottlingModule(options));
+            configuration.AddRequestModule(new AdaptiveThrottlingModule(options), RequestModule.Retry);
         }
 
         /// <summary>
@@ -90,7 +96,7 @@ namespace Vostok.ClusterClient.Core
             double maximumRejectProbability = ClusterClientDefaults.AdaptiveThrottlingRejectProbabilityCap)
         {
             var options = new AdaptiveThrottlingOptions(configuration.ServiceName, minutesToTrack, minimumRequests, criticalRatio, maximumRejectProbability);
-            configuration.AddRequestModule(new AdaptiveThrottlingModule(options));
+            configuration.AddRequestModule(new AdaptiveThrottlingModule(options), RequestModule.Retry);
         }
 
         /// <summary>

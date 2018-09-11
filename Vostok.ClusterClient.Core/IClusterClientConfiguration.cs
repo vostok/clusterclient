@@ -14,6 +14,7 @@ using Vostok.ClusterClient.Abstractions.Strategies;
 using Vostok.ClusterClient.Abstractions.Topology;
 using Vostok.ClusterClient.Abstractions.Transforms;
 using Vostok.ClusterClient.Abstractions.Transport;
+using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Ordering.Weighed;
 using Vostok.ClusterClient.Core.Strategies;
 using Vostok.Logging.Abstractions;
@@ -85,26 +86,29 @@ namespace Vostok.ClusterClient.Abstractions
         List<IResponseCriterion> ResponseCriteria { get; set; }
 
         /// <summary>
-        /// <para>A list of additional user-defined request modules. These modules are inserted into native execution pipeline.</para>
+        /// <para>A collection of additional user-defined request modules. These modules are inserted into native execution pipeline.</para>
+        /// <para>User-defined modules inserted into pipeline after specified <see cref="RequestModule"/></para>
         /// <para>See <see cref="IRequestModule"/> interface for more details about request modules.</para>
         /// <para>Final execution pipeline looks like this:</para>
         /// <list type="number">
-        /// <item><description>Exception logging and handling.</description></item>
-        /// <item><description>Request transformation (application of <see cref="IRequestTransform"/> chain).</description></item>
-        /// <item><description>Request priority application (adding a priority header to request).</description></item>
-        /// <item><description>User-defined <see cref="IRequestModule"/> implementations.</description></item>
-        /// <item><description>Request/result logging.</description></item>
-        /// <item><description>Exception logging and handling.</description></item>
-        /// <item><description>Request validation.</description></item>
-        /// <item><description>Timeout validation.</description></item>
-        /// <item><description>Retry loop (application of <see cref="IRetryPolicy"/> and <see cref="IRetryStrategy"/>).</description></item>
-        /// <item><description>Sending of requests with absolute urls (directly using <see cref="ITransport"/>).</description></item>
-        /// <item><description>Request execution (<see cref="IClusterProvider"/> --> <see cref="IReplicaOrdering"/> --> <see cref="IRequestStrategy"/>)</description></item>
+        /// <item><description><see cref="RequestModule.LeakPrevention"/>: Underlying response streams closing.</description></item>
+        /// <item><description><see cref="RequestModule.GlobalErrorHandling"/>: Exception logging and handling.</description></item>
+        /// <item><description><see cref="RequestModule.RequestTransformation"/>: Request transformation (application of <see cref="IRequestTransform"/> chain).</description></item>
+        /// <item><description><see cref="RequestModule.Priority"/>: Request priority application (adding a priority header to request).</description></item>
+        /// <item><description>User-defined <see cref="IRequestModule"/> implementations (by default inserted here).</description></item>
+        /// <item><description><see cref="RequestModule.Logging"/>: Request/result logging.</description></item>
+        /// <item><description><see cref="RequestModule.ResponseTransformation"/>: Response transformation (application of <see cref="IResponseTransform"/> chain).</description></item>
+        /// <item><description><see cref="RequestModule.RequestErrorHandling"/>: Exception logging and handling.</description></item>
+        /// <item><description><see cref="RequestModule.RequestValidation"/>: Request validation.</description></item>
+        /// <item><description><see cref="RequestModule.TimeoutValidation"/>: Timeout validation.</description></item>
+        /// <item><description><see cref="RequestModule.Retry"/>: Retry loop (application of <see cref="IRetryPolicy"/> and <see cref="IRetryStrategy"/>).</description></item>
+        /// <item><description><see cref="RequestModule.Sending"/>: Sending of requests with absolute urls (directly using <see cref="ITransport"/>).</description></item>
+        /// <item><description><see cref="RequestModule.Execution"/>: Request execution (<see cref="IClusterProvider"/> --> <see cref="IReplicaOrdering"/> --> <see cref="IRequestStrategy"/>)</description></item>
         /// </list>
-        /// <para>Use <see cref="Core.IClusterClientConfigurationExtensions.AddRequestModule"/> to add transforms to this list.</para>
+        /// <para>Use <see cref="Core.IClusterClientConfigurationExtensions.AddRequestModule"/> to add transforms to this collection.</para>
         /// <para>This parameter is optional and has an empty default value.</para>
         /// </summary>
-        List<IRequestModule> Modules { get; set; }
+        Dictionary<RequestModule, List<IRequestModule>> Modules { get; set; }
 
         /// <summary>
         /// <para>Gets or sets retry policy. See <see cref="IRetryPolicy"/> for more details.</para>

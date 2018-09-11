@@ -95,7 +95,12 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             var configuration = Substitute.For<IClusterClientConfiguration>();
 
-            configuration.Modules.Returns(new List<IRequestModule> {module1, module2});
+            configuration.Modules.Returns(new Dictionary<RequestModule, List<IRequestModule>>
+            {
+                [RequestModule.Default] = new List<IRequestModule>
+                {
+                    module1, module2
+                }});
 
             configuration.Logging.Returns(new LoggingOptions());
 
@@ -128,12 +133,14 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             configuration.Logging.Returns(new LoggingOptions());
             
-            configuration.Modules.Returns(null as List<IRequestModule>);
-            configuration.Modules.Returns(new List<IRequestModule>
+//            configuration.Modules.Returns(null as List<IRequestModule>);
+            configuration.Modules.Returns(new Dictionary<RequestModule, List<IRequestModule>>
+            {
+                [RequestModule.Retry] = new List<IRequestModule>
             {
                 new AdaptiveThrottlingModule(new AdaptiveThrottlingOptions("foo")),
                 new ReplicaBudgetingModule(new ReplicaBudgetingOptions("foo"))
-            });
+            }});
 
             var storageProvider = Substitute.For<IReplicaStorageProvider>();
 

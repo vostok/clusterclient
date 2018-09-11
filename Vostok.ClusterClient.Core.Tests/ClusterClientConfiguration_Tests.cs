@@ -89,9 +89,10 @@ namespace Vostok.ClusterClient.Core.Tests
         }
 
         [Test]
-        public void Should_initially_have_empty_modules_list()
+        public void Should_initially_have_empty_modules_collection()
         {
-            configuration.Modules.Should().BeEmpty();
+            foreach (var kvp in configuration.Modules)
+                kvp.Value.Should().BeEmpty();
         }
 
         [Test]
@@ -400,7 +401,8 @@ namespace Vostok.ClusterClient.Core.Tests
         {
             configuration.AugmentWithDefaults();
 
-            configuration.Modules.Should().BeEmpty();
+            foreach (var kvp in configuration.Modules)
+                kvp.Value.Should().BeEmpty();
         }
 
         [Test]

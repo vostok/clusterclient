@@ -5,19 +5,18 @@ namespace Vostok.ClusterClient.Core.Modules
     /// </summary>
     public enum RequestModule
     {
+        Default,
         LeakPrevention,
-        GlobalErrorCatching,
+        GlobalErrorHandling,
         RequestTransformation,
-        RequestPriority,
+        Priority,
         Logging,
         ResponseTransformation,
-        SendingErrorCatching,
+        RequestErrorHandling,
         RequestValidation,
         TimeoutValidation,
-        RequestRetry,
-        AdaptiveThrottling,
-        ReplicaBudgeting,
-        AbsoluteUrlSender,
-        RequestExecution
+        Retry,
+        Sending,
+        Execution
     }
 }
