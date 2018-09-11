@@ -34,7 +34,7 @@ namespace Vostok.ClusterClient.Core
         /// Adds an <see cref="AdHocResponseTransform"/> with given <paramref name="transform"/> function to configuration's <see cref="IClusterClientConfiguration.ResponseTransforms"/> list.
         /// </summary>
         public static void AddResponseTransform(this IClusterClientConfiguration configuration, Func<Response, Response> transform) =>
-            Abstractions.IClusterClientConfigurationExtensions.AddResponseTransform(configuration, new AdHocResponseTransform(transform));
+            configuration.AddResponseTransform(new AdHocResponseTransform(transform));
 
         /// <summary>
         /// Modifies configuration's <see cref="IClusterClientConfiguration.ClusterProvider"/> to repeat all of its replicas <paramref name="repeatCount"/> times.
@@ -127,6 +127,29 @@ namespace Vostok.ClusterClient.Core
         {
             var options = new ReplicaBudgetingOptions(configuration.ServiceName, minutesToTrack, minimumRequests, criticalRatio);
             configuration.AddRequestModule(new ReplicaBudgetingModule(options));
+        }
+        
+        /// <summary>
+        /// Initializes configuration's <see cref="IClusterClientConfiguration.ResponseCriteria"/> list with given <paramref name="criteria"/>.
+        /// </summary>
+        public static void SetupResponseCriteria(this IClusterClientConfiguration configuration, params IResponseCriterion[] criteria)
+        {
+            configuration.ResponseCriteria = new List<IResponseCriterion>(criteria);
+        }
+        /// <summary>
+        /// Adds given <paramref name="transform"/> to configuration's <see cref="IClusterClientConfiguration.RequestTransforms"/> list.
+        /// </summary>
+        public static void AddRequestTransform(this IClusterClientConfiguration configuration, IRequestTransform transform)
+        {
+            (configuration.RequestTransforms ?? (configuration.RequestTransforms = new List<IRequestTransform>())).Add(transform);
+        }
+
+        /// <summary>
+        /// Adds given <paramref name="transform"/> to configuration's <see cref="IClusterClientConfiguration.ResponseTransforms"/> list.
+        /// </summary>
+        public static void AddResponseTransform(this IClusterClientConfiguration configuration, IResponseTransform transform)
+        {
+            (configuration.ResponseTransforms ?? (configuration.ResponseTransforms = new List<IResponseTransform>())).Add(transform);
         }
     }
 }
