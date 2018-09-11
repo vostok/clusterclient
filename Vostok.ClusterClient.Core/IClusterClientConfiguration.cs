@@ -14,6 +14,8 @@ using Vostok.ClusterClient.Abstractions.Strategies;
 using Vostok.ClusterClient.Abstractions.Topology;
 using Vostok.ClusterClient.Abstractions.Transforms;
 using Vostok.ClusterClient.Abstractions.Transport;
+using Vostok.ClusterClient.Core.Ordering.Weighed;
+using Vostok.ClusterClient.Core.Strategies;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Abstractions
@@ -50,8 +52,8 @@ namespace Vostok.ClusterClient.Abstractions
 
         /// <summary>
         /// <para>Gets or sets replica ordering implementation. See <see cref="IReplicaOrdering.Order"/> and <see cref="IReplicaOrdering.Learn"/> for more details.</para>
-        /// <para>The recommended implementation is <see cref="Ordering.Weighed.WeighedReplicaOrdering"/>. Use <see cref="IClusterClientConfigurationExtensions.SetupWeighedReplicaOrdering"/> extension to build it.</para>
-        /// <para>This parameter is optional and has a default value (see <see cref="ClusterClientDefaults.ReplicaOrdering"/>).</para>
+        /// <para>The recommended implementation is <see cref="WeighedReplicaOrdering"/>. Use <see cref="Core.IClusterClientConfigurationExtensions.SetupWeighedReplicaOrdering"/> extension to build it.</para>
+        /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.ReplicaOrdering"/>).</para>
         /// </summary>
         IReplicaOrdering ReplicaOrdering { get; set; }
 
@@ -63,22 +65,22 @@ namespace Vostok.ClusterClient.Abstractions
 
         /// <summary>
         /// <para>A list of request transforms. See <see cref="IRequestTransform"/> for more details.</para>
-        /// <para>Use <see cref="IClusterClientConfigurationExtensions.AddRequestTransform(IClusterClientConfiguration, IRequestTransform)"/> to add transforms to this list.</para>
+        /// <para>Use <see cref="Core.IClusterClientConfigurationExtensions.AddRequestTransform(IClusterClientConfiguration, IRequestTransform)"/> to add transforms to this list.</para>
         /// <para>This parameter is optional and has an empty default value.</para>
         /// </summary>
         List<IRequestTransform> RequestTransforms { get; set; }
 
         /// <summary>
         /// <para>A list of response transforms. See <see cref="IResponseTransform"/> for more details.</para>
-        /// <para>Use <see cref="IClusterClientConfigurationExtensions.AddResponseTransform(IClusterClientConfiguration, IResponseTransform)"/> to add transforms to this list.</para>
+        /// <para>Use <see cref="Core.IClusterClientConfigurationExtensions.AddResponseTransform(IClusterClientConfiguration, IResponseTransform)"/> to add transforms to this list.</para>
         /// <para>This parameter is optional and has an empty default value.</para>
         /// </summary>
         List<IResponseTransform> ResponseTransforms { get; set; }
 
         /// <summary>
         /// <para>A list of response criteria. See <see cref="IResponseCriterion"/> and <see cref="ResponseVerdict"/> for more details.</para>
-        /// <para>Use <see cref="IClusterClientConfigurationExtensions.SetupResponseCriteria"/> to initialize this list.</para>
-        /// <para>This parameter is optional and has a default value (see <see cref="ClusterClientDefaults.ResponseCriteria"/>).</para>
+        /// <para>Use <see cref="Core.IClusterClientConfigurationExtensions.SetupResponseCriteria"/> to initialize this list.</para>
+        /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.ResponseCriteria"/>).</para>
         /// </summary>
         List<IResponseCriterion> ResponseCriteria { get; set; }
 
@@ -99,26 +101,26 @@ namespace Vostok.ClusterClient.Abstractions
         /// <item><description>Sending of requests with absolute urls (directly using <see cref="ITransport"/>).</description></item>
         /// <item><description>Request execution (<see cref="IClusterProvider"/> --> <see cref="IReplicaOrdering"/> --> <see cref="IRequestStrategy"/>)</description></item>
         /// </list>
-        /// <para>Use <see cref="IClusterClientConfigurationExtensions.AddRequestModule"/> to add transforms to this list.</para>
+        /// <para>Use <see cref="Core.IClusterClientConfigurationExtensions.AddRequestModule"/> to add transforms to this list.</para>
         /// <para>This parameter is optional and has an empty default value.</para>
         /// </summary>
         List<IRequestModule> Modules { get; set; }
 
         /// <summary>
         /// <para>Gets or sets retry policy. See <see cref="IRetryPolicy"/> for more details.</para>
-        /// <para>This parameter is optional and has a default value (see <see cref="ClusterClientDefaults.RetryPolicy"/>).</para>
+        /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.RetryPolicy"/>).</para>
         /// </summary>
         IRetryPolicy RetryPolicy { get; set; }
 
         /// <summary>
         /// <para>Gets or sets retry strategy. See <see cref="IRetryStrategy"/> for more details.</para>
-        /// <para>This parameter is optional and has a default value (see <see cref="ClusterClientDefaults.RetryStrategy"/>).</para>
+        /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.RetryStrategy"/>).</para>
         /// </summary>
         IRetryStrategy RetryStrategy { get; set; }
 
         /// <summary>
         /// <para>Gets or sets the response selector. See <see cref="IResponseSelector.Select"/> for more details.</para>
-        /// <para>This parameter is optional and has a default value (see <see cref="ClusterClientDefaults.ResponseSelector"/>).</para>
+        /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.ResponseSelector"/>).</para>
         /// </summary>
         IResponseSelector ResponseSelector { get; set; }
 
@@ -126,7 +128,7 @@ namespace Vostok.ClusterClient.Abstractions
         /// <para>Gets or sets a default request strategy used for <see cref="ClusterClient"/> method overloads without strategy parameter.</para>
         /// <para>See <see cref="IRequestStrategy.SendAsync"/> for more details about what a request strategy is.</para>
         /// <para>See <see cref="Strategy"/> class for some prebuilt strategies and convenient factory methods.</para>
-        /// <para>This parameter is optional and has a default value (see <see cref="ClusterClientDefaults.RequestStrategy"/>).</para>
+        /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.RequestStrategy"/>).</para>
         /// </summary>
         IRequestStrategy DefaultRequestStrategy { get; set; }
 
@@ -144,16 +146,15 @@ namespace Vostok.ClusterClient.Abstractions
 
         /// <summary>
         /// <para>Gets or sets a limit on how many replicas a single request may use. Such a limit is useful to contain uncontrollable retry explosions.</para>
-        /// <para>This parameter is optional and has a default value (see <see cref="ClusterClientDefaults.MaxReplicasUsedPerRequest"/>).</para>
+        /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.MaxReplicasUsedPerRequest"/>).</para>
         /// </summary>
         int MaxReplicasUsedPerRequest { get; set; }
 
         /// <summary>
         /// <para>Gets or sets the options for request/response logging.</para>
         /// <para>This parameter is optional and has a <c>null</c> default value which implies default options will be used.</para>
-        /// <para>Use <see cref="IClusterClientConfigurationExtensions.SetupReplicaBudgeting"/> to set these options.</para>
+        /// <para>Use <see cref="Core.IClusterClientConfigurationExtensions.SetupReplicaBudgeting"/> to set these options.</para>
         /// </summary>
-        //TODO: should it be in abstractions?
         LoggingOptions Logging { get; set; }
 
         /// <summary>
@@ -175,16 +176,14 @@ namespace Vostok.ClusterClient.Abstractions
         /// <para>Example request url: v1/contents/foo/bar</para>
         /// <para>Example duplicate path segment is "v1".</para>
         /// <para>Only works for requests with relative urls.</para>
-        /// <para>This parameter is optional and has a default value (see <see cref="ClusterClientDefaults.DeduplicateRequestUrl"/>).</para>
+        /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.DeduplicateRequestUrl"/>).</para>
         /// </summary>
-        //TODO: should it be in abstractions?
         bool DeduplicateRequestUrl { get; set; }
 
         /// <summary>
         /// <para>Gets or sets whether to validate http method in request.</para>
-        /// <para>This parameter is optional and has a default value (see <see cref="ClusterClientDefaults.ValidateHttpMethod"/>).</para>
+        /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.ValidateHttpMethod"/>).</para>
         /// </summary>
-        //TODO: should it be in abstractions?
         bool ValidateHttpMethod { get; set; }
     }
 }
