@@ -6,13 +6,12 @@ using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using Vostok.ClusterClient.Abstractions;
-using Vostok.ClusterClient.Abstractions.Logging;
 using Vostok.ClusterClient.Abstractions.Model;
 using Vostok.ClusterClient.Abstractions.Modules;
 using Vostok.ClusterClient.Abstractions.Ordering.Storage;
+using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Ordering.Storage;
 
 namespace Vostok.ClusterClient.Core.Tests.Modules
 {

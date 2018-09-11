@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Vostok.ClusterClient.Abstractions;
 using Vostok.ClusterClient.Abstractions.Criteria;
-using Vostok.ClusterClient.Abstractions.Logging;
 using Vostok.ClusterClient.Abstractions.Misc;
 using Vostok.ClusterClient.Abstractions.Model;
 using Vostok.ClusterClient.Abstractions.Modules;
@@ -16,6 +15,7 @@ using Vostok.ClusterClient.Abstractions.Topology;
 using Vostok.ClusterClient.Abstractions.Transforms;
 using Vostok.ClusterClient.Abstractions.Transport;
 using Vostok.ClusterClient.Core.Criteria;
+using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Modules;
 using Vostok.Logging.Abstractions;
 
