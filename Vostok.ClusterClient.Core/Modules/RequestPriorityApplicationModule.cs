@@ -11,8 +11,8 @@ namespace Vostok.ClusterClient.Core.Modules
             //TODO: priority from context
             var priority = context.Priority;
             //TODO: set priority in headers
-            //if (priority.HasValue)
-            //    context.Request = context.Request.WithHeader(HeaderNames.XKonturRequestPriority, priority.Value);
+            if (priority.HasValue)
+                context.Request = context.Request.WithHeader(HeaderNames.RequestPriority, priority.Value);
 
             return next(context);
         }
