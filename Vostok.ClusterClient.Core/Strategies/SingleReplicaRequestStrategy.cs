@@ -23,7 +23,7 @@ namespace Vostok.ClusterClient.Core.Strategies
     public class SingleReplicaRequestStrategy : IRequestStrategy
     {
         public Task SendAsync(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken) =>
-            sender.SendToReplicaAsync(replicas.First(), request, budget.Remaining, cancellationToken);
+            sender.SendToReplicaAsync(replicas.First(), request, budget.Remaining(), cancellationToken);
 
         public override string ToString() => "SingleReplica";
     }

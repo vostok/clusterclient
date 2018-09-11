@@ -54,7 +54,7 @@ namespace Vostok.ClusterClient.Core.Strategies
                         if (!replicasEnumerator.MoveNext())
                             throw new InvalidOperationException("Replicas enumerator ended prematurely. This is definitely a bug in code.");
 
-                        currentTasks.Add(sender.SendToReplicaAsync(replicasEnumerator.Current, request, budget.Remaining, linkedCancellationToken));
+                        currentTasks.Add(sender.SendToReplicaAsync(replicasEnumerator.Current, request, budget.Remaining(), linkedCancellationToken));
                     }
 
                     while (currentTasks.Count > 0)
@@ -82,14 +82,14 @@ namespace Vostok.ClusterClient.Core.Strategies
 
         private static void TryLaunchNextRequest(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerator<Uri> replicas, List<Task<ReplicaResult>> currentTasks, CancellationToken cancellationToken)
         {
-            if (budget.HasExpired)
+            if (budget.HasExpired())
                 return;
 
             if (request.ContainsAlreadyUsedStream())
                 return;
 
             if (replicas.MoveNext())
-                currentTasks.Add(sender.SendToReplicaAsync(replicas.Current, request, budget.Remaining, cancellationToken));
+                currentTasks.Add(sender.SendToReplicaAsync(replicas.Current, request, budget.Remaining(), cancellationToken));
         }
     }
 }

@@ -42,13 +42,13 @@ namespace Vostok.ClusterClient.Core.Strategies
 
             foreach (var replica in replicas)
             {
-                if (budget.HasExpired)
+                if (budget.HasExpired())
                     break;
 
                 if (request.ContainsAlreadyUsedStream())
                     break;
 
-                var timeout = TimeSpanExtensions.Min(timeoutsProvider.GetTimeout(request, budget, currentReplicaIndex++, replicasCount), budget.Remaining);
+                var timeout = TimeSpanExtensions.Min(timeoutsProvider.GetTimeout(request, budget, currentReplicaIndex++, replicasCount), budget.Remaining());
 
                 var result = await sender.SendToReplicaAsync(replica, request, timeout, cancellationToken).ConfigureAwait(false);
                 if (result.Verdict == ResponseVerdict.Accept)

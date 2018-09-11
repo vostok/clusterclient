@@ -37,10 +37,10 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
         {
             if (currentReplicaIndex >= providers.Length)
                 return tailBehaviour == TailTimeoutBehaviour.UseRemainingBudget
-                    ? budget.Remaining
-                    : TimeSpanExtensions.Min(providers.Last()(), budget.Remaining);
+                    ? budget.Remaining()
+                    : TimeSpanExtensions.Min(providers.Last()(), budget.Remaining());
 
-            return TimeSpanExtensions.Min(providers[currentReplicaIndex](), budget.Remaining);
+            return TimeSpanExtensions.Min(providers[currentReplicaIndex](), budget.Remaining());
         }
 
         public override string ToString() => "ad-hoc";

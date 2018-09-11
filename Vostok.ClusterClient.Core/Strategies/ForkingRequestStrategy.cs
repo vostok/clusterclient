@@ -72,7 +72,7 @@ namespace Vostok.ClusterClient.Core.Strategies
                 {
                     for (var i = 0; i < replicasCount; i++)
                     {
-                        if (budget.HasExpired)
+                        if (budget.HasExpired())
                             break;
 
                         if (request.ContainsAlreadyUsedStream())
@@ -93,7 +93,7 @@ namespace Vostok.ClusterClient.Core.Strategies
                 }
 
                 while (currentTasks.Count > 0)
-                    if (budget.HasExpired || await WaitForAcceptedResultAsync(currentTasks).ConfigureAwait(false))
+                    if (budget.HasExpired() || await WaitForAcceptedResultAsync(currentTasks).ConfigureAwait(false))
                         return;
             }
         }
@@ -105,7 +105,7 @@ namespace Vostok.ClusterClient.Core.Strategies
             if (!replicasEnumerator.MoveNext())
                 throw new InvalidOperationException("Replicas enumerator ended prematurely. This is definitely a bug in code.");
 
-            currentTasks.Add(sender.SendToReplicaAsync(replicasEnumerator.Current, request, budget.Remaining, cancellationToken));
+            currentTasks.Add(sender.SendToReplicaAsync(replicasEnumerator.Current, request, budget.Remaining(), cancellationToken));
         }
 
         private void ScheduleForkIfNeeded(List<Task> currentTasks, Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas, CancellationToken cancellationToken)
@@ -123,7 +123,7 @@ namespace Vostok.ClusterClient.Core.Strategies
             if (forkingDelay.Value < TimeSpan.Zero)
                 return;
 
-            if (forkingDelay.Value >= budget.Remaining)
+            if (forkingDelay.Value >= budget.Remaining())
                 return;
 
             currentTasks.Add(delaysPlanner.Plan(forkingDelay.Value, cancellationToken));

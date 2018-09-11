@@ -34,7 +34,7 @@ namespace Vostok.ClusterClient.Core.Modules
                 if (result.Status != ClusterResultStatus.ReplicasExhausted)
                     return result;
 
-                if (context.Budget.HasExpired)
+                if (context.Budget.HasExpired())
                     return result;
 
                 if (context.Request.ContainsAlreadyUsedStream())
@@ -47,7 +47,7 @@ namespace Vostok.ClusterClient.Core.Modules
                     return result;
 
                 var retryDelay = retryStrategy.GetRetryDelay(attemptsUsed);
-                if (retryDelay >= context.Budget.Remaining)
+                if (retryDelay >= context.Budget.Remaining())
                     return result;
 
                 context.Log.Info($"All replicas exhausted. Will retry after {retryDelay.ToPrettyString()}. Attempts used: {attemptsUsed}/{retryStrategy.AttemptsCount}.");

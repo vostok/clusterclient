@@ -22,12 +22,10 @@ namespace Vostok.ClusterClient.Core.Model
 
         public TimeSpan Total => budget.Budget;
 
-        public TimeSpan Precision => budget.Precision;
+        public TimeSpan Elapsed() => budget.Elapsed();
 
-        public TimeSpan Elapsed => budget.Elapsed();
+        public TimeSpan Remaining() => budget.Remaining();
 
-        public TimeSpan Remaining => budget.Remaining();
-
-        public bool HasExpired => budget.HasExpired();
+        public bool HasExpired() => budget.HasExpired();
     }
 }

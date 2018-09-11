@@ -54,11 +54,11 @@ namespace Vostok.ClusterClient.Core.Modules
             context.Log.Info($"Sending request '{context.Request.ToString(false, false)}'. Timeout = {context.Budget.Total.ToPrettyString()}. Strategy = '{context.Strategy}'.");
 
         private static void LogSuccessfulResult(IRequestContext context, ClusterResult result) =>
-            context.Log.Info($"Success. Response code = {(int)result.Response.Code} ('{result.Response.Code}'). Time = {context.Budget.Elapsed.ToPrettyString()}.");
+            context.Log.Info($"Success. Response code = {(int)result.Response.Code} ('{result.Response.Code}'). Time = {context.Budget.Elapsed().ToPrettyString()}.");
 
         private static void LogFailedResult(IRequestContext context, ClusterResult result)
         {
-            var message = $"Failed with status '{result.Status}'. Response code = {(int)result.Response.Code} ('{result.Response.Code}'). Time = {context.Budget.Elapsed.ToPrettyString()}.";
+            var message = $"Failed with status '{result.Status}'. Response code = {(int)result.Response.Code} ('{result.Response.Code}'). Time = {context.Budget.Elapsed().ToPrettyString()}.";
 
             if (result.Status == ClusterResultStatus.Canceled)
                 context.Log.Warn(message);

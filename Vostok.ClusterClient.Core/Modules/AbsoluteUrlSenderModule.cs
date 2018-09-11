@@ -36,13 +36,13 @@ namespace Vostok.ClusterClient.Core.Modules
 
         private async Task<ClusterResult> SendAsync(IRequestContext context)
         {
-            var elapsedBefore = context.Budget.Elapsed;
-            var response = await context.Transport.SendAsync(context.Request, context.Budget.Remaining, context.CancellationToken).ConfigureAwait(false);
+            var elapsedBefore = context.Budget.Elapsed();
+            var response = await context.Transport.SendAsync(context.Request, context.Budget.Remaining(), context.CancellationToken).ConfigureAwait(false);
             if (response.Code == ResponseCode.Canceled)
                 return ClusterResultFactory.Canceled(context.Request);
 
             var responseVerdict = responseClassifier.Decide(response, responseCriteria);
-            var replicaResult = new ReplicaResult(context.Request.Url, response, responseVerdict, context.Budget.Elapsed - elapsedBefore);
+            var replicaResult = new ReplicaResult(context.Request.Url, response, responseVerdict, context.Budget.Elapsed() - elapsedBefore);
             var replicaResults = new[] {replicaResult};
             var resultStatus = resultStatusSelector.Select(replicaResults, context.Budget);
 

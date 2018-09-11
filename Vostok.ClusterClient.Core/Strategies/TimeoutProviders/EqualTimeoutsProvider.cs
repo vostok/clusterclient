@@ -31,11 +31,11 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
         public TimeSpan GetTimeout(Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas)
         {
             if (currentReplicaIndex >= divisionFactor)
-                return budget.Remaining;
+                return budget.Remaining();
 
             var effectiveDivisionFactor = Math.Min(divisionFactor, totalReplicas) - currentReplicaIndex;
 
-            return TimeSpanExtensions.Max(TimeSpan.Zero, budget.Remaining.Divide(effectiveDivisionFactor));
+            return TimeSpanExtensions.Max(TimeSpan.Zero, budget.Remaining().Divide(effectiveDivisionFactor));
         }
 
         public override string ToString() => "equal-" + divisionFactor;
