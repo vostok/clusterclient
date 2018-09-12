@@ -11,6 +11,7 @@ notests *default:
   deps:
     - vostok.commons.threading/src
     - vostok.commons.collections/src
+    - vostok.commons.helpers/src
     - vostok.clusterclient.abstractions
     - vostok.context
     - vostok.logging.abstractions
