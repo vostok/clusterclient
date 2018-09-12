@@ -13,7 +13,7 @@ using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.ClusterClient.Core.Sending;
 using Vostok.ClusterClient.Core.Tests.Helpers;
 using Vostok.ClusterClient.Core.Transport;
-using Vostok.Logging.ConsoleLog;
+using Vostok.Logging.Console;
 
 namespace Vostok.ClusterClient.Core.Tests.Sending
 {

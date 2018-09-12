@@ -15,7 +15,7 @@ using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Tests.Helpers;
 using Vostok.ClusterClient.Core.Topology;
 using Vostok.ClusterClient.Core.Transport;
-using Vostok.Logging.ConsoleLog;
+using Vostok.Logging.Console;
 
 namespace Vostok.ClusterClient.Core.Tests.Modules
 {

@@ -7,7 +7,7 @@ using Vostok.ClusterClient.Core.Topology;
 using Vostok.ClusterClient.Core.Transforms;
 using Vostok.ClusterClient.Core.Transport;
 using Vostok.Logging.Abstractions;
-using Vostok.Logging.ConsoleLog;
+using Vostok.Logging.Console;
 
 namespace Vostok.ClusterClient.Core.Tests
 {

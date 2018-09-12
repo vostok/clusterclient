@@ -4,7 +4,7 @@ using NUnit.Framework;
 using Vostok.ClusterClient.Core.Criteria;
 using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Transforms;
-using Vostok.Logging.ConsoleLog;
+using Vostok.Logging.Console;
 
 namespace Vostok.ClusterClient.Core.Tests
 {
