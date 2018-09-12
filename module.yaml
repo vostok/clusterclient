@@ -9,7 +9,8 @@ notests *default:
       - Vostok.ClusterClient.Core/bin/Release/netstandard2.0/Vostok.ClusterClient.Core.dll
 
   deps:
-    - vostok.commons.threading
+    - vostok.commons.threading/src
+    - vostok.commons.collections/src
     - vostok.clusterclient.abstractions
     - vostok.context
     - vostok.logging.abstractions
