@@ -13,12 +13,12 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
     /// <para>Health damage also decays linearly during a configurable time period since last health decrease. Subsequent decreases reset decay duration.</para>
     /// <para>For instance, let's assume that we've reduced a replica's health to 0.5 just a moment ago and decay duration is 10 minutes. Then, assuming there are no other changes, health will have following values in the future:</para>
     /// <list type="bullet">
-    /// <item>0.55 after 1 minute</item>
-    /// <item>0.625 after 2.5 minutes</item>
-    /// <item>0.75 after 5 minutes</item>
-    /// <item>0.9 after 8 minutes</item>
-    /// <item>1.0 after 10 minutes</item>
-    /// <item>1.0 after 11 minutes</item>
+    /// <item><description>0.55 after 1 minute</description></item>
+    /// <item><description>0.625 after 2.5 minutes</description></item>
+    /// <item><description>0.75 after 5 minutes</description></item>
+    /// <item><description>0.9 after 8 minutes</description></item>
+    /// <item><description>1.0 after 10 minutes</description></item>
+    /// <item><description>1.0 after 11 minutes</description></item>
     /// </list>
     /// <para>This decay mechanism helps to avoid situations where replicas which had temporary problems are still avoided when the problems resolve.</para>
     /// <para>Health application is just a multiplication of health value and current weight (health = 0.5 causes weight = 2 to turn into 1).</para>

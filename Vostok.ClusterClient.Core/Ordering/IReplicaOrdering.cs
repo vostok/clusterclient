@@ -15,9 +15,9 @@ namespace Vostok.ClusterClient.Core.Ordering
         /// <para>Implementations may use <paramref name="storageProvider"/> to fetch previously stored information about replicas.</para>
         /// <para>Implementations must satisfy following requirements:</para>
         /// <list type="bullet">
-        /// <item>This method MUST NOT omit or duplicate any of original replicas.</item>
-        /// <item>This method MUST NOT introduce any new replicas.</item>
-        /// <item>This method MUST be thread-safe.</item>
+        /// <item><description>This method MUST NOT omit or duplicate any of original replicas.</description></item>
+        /// <item><description>This method MUST NOT introduce any new replicas.</description></item>
+        /// <item><description>This method MUST be thread-safe.</description></item>
         /// </list>
         /// </summary>
         [Pure]

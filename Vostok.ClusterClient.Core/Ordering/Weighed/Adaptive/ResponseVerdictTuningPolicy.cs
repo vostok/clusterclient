@@ -5,8 +5,8 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
     /// <summary>
     /// <para>Represents a tuning policy which selects action based on replica's response verdict:</para>
     /// <list type="bullet">
-    /// <item><see cref="ResponseVerdict.Accept"/> verdict leads to <see cref="AdaptiveHealthAction.Increase"/> of replica health.</item>
-    /// <item><see cref="ResponseVerdict.Reject"/> verdict leads to <see cref="AdaptiveHealthAction.Decrease"/> of replica health.</item>
+    /// <item><description><see cref="ResponseVerdict.Accept"/> verdict leads to <see cref="AdaptiveHealthAction.Increase"/> of replica health.</description></item>
+    /// <item><description><see cref="ResponseVerdict.Reject"/> verdict leads to <see cref="AdaptiveHealthAction.Decrease"/> of replica health.</description></item>
     /// </list>
     /// </summary>
     public class ResponseVerdictTuningPolicy : IAdaptiveHealthTuningPolicy

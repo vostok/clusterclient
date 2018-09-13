@@ -12,8 +12,8 @@ namespace Vostok.ClusterClient.Core.Model
     /// <para>Represents an efficient builder of request urls.</para>
     /// <para>Supports collection initializer syntax:</para>
     /// <list type="bullet">
-    /// <item>You can add string or object which are treated as path segments.</item>
-    /// <item>You can add key-value pairs which are treated as query parameters.</item>
+    /// <item><description>You can add string or object which are treated as path segments.</description></item>
+    /// <item><description>You can add key-value pairs which are treated as query parameters.</description></item>
     /// </list>
     /// </summary>
     /// <example>

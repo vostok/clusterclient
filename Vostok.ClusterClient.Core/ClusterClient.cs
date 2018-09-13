@@ -16,9 +16,9 @@ namespace Vostok.ClusterClient.Core
     /// <para>Represents a client used to send HTTP requests to a cluster of replicas.</para>
     /// <para>This implementation guarantees following contracts:</para>
     /// <list type="bullet">
-    /// <item>It never throws exceptions. All failures are logged and reflected in returned <see cref="ClusterResult"/> instances.</item>
-    /// <item>It is thread-safe. It's recommended to reuse <see cref="ClusterClient"/> instances as much as possible.</item>
-    /// <item>It sends requests with absolute urls directly and does not perform implicit resolving. You can turn them into relative ones with <see cref="IRequestTransform"/>.</item>
+    /// <item><description>It never throws exceptions. All failures are logged and reflected in returned <see cref="ClusterResult"/> instances.</description></item>
+    /// <item><description>It is thread-safe. It's recommended to reuse <see cref="ClusterClient"/> instances as much as possible.</description></item>
+    /// <item><description>It sends requests with absolute urls directly and does not perform implicit resolving. You can turn them into relative ones with <see cref="IRequestTransform"/>.</description></item>
     /// </list>
     /// <para>A <see cref="ClusterClient"/> instance is constructed by passing an <see cref="ILog"/> and a <see cref="ClusterClientSetup"/> delegate to a constructor.</para>
     /// <para>Provided setup delegate is expected to initialize some fields of an <see cref="IClusterClientConfiguration"/> instance.</para>

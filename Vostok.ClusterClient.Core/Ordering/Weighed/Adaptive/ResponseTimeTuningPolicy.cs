@@ -7,8 +7,8 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
     /// <summary>
     /// <para>Represents a tuning policy which selects action based on replica's response time:</para>
     /// <list type="bullet">
-    /// <item>Response time less than given threshold leads to <see cref="AdaptiveHealthAction.Increase"/> of replica health.</item>
-    /// <item>Response time greater than given threshold leads to <see cref="AdaptiveHealthAction.Decrease"/> of replica health.</item>
+    /// <item><description>Response time less than given threshold leads to <see cref="AdaptiveHealthAction.Increase"/> of replica health.</description></item>
+    /// <item><description>Response time greater than given threshold leads to <see cref="AdaptiveHealthAction.Decrease"/> of replica health.</description></item>
     /// </list>
     /// </summary>
     public class ResponseTimeTuningPolicy : IAdaptiveHealthTuningPolicy

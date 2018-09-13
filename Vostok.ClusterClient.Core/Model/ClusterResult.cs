@@ -49,9 +49,9 @@ namespace Vostok.ClusterClient.Core.Model
         /// <para>By default this property returns a response selected by <see cref="Misc.IResponseSelector"/> implementation.</para>
         /// <para>If no response was received or explicitly selected, this property returns a generated response:</para>
         /// <list type="bullet">
-        /// <item><see cref="ClusterResultStatus.TimeExpired"/> --> <see cref="ResponseCode.RequestTimeout"/></item>
-        /// <item><see cref="ClusterResultStatus.UnexpectedException"/> --> <see cref="ResponseCode.UnknownFailure"/></item>
-        /// <item>any other status --> <see cref="ResponseCode.Unknown"/></item>
+        /// <item><description><see cref="ClusterResultStatus.TimeExpired"/> --> <see cref="ResponseCode.RequestTimeout"/></description></item>
+        /// <item><description><see cref="ClusterResultStatus.UnexpectedException"/> --> <see cref="ResponseCode.UnknownFailure"/></description></item>
+        /// <item><description>any other status --> <see cref="ResponseCode.Unknown"/></description></item>
         /// </list>
         /// </summary>
         [NotNull]
