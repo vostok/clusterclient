@@ -15,12 +15,12 @@ namespace Vostok.ClusterClient.Core.Modules
             }
             catch (OperationCanceledException)
             {
-                return ClusterResultFactory.Canceled(context.Request);
+                return ClusterResult.Canceled(context.Request);
             }
             catch (Exception error)
             {
                 context.Log.Error(error, "Unexpected failure during request execution.", error);
-                return ClusterResultFactory.UnexpectedException(context.Request);
+                return ClusterResult.UnexpectedException(context.Request);
             }
         }
     }

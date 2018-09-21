@@ -63,7 +63,7 @@ namespace Vostok.ClusterClient.Core.Modules
                 {
                     LogThrottledRequest(context, ratio, rejectionProbability);
 
-                    return ClusterResultFactory.Throttled(context.Request);
+                    return ClusterResult.Throttled(context.Request);
                 }
 
                 result = await next(context).ConfigureAwait(false);

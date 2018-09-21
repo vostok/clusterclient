@@ -36,7 +36,7 @@ namespace Vostok.ClusterClient.Core.Modules
             var elapsedBefore = context.Budget.Elapsed();
             var response = await context.Transport.SendAsync(context.Request, context.Budget.Remaining(), context.CancellationToken).ConfigureAwait(false);
             if (response.Code == ResponseCode.Canceled)
-                return ClusterResultFactory.Canceled(context.Request);
+                return ClusterResult.Canceled(context.Request);
 
             var responseVerdict = responseClassifier.Decide(response, responseCriteria);
             var replicaResult = new ReplicaResult(context.Request.Url, response, responseVerdict, context.Budget.Elapsed() - elapsedBefore);

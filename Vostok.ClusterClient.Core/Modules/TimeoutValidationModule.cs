@@ -13,13 +13,13 @@ namespace Vostok.ClusterClient.Core.Modules
             if (context.Budget.Total < TimeSpan.Zero)
             {
                 LogNegativeTimeout(context);
-                return Task.FromResult(ClusterResultFactory.IncorrectArguments(context.Request));
+                return Task.FromResult(ClusterResult.IncorrectArguments(context.Request));
             }
 
             if (context.Budget.HasExpired())
             {
                 LogExpiredTimeout(context);
-                return Task.FromResult(ClusterResultFactory.TimeExpired(context.Request));
+                return Task.FromResult(ClusterResult.TimeExpired(context.Request));
             }
 
             return next(context);

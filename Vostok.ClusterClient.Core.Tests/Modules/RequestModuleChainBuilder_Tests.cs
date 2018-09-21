@@ -53,7 +53,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             module4.ExecuteAsync(null, null).ReturnsForAnyArgs(_ =>
             {
                 calledModules.Add(module4);
-                return Task.FromResult(ClusterResultFactory.UnexpectedException(context.Request));
+                return Task.FromResult(ClusterResult.UnexpectedException(context.Request));
             });
 
             context = Substitute.For<IRequestContext>();

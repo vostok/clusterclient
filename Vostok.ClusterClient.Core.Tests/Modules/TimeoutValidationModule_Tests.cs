@@ -78,7 +78,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             context.Budget.Returns(budget);
 
-            var task = Task.FromResult(ClusterResultFactory.UnexpectedException(context.Request));
+            var task = Task.FromResult(ClusterResult.UnexpectedException(context.Request));
 
             module.ExecuteAsync(context, _ => task).Should().BeSameAs(task);
         }

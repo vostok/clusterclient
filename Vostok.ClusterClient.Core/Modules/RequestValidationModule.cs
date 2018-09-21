@@ -39,7 +39,7 @@ namespace Vostok.ClusterClient.Core.Modules
         {
             LogValidationErrors(context, errors);
 
-            return Task.FromResult(ClusterResultFactory.IncorrectArguments(context.Request));
+            return Task.FromResult(ClusterResult.IncorrectArguments(context.Request));
         }
 
         private static bool HasStreamUnsupportedByTransport(IRequestContext context) =>

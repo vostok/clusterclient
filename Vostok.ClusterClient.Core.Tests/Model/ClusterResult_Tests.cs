@@ -18,7 +18,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [Test]
         public void Throttled_factory_method_should_return_correct_result()
         {
-            var result = ClusterResultFactory.Throttled(request);
+            var result = ClusterResult.Throttled(request);
 
             result.Status.Should().Be(ClusterResultStatus.Throttled);
             result.Request.Should().BeSameAs(request);

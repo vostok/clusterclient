@@ -89,7 +89,7 @@ namespace Vostok.ClusterClient.Core.Modules
                 var currentResult = result;
 
                 result = ctx => ctx.CancellationToken.IsCancellationRequested
-                    ? Task.FromResult(ClusterResultFactory.Canceled(ctx.Request))
+                    ? Task.FromResult(ClusterResult.Canceled(ctx.Request))
                     : currentModule.ExecuteAsync(ctx, currentResult);
             }
 

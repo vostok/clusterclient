@@ -108,7 +108,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             context.Request.Returns(CreateIncorrectRequest());
 
-            var task = Task.FromResult(ClusterResultFactory.UnexpectedException(context.Request));
+            var task = Task.FromResult(ClusterResult.UnexpectedException(context.Request));
 
             var moduleWithoutHttpMethodValidation = new RequestValidationModule(false);
 
@@ -118,7 +118,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
         private void ShouldPassChecks()
         {
-            var task = Task.FromResult(ClusterResultFactory.UnexpectedException(context.Request));
+            var task = Task.FromResult(ClusterResult.UnexpectedException(context.Request));
 
             module.ExecuteAsync(context, _ => task).Should().BeSameAs(task);
         }

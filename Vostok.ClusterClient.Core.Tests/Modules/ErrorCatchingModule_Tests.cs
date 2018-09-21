@@ -58,7 +58,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         [Test]
         public void Should_delegate_to_next_module_if_no_exceptions_arise()
         {
-            var task = Task.FromResult(ClusterResultFactory.ReplicasNotFound(context.Request));
+            var task = Task.FromResult(ClusterResult.ReplicasNotFound(context.Request));
 
             module.ExecuteAsync(context, _ => task).Result.Should().BeSameAs(task.Result);
         }
