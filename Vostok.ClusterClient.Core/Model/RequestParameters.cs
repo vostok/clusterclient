@@ -52,7 +52,7 @@ namespace Vostok.ClusterClient.Core.Model
             => new RequestParameters(Strategy, priority, properties);
         
         [PublicAPI]
-        public RequestParameters WithCustomProperty(string key, object value)
+        public RequestParameters WithProperty(string key, object value)
             => new RequestParameters(Strategy, Priority, properties.Set(key, value));
     }
 }
