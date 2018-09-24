@@ -13,7 +13,6 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
     {
         private HttpMethodValidationModule module = new HttpMethodValidationModule();
 
-
         [TestCaseSource(typeof(RequestMethods), nameof(RequestMethods.All))]
         public void Validation_should_pass_if_request_has_supported_method(string method)
         {

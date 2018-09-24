@@ -12,7 +12,7 @@ namespace Vostok.ClusterClient.Core.Modules
         LeakPrevention,
         GlobalErrorHandling,
         RequestTransformation,
-        Priority,
+        SetSpecificHeaders,
         Logging,
         ResponseTransformation,
         RequestErrorHandling,

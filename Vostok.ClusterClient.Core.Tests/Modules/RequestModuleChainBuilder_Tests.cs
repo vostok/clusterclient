@@ -109,7 +109,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             modules[0].Should().BeOfType<LeakPreventionModule>();
             modules[1].Should().BeOfType<ErrorCatchingModule>();
             modules[2].Should().BeOfType<RequestTransformationModule>();
-            modules[3].Should().BeOfType<RequestPriorityApplicationModule>();
+            modules[3].Should().BeOfType<SetSpecificHeadersModule>();
             modules[4].Should().BeSameAs(module1);
             modules[5].Should().BeSameAs(module2);
             modules[6].Should().BeOfType<LoggingModule>();
@@ -147,7 +147,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             modules[0].Should().BeOfType<LeakPreventionModule>();
             modules[1].Should().BeOfType<ErrorCatchingModule>();
             modules[2].Should().BeOfType<RequestTransformationModule>();
-            modules[3].Should().BeOfType<RequestPriorityApplicationModule>();
+            modules[3].Should().BeOfType<SetSpecificHeadersModule>();
             modules[4].Should().BeOfType<LoggingModule>();
             modules[5].Should().BeOfType<ResponseTransformationModule>();
             modules[6].Should().BeOfType<ErrorCatchingModule>();

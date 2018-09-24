@@ -19,6 +19,7 @@ namespace Vostok.ClusterClient.Core.Modules
             ITransport transport,
             RequestPriority? priority,
             int maximumReplicasToUse,
+            string clientApplicationName = null,
             IReadOnlyDictionary<string, object> properties = null,
             CancellationToken cancellationToken = default)
         {
@@ -50,6 +51,8 @@ namespace Vostok.ClusterClient.Core.Modules
         public RequestPriority? Priority { get; }
 
         public int MaximumReplicasToUse { get; set; }
+
+        public string ClientApplicationName { get; }
         
         public IReadOnlyDictionary<string, object> Properties { get; }
 

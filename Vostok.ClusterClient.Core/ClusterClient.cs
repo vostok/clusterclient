@@ -65,6 +65,7 @@ namespace Vostok.ClusterClient.Core
                 configuration.Transport,
                 parameters?.Priority ?? configuration.DefaultPriority,
                 configuration.MaxReplicasUsedPerRequest,
+                configuration.ClientApplicationName,
                 parameters?.Properties ?? ImmutableArrayDictionary<string, object>.Empty,
                 cancellationToken));
         }

@@ -93,7 +93,7 @@ namespace Vostok.ClusterClient.Core
         /// <item><description><see cref="RequestModule.LeakPrevention"/>: Underlying response streams closing.</description></item>
         /// <item><description><see cref="RequestModule.GlobalErrorHandling"/>: Exception logging and handling.</description></item>
         /// <item><description><see cref="RequestModule.RequestTransformation"/>: Request transformation (application of <see cref="IRequestTransform"/> chain).</description></item>
-        /// <item><description><see cref="RequestModule.Priority"/>: Request priority application (adding a priority header to request).</description></item>
+        /// <item><description><see cref="RequestModule.SetSpecificHeaders"/>: Request priority application (adding a priority header to request).</description></item>
         /// <item><description>User-defined <see cref="IRequestModule"/> implementations (by default inserted here).</description></item>
         /// <item><description><see cref="RequestModule.Logging"/>: Request/result logging.</description></item>
         /// <item><description><see cref="RequestModule.ResponseTransformation"/>: Response transformation (application of <see cref="IResponseTransform"/> chain).</description></item>
@@ -164,7 +164,7 @@ namespace Vostok.ClusterClient.Core
         /// <para>Gets or sets the name of client application which use ClusterClient. </para>
         /// <para>This parameter is optional and by default set to <see cref="Assembly.GetEntryAssembly"/> name.</para>
         /// </summary>
-        string ClientApplication { get; set; }
+        string ClientApplicationName { get; set; }
 
         /// <summary>
         /// <para>Gets or sets the name of service this <see cref="ClusterClient"/> will talk to.</para>

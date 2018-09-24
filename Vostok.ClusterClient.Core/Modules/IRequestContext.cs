@@ -61,6 +61,11 @@ namespace Vostok.ClusterClient.Core.Modules
         int MaximumReplicasToUse { get; set; }
         
         /// <summary>
+        /// Gets the client application name.
+        /// </summary>
+        string ClientApplicationName { get; }
+        
+        /// <summary>
         /// Returns request custom properties.
         /// </summary>
         IReadOnlyDictionary<string, object> Properties { get; }

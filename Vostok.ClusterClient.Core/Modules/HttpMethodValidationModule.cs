@@ -17,5 +17,5 @@ namespace Vostok.ClusterClient.Core.Modules
             context.Log.Error($"Request HTTP method {method} is not valid.");
             return Task.FromResult(ClusterResult.IncorrectArguments(context.Request));
         }
-    } 
+    }
 }

@@ -11,7 +11,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
     internal class RequestPriorityApplicationModule_Tests
     {
         private IRequestContext context;
-        private RequestPriorityApplicationModule module;
+        private SetSpecificHeadersModule module;
 
         [SetUp]
         public void TestSetup()
@@ -20,7 +20,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             context.Request.Returns(Request.Get("foo/bar"));
             context.Priority.Returns(null as RequestPriority?);
 
-            module = new RequestPriorityApplicationModule();
+            module = new SetSpecificHeadersModule();
         }
 
         [TearDown]

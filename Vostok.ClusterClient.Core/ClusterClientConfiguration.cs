@@ -41,7 +41,7 @@ namespace Vostok.ClusterClient.Core
             };
             MaxReplicasUsedPerRequest = ClusterClientDefaults.MaxReplicasUsedPerRequest;
             DeduplicateRequestUrl = ClusterClientDefaults.DeduplicateRequestUrl;
-            ClientApplication = HttpClientIdentity.Get();
+            ClientApplicationName = HttpClientIdentity.Get();
         }
 
         public ILog Log { get; }
@@ -80,7 +80,7 @@ namespace Vostok.ClusterClient.Core
         
         public LoggingOptions Logging { get; set; }
         
-        public string ClientApplication { get; set; }
+        public string ClientApplicationName { get; set; }
 
         public AdaptiveThrottlingOptions AdaptiveThrottling { get; set; }
 

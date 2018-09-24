@@ -31,8 +31,8 @@ namespace Vostok.ClusterClient.Core.Modules
             modules.Add(new RequestTransformationModule(config.RequestTransforms));
             modules.AddRange(GetModulesAfter(RequestModule.RequestTransformation));
             
-            modules.Add(new RequestPriorityApplicationModule());
-            modules.AddRange(GetModulesAfter(RequestModule.Priority));
+            modules.Add(new SetSpecificHeadersModule());
+            modules.AddRange(GetModulesAfter(RequestModule.SetSpecificHeaders));
             
             modules.AddRange(GetModulesAfter(RequestModule.Default));
             // -->> user-defined modules by default inserted here <<-- //
