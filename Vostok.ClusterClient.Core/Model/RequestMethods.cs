@@ -14,15 +14,50 @@ namespace Vostok.ClusterClient.Core.Model
     [PublicAPI]
     public static class RequestMethods
     {
+        /// <summary>
+        /// GET header name
+        /// </summary>
         public const string Get = "GET";
+        
+        /// <summary>
+        /// POST header name
+        /// </summary>
         public const string Post = "POST";
+        
+        /// <summary>
+        /// PUT header name
+        /// </summary>
         public const string Put = "PUT";
+        
+        /// <summary>
+        /// HEAD header name
+        /// </summary>
         public const string Head = "HEAD";
+        
+        /// <summary>
+        /// PATCH header name
+        /// </summary>
         public const string Patch = "PATCH";
+        
+        /// <summary>
+        /// DELETE header name
+        /// </summary>
         public const string Delete = "DELETE";
+        
+        /// <summary>
+        /// OPTIONS header name
+        /// </summary>
         public const string Options = "OPTIONS";
+        
+        /// <summary>
+        /// TRACE header name
+        /// </summary>
         public const string Trace = "TRACE";
 
+        /// <summary>
+        /// <para>A set of valid HTTP request methods.</para>
+        /// <para>Includes GET, POST, PUT, HEAD, PATCH, DELETE, OPTIONS and TRACE methods.</para>
+        /// </summary>
         public static readonly HashSet<string> All = new HashSet<string>
         {
             Get, Post, Put, Head, Patch, Delete, Options, Trace
