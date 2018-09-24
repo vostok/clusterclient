@@ -87,9 +87,7 @@ namespace Vostok.ClusterClient.Core
         public string Environment { get; set; }
 
         public bool DeduplicateRequestUrl { get; set; }
-
-        public bool ValidateHttpMethod { get; set; }
-
+        
         public bool IsValid => !Validate().Any();
 
         public IEnumerable<string> Validate()
