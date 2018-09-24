@@ -30,7 +30,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             
             log.IsEnabledFor(default).ReturnsForAnyArgs(true);
 
-            module = new RequestValidationModule(true);
+            module = new RequestValidationModule();
         }
 
         [Test]
@@ -103,19 +103,6 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             ShouldPassChecks();
         }
 
-        [Test]
-        public void Should_delegate_to_next_module_when_request_method_is_not_valid_but_validateHttpMetod_are_false()
-        {
-            context.Request.Returns(CreateIncorrectRequest());
-
-            var task = Task.FromResult(ClusterResult.UnexpectedException(context.Request));
-
-            var moduleWithoutHttpMethodValidation = new RequestValidationModule(false);
-
-            moduleWithoutHttpMethodValidation.ExecuteAsync(context, _ => task).Should().BeSameAs(task);
-        }
-
-
         private void ShouldPassChecks()
         {
             var task = Task.FromResult(ClusterResult.UnexpectedException(context.Request));
@@ -135,7 +122,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
         private static Request CreateIncorrectRequest()
         {
-            return new Request("FUCK", new Uri("foo/bar", UriKind.Relative));
+            return new Request(RequestMethods.Head, new Uri("foo/bar", UriKind.Relative), new Content(new byte[]{1, 2, 3}));
         }
     }
 }

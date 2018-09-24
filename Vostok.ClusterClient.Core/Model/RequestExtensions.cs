@@ -9,11 +9,8 @@ namespace Vostok.ClusterClient.Core.Model
         /// <summary>
         /// Returns all validation errors for this <see cref="Request"/> instance. An empty sequence is returned for a valid request.
         /// </summary>
-        public static IEnumerable<string> Validate(this Request request, bool validateHttpMethod = true)
+        public static IEnumerable<string> Validate(this Request request)
         {
-            if (validateHttpMethod && !RequestMethods.All.Contains(request.Method))
-                yield return $"Request method has unsupported value '{request.Method}'.";
-
             if (request.Url.IsAbsoluteUri)
             {
                 var scheme = request.Url.Scheme;
@@ -30,10 +27,5 @@ namespace Vostok.ClusterClient.Core.Model
         /// <para><see cref="Validate"/> method can be used to obtain error messages.</para>
         /// </summary>
         public static bool IsValid(this Request request) => !request.Validate().Any();
-
-        internal static bool IsValidCustomizable(this Request request, bool validateHttpMethod)
-        {
-            return !request.Validate(validateHttpMethod).Any();
-        }
     }
 }

@@ -22,7 +22,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         {
             request.Validate().Should().BeEmpty();
 
-            request.IsValidCustomizable(true).Should().BeTrue();
+            request.IsValid().Should().BeTrue();
         }
 
         [Test]
@@ -32,25 +32,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
 
             request.Validate().Should().BeEmpty();
 
-            request.IsValidCustomizable(true).Should().BeTrue();
-        }
-
-        [Test]
-        public void Validation_procedures_should_pass_if_request_has_unsupported_method_but_validateHttpMethod_are_false()
-        {
-            request = new Request("WHATEVER", request.Url);
-
-            request.IsValidCustomizable(false).Should().BeTrue();
-        }
-
-        [Test]
-        public void Validation_should_fail_if_request_has_unsupported_method()
-        {
-            request = new Request("WHATEVER", request.Url);
-
-            request.IsValidCustomizable(true).Should().BeFalse();
-
-            Console.Out.WriteLine(request.Validate().Single());
+            request.IsValid().Should().BeTrue();
         }
 
         [Test]
@@ -58,7 +40,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         {
             request = new Request(request.Method, new Uri("ftp://foo/bar"));
 
-            request.IsValidCustomizable(true).Should().BeFalse();
+            request.IsValid().Should().BeFalse();
 
             Console.Out.WriteLine(request.Validate().Single());
         }
@@ -68,7 +50,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         {
             request = Request.Get(request.Url).WithContent(new Content(new byte[16]));
 
-            request.IsValidCustomizable(true).Should().BeFalse();
+            request.IsValid().Should().BeFalse();
 
             Console.Out.WriteLine(request.Validate().Single());
         }
@@ -78,7 +60,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         {
             request = Request.Get(request.Url).WithContent(new StreamContent(Stream.Null, 123));
 
-            request.IsValidCustomizable(true).Should().BeFalse();
+            request.IsValid().Should().BeFalse();
 
             Console.Out.WriteLine(request.Validate().Single());
         }
@@ -88,7 +70,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         {
             request = Request.Head(request.Url).WithContent(new Content(new byte[16]));
 
-            request.IsValidCustomizable(true).Should().BeFalse();
+            request.IsValid().Should().BeFalse();
 
             Console.Out.WriteLine(request.Validate().Single());
         }

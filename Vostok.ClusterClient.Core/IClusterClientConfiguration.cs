@@ -180,11 +180,5 @@ namespace Vostok.ClusterClient.Core
         /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.DeduplicateRequestUrl"/>).</para>
         /// </summary>
         bool DeduplicateRequestUrl { get; set; }
-
-        /// <summary>
-        /// <para>Gets or sets whether to validate http method in request.</para>
-        /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.ValidateHttpMethod"/>).</para>
-        /// </summary>
-        bool ValidateHttpMethod { get; set; }
     }
 }

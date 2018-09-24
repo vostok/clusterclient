@@ -45,7 +45,7 @@ namespace Vostok.ClusterClient.Core.Modules
             modules.Add(new ErrorCatchingModule());
             modules.AddRange(GetModulesAfter(RequestModule.RequestErrorHandling));
             
-            modules.Add(new RequestValidationModule(config.ValidateHttpMethod));
+            modules.Add(new RequestValidationModule());
             modules.AddRange(GetModulesAfter(RequestModule.RequestValidation));
             
             modules.Add(new TimeoutValidationModule());

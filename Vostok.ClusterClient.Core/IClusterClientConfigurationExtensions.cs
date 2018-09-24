@@ -24,13 +24,13 @@ namespace Vostok.ClusterClient.Core
         /// <summary>
         /// Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.Modules"/> list.
         /// </summary>
-        public static void AddRequestModule(this IClusterClientConfiguration configuration, IRequestModule module, RequestModule insertAfter = RequestModule.Default)
+        public static void AddRequestModule(this IClusterClientConfiguration configuration, IRequestModule module, RequestModule after = RequestModule.Default)
         {
             if (configuration.Modules == null)
                 configuration.Modules = new Dictionary<RequestModule, List<IRequestModule>>();
-            if (!configuration.Modules.ContainsKey(insertAfter))
-                configuration.Modules[insertAfter] = new List<IRequestModule>();
-            configuration.Modules[insertAfter].Add(module);
+            if (!configuration.Modules.ContainsKey(after))
+                configuration.Modules[after] = new List<IRequestModule>();
+            configuration.Modules[after].Add(module);
         }
 
         /// <summary>
@@ -130,6 +130,15 @@ namespace Vostok.ClusterClient.Core
         {
             var options = new ReplicaBudgetingOptions(configuration.ServiceName, minutesToTrack, minimumRequests, criticalRatio);
             configuration.AddRequestModule(new ReplicaBudgetingModule(options));
+        }
+        
+        /// <summary>
+        /// Enables HTTP request method validation. Valid HTTP methods listed in <see cref="RequestMethods" /> class.
+        /// </summary>
+        public static void SetupHttpMethodValidation(
+            this IClusterClientConfiguration configuration)
+        {
+            configuration.AddRequestModule(new HttpMethodValidationModule(), RequestModule.RequestValidation);
         }
         
         /// <summary>

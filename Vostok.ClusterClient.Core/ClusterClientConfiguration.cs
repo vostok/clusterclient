@@ -40,7 +40,6 @@ namespace Vostok.ClusterClient.Core
             };
             MaxReplicasUsedPerRequest = ClusterClientDefaults.MaxReplicasUsedPerRequest;
             DeduplicateRequestUrl = ClusterClientDefaults.DeduplicateRequestUrl;
-            ValidateHttpMethod = ClusterClientDefaults.ValidateHttpMethod;
         }
 
         public ILog Log { get; }
