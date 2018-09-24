@@ -19,6 +19,7 @@ namespace Vostok.ClusterClient.Core.Modules
             var requestSender = new RequestSender(config, storageProvider, responseClassifier, requestConverter);
             var resultStatusSelector = new ClusterResultStatusSelector();
 
+            // ReSharper disable once UseObjectOrCollectionInitializer
             var modules = new List<IRequestModule>(12 + config.Modules?.Where(x => x.Value != null).SelectMany(x => x.Value).Count() ?? 0);
             
             modules.Add(new LeakPreventionModule());

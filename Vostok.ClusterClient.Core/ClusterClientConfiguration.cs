@@ -6,6 +6,7 @@ using Vostok.ClusterClient.Core.Criteria;
 using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
+using Vostok.ClusterClient.Core.Net;
 using Vostok.ClusterClient.Core.Ordering;
 using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.ClusterClient.Core.Retry;
@@ -40,6 +41,7 @@ namespace Vostok.ClusterClient.Core
             };
             MaxReplicasUsedPerRequest = ClusterClientDefaults.MaxReplicasUsedPerRequest;
             DeduplicateRequestUrl = ClusterClientDefaults.DeduplicateRequestUrl;
+            ClientApplication = HttpClientIdentity.Get();
         }
 
         public ILog Log { get; }
@@ -77,6 +79,8 @@ namespace Vostok.ClusterClient.Core
         public int MaxReplicasUsedPerRequest { get; set; }
         
         public LoggingOptions Logging { get; set; }
+        
+        public string ClientApplication { get; set; }
 
         public AdaptiveThrottlingOptions AdaptiveThrottling { get; set; }
 

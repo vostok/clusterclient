@@ -1,12 +1,20 @@
 ﻿using System;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive;
 
 namespace Vostok.ClusterClient.Core
 {
+    /// <summary>
+    /// A helper class for dropping ClusterClient caches.
+    /// </summary>
+    [PublicAPI]
     public static class ClusterClientCachesCleaner
     {
+        /// <summary>
+        /// Drops all ClusterClient caches. It also drops cache of <see cref="ReplicaBudgetingModule"/> and <see cref="AdaptiveThrottlingModule"/>.
+        /// </summary>
         public static void Clean()
         {
             ReplicaBudgetingModule.ClearCache();

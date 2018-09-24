@@ -14,16 +14,18 @@ namespace Vostok.ClusterClient.Core.Model
         /// <summary>
         /// Represents an empty <see cref="RequestParameters"/> object. Useful to start building request properties from scratch.
         /// </summary>
-        [PublicAPI]
         public static readonly RequestParameters Empty = new RequestParameters();
-        
+
         /// <summary>
-        /// See <see cref="Strategy"/> class for some prebuilt strategies and convenient factory methods.
+        /// <para>A <see cref="Strategy"/> which will be used to send the request.</para>
+        /// <para>Uses <see cref="IClusterClientConfiguration.DefaultStrategy"/> if provided <paramref name="timeout"/> is <c>null</c>.</para>
+        /// <para>See <see cref="Strategy"/> class for some prebuilt strategies and convenient factory methods.</para>
         /// </summary>
-        [PublicAPI]
         public IRequestStrategy Strategy { get; }
         
-        [PublicAPI]
+        /// <summary>
+        /// A <see cref="RequestPriority"/> which will be used to send the request.
+        /// </summary>
         public RequestPriority? Priority { get; }
 
         [PublicAPI]

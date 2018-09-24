@@ -7,8 +7,11 @@ using Vostok.ClusterClient.Core.Strategies;
 
 namespace Vostok.ClusterClient.Core
 {
+    /// <summary>
+    /// Extension methods for IClusterClient interface.
+    /// </summary>
     [PublicAPI]
-    public static class IClusterClientExtensions
+    public static class ClusterClientExtensions
     {
         /// <summary>
         /// <para>Sends given request using given <paramref name="timeout"/>, <paramref name="strategy"/> and <paramref name="cancellationToken"/>.</para>
@@ -23,7 +26,7 @@ namespace Vostok.ClusterClient.Core
             [NotNull] Request request,
             [CanBeNull] TimeSpan? timeout = null,
             [CanBeNull] IRequestStrategy strategy = null,
-            CancellationToken cancellationToken = default(CancellationToken),
+            CancellationToken cancellationToken = default,
             [CanBeNull] RequestPriority? priority = null)
         {
             return client.SendAsync(request, timeout, strategy, priority, cancellationToken).GetAwaiter().GetResult();

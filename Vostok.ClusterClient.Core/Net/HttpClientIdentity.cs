@@ -1,63 +1,40 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using Vostok.ClusterClient.Core.Utilities;
 
 namespace Vostok.ClusterClient.Core.Net
 {
-    public static class HttpClientIdentity
+    internal static class HttpClientIdentity
     {
-        private static readonly string Identity;
+        private static string identity;
+        private static volatile bool init;
 
-        static HttpClientIdentity()
+        public static string Get()
         {
-            Identity = GetIdentityFromHostingEnvironmentOrNull();
-            if (!IsValidIdentity(Identity))
-                Identity = GetProcessNameOrNull();
-
-            if (!IsValidIdentity(Identity))
-                Identity = "Unknown";
-
-            Identity = Identity.Replace('/', '.');
+            if (!init)
+                Initialize();
+            return identity;
         }
 
-        public static string Get() => Identity;
-
-        private static bool IsValidIdentity(string identity) => !string.IsNullOrWhiteSpace(identity);
-
-        private static string GetIdentityFromHostingEnvironmentOrNull()
+        private static void Initialize()
+        {
+            identity = GetIdentity();
+            init = true;
+        }
+        
+        private static string GetIdentity()
         {
             try
             {
-                if (RuntimeDetector.IsDotNetFramework)
-                    return GetIdentityForDotNetFramework();
+                if (RuntimeDetector.IsDotNetCore)
+                    return GetEntryAssemblyNameOrNull();
 
-                return null;
+                return GetProcessNameOrNull() ?? GetEntryAssemblyNameOrNull();
             }
             catch
             {
                 return null;
             }
-        }
-
-        private static string GetIdentityForDotNetFramework()
-        {
-            // todo(Mansiper): fix it
-            return null;
-            /*try
-            {
-                if (!HostingEnvironment.IsHosted)
-                    return null;
-
-                var vPath = HostingEnvironment.ApplicationVirtualPath;
-                var siteName = HostingEnvironment.SiteName;
-                if (vPath == null || vPath == "/")
-                    return siteName;
-
-                return siteName + vPath;
-            }
-            catch
-            {
-                return null;
-            }*/
         }
 
         private static string GetProcessNameOrNull()
@@ -65,6 +42,18 @@ namespace Vostok.ClusterClient.Core.Net
             try
             {
                 return Process.GetCurrentProcess().ProcessName;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        
+        private static string GetEntryAssemblyNameOrNull()
+        {
+            try
+            {
+                return Assembly.GetEntryAssembly().GetName().Name;
             }
             catch
             {

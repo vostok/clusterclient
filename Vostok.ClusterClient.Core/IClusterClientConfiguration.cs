@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Criteria;
@@ -22,6 +23,7 @@ namespace Vostok.ClusterClient.Core
     /// <para>Represents a configuration of <see cref="ClusterClient"/> instance which must be filled during client construction.</para>
     /// <para>The only required parameters are <see cref="Transport"/> and <see cref="ClusterProvider"/>.</para>
     /// </summary>
+    [PublicAPI]
     public interface IClusterClientConfiguration
     {
         /// <summary>
@@ -50,7 +52,7 @@ namespace Vostok.ClusterClient.Core
 
         /// <summary>
         /// <para>Gets or sets replica ordering implementation. See <see cref="IReplicaOrdering.Order"/> and <see cref="IReplicaOrdering.Learn"/> for more details.</para>
-        /// <para>The recommended implementation is <see cref="WeighedReplicaOrdering"/>. Use <see cref="Core.IClusterClientConfigurationExtensions.SetupWeighedReplicaOrdering"/> extension to build it.</para>
+        /// <para>The recommended implementation is <see cref="WeighedReplicaOrdering"/>. Use <see cref="ClusterClientConfigurationExtensions.SetupWeighedReplicaOrdering"/> extension to build it.</para>
         /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.ReplicaOrdering"/>).</para>
         /// </summary>
         IReplicaOrdering ReplicaOrdering { get; set; }
@@ -63,21 +65,21 @@ namespace Vostok.ClusterClient.Core
 
         /// <summary>
         /// <para>A list of request transforms. See <see cref="IRequestTransform"/> for more details.</para>
-        /// <para>Use <see cref="Core.IClusterClientConfigurationExtensions.AddRequestTransform(IClusterClientConfiguration, IRequestTransform)"/> to add transforms to this list.</para>
+        /// <para>Use <see cref="ClusterClientConfigurationExtensions.AddRequestTransform(IClusterClientConfiguration, IRequestTransform)"/> to add transforms to this list.</para>
         /// <para>This parameter is optional and has an empty default value.</para>
         /// </summary>
         List<IRequestTransform> RequestTransforms { get; set; }
 
         /// <summary>
         /// <para>A list of response transforms. See <see cref="IResponseTransform"/> for more details.</para>
-        /// <para>Use <see cref="Core.IClusterClientConfigurationExtensions.AddResponseTransform(IClusterClientConfiguration, IResponseTransform)"/> to add transforms to this list.</para>
+        /// <para>Use <see cref="ClusterClientConfigurationExtensions.AddResponseTransform(IClusterClientConfiguration, IResponseTransform)"/> to add transforms to this list.</para>
         /// <para>This parameter is optional and has an empty default value.</para>
         /// </summary>
         List<IResponseTransform> ResponseTransforms { get; set; }
 
         /// <summary>
         /// <para>A list of response criteria. See <see cref="IResponseCriterion"/> and <see cref="ResponseVerdict"/> for more details.</para>
-        /// <para>Use <see cref="Core.IClusterClientConfigurationExtensions.SetupResponseCriteria"/> to initialize this list.</para>
+        /// <para>Use <see cref="ClusterClientConfigurationExtensions.SetupResponseCriteria"/> to initialize this list.</para>
         /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.ResponseCriteria"/>).</para>
         /// </summary>
         List<IResponseCriterion> ResponseCriteria { get; set; }
@@ -102,7 +104,7 @@ namespace Vostok.ClusterClient.Core
         /// <item><description><see cref="RequestModule.Sending"/>: Sending of requests with absolute urls (directly using <see cref="ITransport"/>).</description></item>
         /// <item><description><see cref="RequestModule.Execution"/>: Request execution (<see cref="IClusterProvider"/> --> <see cref="IReplicaOrdering"/> --> <see cref="IRequestStrategy"/>)</description></item>
         /// </list>
-        /// <para>Use <see cref="Core.IClusterClientConfigurationExtensions.AddRequestModule"/> to add transforms to this collection.</para>
+        /// <para>Use <see cref="ClusterClientConfigurationExtensions.AddRequestModule"/> to add transforms to this collection.</para>
         /// <para>This parameter is optional and has an empty default value.</para>
         /// </summary>
         Dictionary<RequestModule, List<IRequestModule>> Modules { get; set; }
@@ -154,9 +156,15 @@ namespace Vostok.ClusterClient.Core
         /// <summary>
         /// <para>Gets or sets the options for request/response logging.</para>
         /// <para>This parameter is optional and has a <c>null</c> default value which implies default options will be used.</para>
-        /// <para>Use <see cref="Core.IClusterClientConfigurationExtensions.SetupReplicaBudgeting"/> to set these options.</para>
+        /// <para>Use <see cref="ClusterClientConfigurationExtensions.SetupReplicaBudgeting"/> to set these options.</para>
         /// </summary>
         LoggingOptions Logging { get; set; }
+
+        /// <summary>
+        /// <para>Gets or sets the name of client application which use ClusterClient. </para>
+        /// <para>This parameter is optional and by default set to <see cref="Assembly.GetEntryAssembly"/> name.</para>
+        /// </summary>
+        string ClientApplication { get; set; }
 
         /// <summary>
         /// <para>Gets or sets the name of service this <see cref="ClusterClient"/> will talk to.</para>
