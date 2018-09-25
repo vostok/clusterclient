@@ -104,23 +104,24 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             
             var modules = RequestModuleChainBuilder.BuildChain(configuration, storageProvider);
 
-            modules.Should().HaveCount(15);
+            modules.Should().HaveCount(16);
 
-            modules[0].Should().BeOfType<LeakPreventionModule>();
-            modules[1].Should().BeOfType<ErrorCatchingModule>();
-            modules[2].Should().BeOfType<RequestTransformationModule>();
-            modules[3].Should().BeOfType<RequestPriorityModule>();
-            modules[4].Should().BeOfType<ClientApplicationIdentityModule>();
-            modules[5].Should().BeSameAs(module1);
-            modules[6].Should().BeSameAs(module2);
-            modules[7].Should().BeOfType<LoggingModule>();
-            modules[8].Should().BeOfType<ResponseTransformationModule>();
-            modules[9].Should().BeOfType<ErrorCatchingModule>();
-            modules[10].Should().BeOfType<RequestValidationModule>();
-            modules[11].Should().BeOfType<TimeoutValidationModule>();
-            modules[12].Should().BeOfType<RequestRetryModule>();
-            modules[13].Should().BeOfType<AbsoluteUrlSenderModule>();
-            modules[14].Should().BeOfType<RequestExecutionModule>();
+            modules[0].Should().BeOfType<RequestTimeoutHeaderModule>();
+            modules[1].Should().BeOfType<LeakPreventionModule>();
+            modules[2].Should().BeOfType<ErrorCatchingModule>();
+            modules[3].Should().BeOfType<RequestTransformationModule>();
+            modules[4].Should().BeOfType<RequestPriorityModule>();
+            modules[5].Should().BeOfType<ClientApplicationIdentityModule>();
+            modules[6].Should().BeSameAs(module1);
+            modules[7].Should().BeSameAs(module2);
+            modules[8].Should().BeOfType<LoggingModule>();
+            modules[9].Should().BeOfType<ResponseTransformationModule>();
+            modules[10].Should().BeOfType<ErrorCatchingModule>();
+            modules[11].Should().BeOfType<RequestValidationModule>();
+            modules[12].Should().BeOfType<TimeoutValidationModule>();
+            modules[13].Should().BeOfType<RequestRetryModule>();
+            modules[14].Should().BeOfType<AbsoluteUrlSenderModule>();
+            modules[15].Should().BeOfType<RequestExecutionModule>();
         }
 
         [Test]
@@ -143,23 +144,24 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             var modules = RequestModuleChainBuilder.BuildChain(configuration, storageProvider);
 
-            modules.Should().HaveCount(15);
+            modules.Should().HaveCount(16);
 
-            modules[0].Should().BeOfType<LeakPreventionModule>();
-            modules[1].Should().BeOfType<ErrorCatchingModule>();
-            modules[2].Should().BeOfType<RequestTransformationModule>();
-            modules[3].Should().BeOfType<RequestPriorityModule>();
-            modules[4].Should().BeOfType<ClientApplicationIdentityModule>();
-            modules[5].Should().BeOfType<LoggingModule>();
-            modules[6].Should().BeOfType<ResponseTransformationModule>();
-            modules[7].Should().BeOfType<ErrorCatchingModule>();
-            modules[8].Should().BeOfType<RequestValidationModule>();
-            modules[9].Should().BeOfType<TimeoutValidationModule>();
-            modules[10].Should().BeOfType<RequestRetryModule>();
-            modules[11].Should().BeOfType<AdaptiveThrottlingModule>();
-            modules[12].Should().BeOfType<ReplicaBudgetingModule>();
-            modules[13].Should().BeOfType<AbsoluteUrlSenderModule>();
-            modules[14].Should().BeOfType<RequestExecutionModule>();
+            modules[0].Should().BeOfType<RequestTimeoutHeaderModule>();
+            modules[1].Should().BeOfType<LeakPreventionModule>();
+            modules[2].Should().BeOfType<ErrorCatchingModule>();
+            modules[3].Should().BeOfType<RequestTransformationModule>();
+            modules[4].Should().BeOfType<RequestPriorityModule>();
+            modules[5].Should().BeOfType<ClientApplicationIdentityModule>();
+            modules[6].Should().BeOfType<LoggingModule>();
+            modules[7].Should().BeOfType<ResponseTransformationModule>();
+            modules[8].Should().BeOfType<ErrorCatchingModule>();
+            modules[9].Should().BeOfType<RequestValidationModule>();
+            modules[10].Should().BeOfType<TimeoutValidationModule>();
+            modules[11].Should().BeOfType<RequestRetryModule>();
+            modules[12].Should().BeOfType<AdaptiveThrottlingModule>();
+            modules[13].Should().BeOfType<ReplicaBudgetingModule>();
+            modules[14].Should().BeOfType<AbsoluteUrlSenderModule>();
+            modules[15].Should().BeOfType<RequestExecutionModule>();
         }
     }
 }
