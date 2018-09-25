@@ -27,10 +27,10 @@ namespace Vostok.ClusterClient.Core
         /// <summary>
         /// Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.Modules"/> list.
         /// </summary>
-        public static void AddRequestModule(this IClusterClientConfiguration configuration, IRequestModule module, RequestModule after = RequestModule.Default)
+        public static void AddRequestModule(this IClusterClientConfiguration configuration, IRequestModule module, RequestPipelinePoint after = RequestPipelinePoint.AfterPrepareRequest)
         {
             if (configuration.Modules == null)
-                configuration.Modules = new Dictionary<RequestModule, List<IRequestModule>>();
+                configuration.Modules = new Dictionary<RequestPipelinePoint, List<IRequestModule>>();
             if (!configuration.Modules.ContainsKey(after))
                 configuration.Modules[after] = new List<IRequestModule>();
             configuration.Modules[after].Add(module);
@@ -77,7 +77,7 @@ namespace Vostok.ClusterClient.Core
                 criticalRatio,
                 maximumRejectProbability);
             
-            configuration.AddRequestModule(new AdaptiveThrottlingModule(options), RequestModule.Retry);
+            configuration.AddRequestModule(new AdaptiveThrottlingModule(options), RequestPipelinePoint.BeforeSend);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Vostok.ClusterClient.Core
             double maximumRejectProbability = ClusterClientDefaults.AdaptiveThrottlingRejectProbabilityCap)
         {
             var options = new AdaptiveThrottlingOptions(configuration.ServiceName, minutesToTrack, minimumRequests, criticalRatio, maximumRejectProbability);
-            configuration.AddRequestModule(new AdaptiveThrottlingModule(options), RequestModule.Retry);
+            configuration.AddRequestModule(new AdaptiveThrottlingModule(options), RequestPipelinePoint.BeforeSend);
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace Vostok.ClusterClient.Core
         public static void SetupHttpMethodValidation(
             this IClusterClientConfiguration configuration)
         {
-            configuration.AddRequestModule(new HttpMethodValidationModule(), RequestModule.RequestValidation);
+            configuration.AddRequestModule(new HttpMethodValidationModule(), RequestPipelinePoint.AfterRequestValidation);
         }
         
         /// <summary>

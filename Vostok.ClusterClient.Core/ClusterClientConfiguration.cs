@@ -26,8 +26,8 @@ namespace Vostok.ClusterClient.Core
             RequestTransforms = new List<IRequestTransform>();
             ResponseTransforms = new List<IResponseTransform>();
             ResponseCriteria = new List<IResponseCriterion>();
-            Modules = new Dictionary<RequestModule, List<IRequestModule>>();
-            foreach (var value in (RequestModule[])Enum.GetValues(typeof(RequestModule)))
+            Modules = new Dictionary<RequestPipelinePoint, List<IRequestModule>>();
+            foreach (var value in (RequestPipelinePoint[])Enum.GetValues(typeof(RequestPipelinePoint)))
                 Modules[value] = new List<IRequestModule>();
             ReplicaStorageScope = ClusterClientDefaults.ReplicaStorageScope;
             DefaultTimeout = ClusterClientDefaults.Timeout;
@@ -62,7 +62,7 @@ namespace Vostok.ClusterClient.Core
 
         public List<IResponseCriterion> ResponseCriteria { get; set; }
 
-        public Dictionary<RequestModule, List<IRequestModule>> Modules { get; set; }
+        public Dictionary<RequestPipelinePoint, List<IRequestModule>> Modules { get; set; }
 
         public IRetryPolicy RetryPolicy { get; set; }
 

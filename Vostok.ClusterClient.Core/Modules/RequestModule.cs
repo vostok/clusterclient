@@ -3,23 +3,26 @@ using JetBrains.Annotations;
 namespace Vostok.ClusterClient.Core.Modules
 {
     /// <summary>
-    /// <para>Defines request modules from standard request pipeline.</para>
+    /// <para>Defines request pipeline extension point.</para>
     /// </summary>
     [PublicAPI]
-    public enum RequestModule
+    public enum RequestPipelinePoint
     {
-        Default,
-        LeakPrevention,
-        GlobalErrorHandling,
-        RequestTransformation,
-        SetSpecificHeaders,
-        Logging,
-        ResponseTransformation,
-        RequestErrorHandling,
-        RequestValidation,
-        TimeoutValidation,
-        Retry,
-        Sending,
-        Execution
+        /// <summary>
+        /// A point in request pipeline after request transformation.
+        /// </summary>
+        AfterPrepareRequest = 0,
+        /// <summary>
+        /// A point in request pipeline after <see cref="RequestValidationModule"/>.
+        /// </summary>
+        AfterRequestValidation = 1,
+        /// <summary>
+        /// A point in request pipeline before <see cref="AbsoluteUrlSenderModule"/>.
+        /// </summary>
+        BeforeSend = 2,
+        /// <summary>
+        /// A point in request pipeline before <see cref="RequestExecutionModule"/>.
+        /// </summary>
+        BeforeExecution = 3,
     }
 }

@@ -23,42 +23,28 @@ namespace Vostok.ClusterClient.Core.Modules
             var modules = new List<IRequestModule>(12 + config.Modules?.Where(x => x.Value != null).SelectMany(x => x.Value).Count() ?? 0);
             
             modules.Add(new LeakPreventionModule());
-            modules.AddRange(GetModulesAfter(RequestModule.LeakPrevention));
-            
             modules.Add(new ErrorCatchingModule());
-            modules.AddRange(GetModulesAfter(RequestModule.GlobalErrorHandling));
-            
             modules.Add(new RequestTransformationModule(config.RequestTransforms));
-            modules.AddRange(GetModulesAfter(RequestModule.RequestTransformation));
+            modules.Add(new RequestPriorityModule());
+            modules.Add(new ClientApplicationIdentityModule());
+            modules.AddRange(GetModulesAfter(RequestPipelinePoint.AfterPrepareRequest));
             
-            modules.Add(new SetSpecificHeadersModule());
-            modules.AddRange(GetModulesAfter(RequestModule.SetSpecificHeaders));
-            
-            modules.AddRange(GetModulesAfter(RequestModule.Default));
             // -->> user-defined modules by default inserted here <<-- //
 
             modules.Add(new LoggingModule(config.Logging.LogPrefixEnabled, config.Logging.LogRequestDetails, config.Logging.LogResultDetails));
-            modules.AddRange(GetModulesAfter(RequestModule.Logging));
-            
             modules.Add(new ResponseTransformationModule(config.ResponseTransforms));
-            modules.AddRange(GetModulesAfter(RequestModule.ResponseTransformation));
-            
             modules.Add(new ErrorCatchingModule());
-            modules.AddRange(GetModulesAfter(RequestModule.RequestErrorHandling));
-            
             modules.Add(new RequestValidationModule());
-            modules.AddRange(GetModulesAfter(RequestModule.RequestValidation));
-            
+            modules.AddRange(GetModulesAfter(RequestPipelinePoint.AfterRequestValidation));
+
             modules.Add(new TimeoutValidationModule());
-            modules.AddRange(GetModulesAfter(RequestModule.TimeoutValidation));
-            
             modules.Add(new RequestRetryModule(config.RetryPolicy, config.RetryStrategy));
-            modules.AddRange(GetModulesAfter(RequestModule.Retry));
+            modules.AddRange(GetModulesAfter(RequestPipelinePoint.BeforeSend));
             
             // -->> adaptive throttling and replica budgeting modules <<-- //
             
             modules.Add(new AbsoluteUrlSenderModule(responseClassifier, config.ResponseCriteria, resultStatusSelector));
-            modules.AddRange(GetModulesAfter(RequestModule.Sending));
+            modules.AddRange(GetModulesAfter(RequestPipelinePoint.BeforeExecution));
             
             modules.Add(
                 new RequestExecutionModule(
@@ -68,11 +54,10 @@ namespace Vostok.ClusterClient.Core.Modules
                     storageProvider,
                     requestSender,
                     resultStatusSelector));
-            modules.AddRange(GetModulesAfter(RequestModule.Execution));
 
             return modules;
 
-            IEnumerable<IRequestModule> GetModulesAfter(RequestModule m)
+            IEnumerable<IRequestModule> GetModulesAfter(RequestPipelinePoint m)
             {
                 if (config.Modules == null)
                     return Enumerable.Empty<IRequestModule>();
