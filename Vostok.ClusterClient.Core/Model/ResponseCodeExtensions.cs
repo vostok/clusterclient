@@ -2,6 +2,9 @@
 
 namespace Vostok.ClusterClient.Core.Model
 {
+    /// <summary>
+    /// A set of extensions for <see cref="ResponseCode"/>.
+    /// </summary>
     [PublicAPI]
     public static class ResponseCodeExtensions
     {

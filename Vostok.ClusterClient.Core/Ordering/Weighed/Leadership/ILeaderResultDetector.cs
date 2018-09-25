@@ -3,6 +3,9 @@ using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Ordering.Weighed.Leadership
 {
+    /// <summary>
+    /// Determines leader of cluster by <see cref="ReplicaResult"/>.
+    /// </summary>
     public interface ILeaderResultDetector
     {
         /// <summary>

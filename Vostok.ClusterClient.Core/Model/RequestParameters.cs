@@ -18,7 +18,7 @@ namespace Vostok.ClusterClient.Core.Model
 
         /// <summary>
         /// <para>A <see cref="Strategy"/> which will be used to send the request.</para>
-        /// <para>Uses <see cref="IClusterClientConfiguration.DefaultStrategy"/> if provided <paramref name="timeout"/> is <c>null</c>.</para>
+        /// <para>Uses <see cref="IClusterClientConfiguration.DefaultRequestStrategy"/> if value is <c>null</c>.</para>
         /// <para>See <see cref="Strategy"/> class for some prebuilt strategies and convenient factory methods.</para>
         /// </summary>
         public IRequestStrategy Strategy { get; }
@@ -28,6 +28,9 @@ namespace Vostok.ClusterClient.Core.Model
         /// </summary>
         public RequestPriority? Priority { get; }
 
+        /// <summary>
+        /// A set of additional request properties.
+        /// </summary>
         [PublicAPI]
         public IReadOnlyDictionary<string, object> Properties => properties;
         
@@ -45,14 +48,18 @@ namespace Vostok.ClusterClient.Core.Model
             this.properties = properties ?? ImmutableArrayDictionary<string, object>.Empty;
         }
 
+        /// <returns>New instance of <see cref="RequestParameters"/> with specified <paramref name="strategy"/>.</returns>
         [PublicAPI]
         public RequestParameters WithStrategy(IRequestStrategy strategy)
             => new RequestParameters(strategy, Priority, properties);
     
+        /// <returns>New instance of <see cref="RequestParameters"/> with specified <paramref name="priority"/>.</returns>
         [PublicAPI]
         public RequestParameters WithPriority(RequestPriority? priority)
             => new RequestParameters(Strategy, priority, properties);
         
+        
+        /// <returns>New instance of <see cref="RequestParameters"/> with specified property.</returns>
         [PublicAPI]
         public RequestParameters WithProperty(string key, object value)
             => new RequestParameters(Strategy, Priority, properties.Set(key, value));

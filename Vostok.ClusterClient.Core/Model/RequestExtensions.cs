@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace Vostok.ClusterClient.Core.Model
 {
+    /// <summary>
+    /// A set of extensions for <see cref="Request"/>
+    /// </summary>
     public static class RequestExtensions
     {
         /// <summary>
@@ -27,5 +30,6 @@ namespace Vostok.ClusterClient.Core.Model
         /// <para><see cref="Validate"/> method can be used to obtain error messages.</para>
         /// </summary>
         public static bool IsValid(this Request request) => !request.Validate().Any();
+        
     }
 }

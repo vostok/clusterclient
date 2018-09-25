@@ -76,14 +76,27 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
             MinimumHealthValue = minimumHealthValue;
         }
 
+        /// <summary>
+        /// A duration during which health damage fully decays.
+        /// </summary>
         public TimeSpan DecayDuration { get; }
 
+        /// <summary>
+        /// A multiplier used to increase health. Must be in <c>(1; +infinity)</c> range.
+        /// </summary>
         public double UpMultiplier { get; }
 
+        /// <summary>
+        /// A multiplier used to decrease health. Must be in <c>(0; 1)</c> range.
+        /// </summary>
         public double DownMultiplier { get; }
 
+        /// <summary>
+        /// Minimum possible health value. Must be in <c>(0; 1)</c> range.
+        /// </summary>
         public double MinimumHealthValue { get; }
 
+        /// <inheritdoc />
         public void ModifyWeight(HealthWithDecay health, ref double weight)
         {
             var healthDamage = MaximumHealthValue - health.Value;
@@ -99,18 +112,23 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
             weight *= effectiveHealth;
         }
 
+        /// <inheritdoc />
         public HealthWithDecay CreateDefaultHealth() =>
             new HealthWithDecay(MaximumHealthValue, DateTime.MinValue);
 
+        /// <inheritdoc />
         public HealthWithDecay IncreaseHealth(HealthWithDecay current) =>
             new HealthWithDecay(Math.Min(MaximumHealthValue, current.Value * UpMultiplier), current.DecayPivot);
 
+        /// <inheritdoc />
         public HealthWithDecay DecreaseHealth(HealthWithDecay current) =>
             new HealthWithDecay(Math.Max(MinimumHealthValue, current.Value * DownMultiplier), timeProvider.GetCurrentTime());
 
+        /// <inheritdoc />
         public bool AreEqual(HealthWithDecay x, HealthWithDecay y) =>
             x.Value.Equals(y.Value) && x.DecayPivot == y.DecayPivot;
 
+        /// <inheritdoc />
         public void LogHealthChange(Uri replica, HealthWithDecay oldHealth, HealthWithDecay newHealth, ILog log) =>
             log.Debug($"Local base health for replica '{replica}' has changed from {oldHealth.Value:N4} to {newHealth.Value:N4}.");
     }

@@ -8,6 +8,9 @@ namespace Vostok.ClusterClient.Core.Ordering
     /// </summary>
     public class RandomReplicaOrdering : WeighedReplicaOrdering
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="RandomReplicaOrdering"/> class.
+        /// </summary>
         public RandomReplicaOrdering()
             : base(new List<IReplicaWeightModifier>())
         {

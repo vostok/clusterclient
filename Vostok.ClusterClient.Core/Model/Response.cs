@@ -16,6 +16,9 @@ namespace Vostok.ClusterClient.Core.Model
         private readonly Headers headers;
         private readonly Stream stream;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="Response"/> class.
+        /// </summary>
         public Response(
             ResponseCode code,
             [CanBeNull] Content content = null,
@@ -74,6 +77,9 @@ namespace Vostok.ClusterClient.Core.Model
         /// </summary>
         public bool IsSuccessful => Code.IsSuccessful();
 
+        /// <summary>
+        /// Dispose underlying response stream.
+        /// </summary>
         public void Dispose()
         {
             stream?.Dispose();
@@ -158,11 +164,13 @@ namespace Vostok.ClusterClient.Core.Model
             return this;
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return ToString(false);
         }
 
+        /// <returns>String representation of current <see cref="Response"/> instance.</returns>
         [PublicAPI]
         public string ToString(bool includeHeaders)
         {

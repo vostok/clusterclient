@@ -15,16 +15,24 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
     {
         private readonly Func<TimeSpan> thresholdProvider;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="ResponseTimeTuningPolicy"/> class.
+        /// </summary>
         public ResponseTimeTuningPolicy(TimeSpan threshold)
             : this(() => threshold)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="ResponseTimeTuningPolicy"/> class.
+        /// </summary>
+        /// <param name="thresholdProvider"></param>
         public ResponseTimeTuningPolicy([NotNull] Func<TimeSpan> thresholdProvider)
         {
             this.thresholdProvider = thresholdProvider ?? throw new ArgumentNullException(nameof(thresholdProvider));
         }
 
+        /// <inheritdoc />
         public AdaptiveHealthAction SelectAction(ReplicaResult result) =>
             result.Time >= thresholdProvider() ? AdaptiveHealthAction.Decrease : AdaptiveHealthAction.Increase;
     }

@@ -19,6 +19,9 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
         private readonly ILog log;
         private readonly string storageKey;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="AdaptiveHealthModifier{THealth}"/> class.
+        /// </summary>
         public AdaptiveHealthModifier(IAdaptiveHealthImplementation<THealth> implementation, IAdaptiveHealthTuningPolicy tuningPolicy, ILog log)
         {
             this.implementation = implementation;
@@ -28,12 +31,14 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
             storageKey = implementation.GetType().FullName;
         }
 
+        /// <inheritdoc />
         public void Modify(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request, ref double weight)
         {
             if (storageProvider.Obtain<THealth>(storageKey).TryGetValue(replica, out var currentHealth))
                 implementation.ModifyWeight(currentHealth, ref weight);
         }
 
+        /// <inheritdoc />
         public void Learn(ReplicaResult result, IReplicaStorageProvider storageProvider)
         {
             var storage = storageProvider.Obtain<THealth>(storageKey);

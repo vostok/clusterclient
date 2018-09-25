@@ -1,11 +1,13 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 using JetBrains.Annotations;
 
 namespace Vostok.ClusterClient.Core.Model
 {
-    [PublicAPI]
+    /// <summary>
+    /// A set of <see cref="Content"/>-related <see cref="Request"/> extensions.
+    /// </summary>
     public static class RequestContentExtensions
     {
         /// <summary>

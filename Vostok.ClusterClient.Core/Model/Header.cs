@@ -37,6 +37,9 @@ namespace Vostok.ClusterClient.Core.Model
 
         #region Equality members
 
+        /// <summary>
+        /// Compares two <see cref="Headers"/> instances.
+        /// </summary>
         public bool Equals(Header other)
         {
             if (ReferenceEquals(null, other))
@@ -46,6 +49,7 @@ namespace Vostok.ClusterClient.Core.Model
             return string.Equals(Name, other.Name) && string.Equals(Value, other.Value);
         }
 
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
@@ -57,6 +61,7 @@ namespace Vostok.ClusterClient.Core.Model
             return Equals((Header) obj);
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             unchecked

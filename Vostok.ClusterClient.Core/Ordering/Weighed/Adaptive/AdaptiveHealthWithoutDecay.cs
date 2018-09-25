@@ -43,24 +43,39 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
             MinimumHealthValue = minimumHealthValue;
         }
 
+        /// <summary>
+        /// A multiplier used to increase health. Must be in <c>(1; +infinity)</c> range.
+        /// </summary>
         public double UpMultiplier { get; }
 
+        /// <summary>
+        /// A multiplier used to decrease health. Must be in <c>(0; 1)</c> range.
+        /// </summary>
         public double DownMultiplier { get; }
 
+        /// <summary>
+        /// Minimum possible health value. Must be in <c>(0; 1)</c> range.
+        /// </summary>
         public double MinimumHealthValue { get; }
 
+        /// <inheritdoc />
         public void ModifyWeight(double health, ref double weight) => weight *= health;
 
+        /// <inheritdoc />
         public double CreateDefaultHealth() => MaximumHealthValue;
 
+        /// <inheritdoc />
         public double IncreaseHealth(double current) =>
             Math.Min(MaximumHealthValue, current * UpMultiplier);
 
+        /// <inheritdoc />
         public double DecreaseHealth(double current) =>
             Math.Max(MinimumHealthValue, current * DownMultiplier);
 
+        /// <inheritdoc />
         public bool AreEqual(double x, double y) => x.Equals(y);
 
+        /// <inheritdoc />
         public void LogHealthChange(Uri replica, double oldHealth, double newHealth, ILog log) =>
             log.Debug($"Local health for replica '{replica}' has changed from {oldHealth:N4} to {newHealth:N4}.");
     }

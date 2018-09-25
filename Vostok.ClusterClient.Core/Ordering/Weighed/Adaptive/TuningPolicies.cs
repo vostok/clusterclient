@@ -3,8 +3,14 @@ using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
 {
+    /// <summary>
+    /// A set of predefined implementations of <see cref="IAdaptiveHealthTuningPolicy"/>
+    /// </summary>
     public sealed class TuningPolicies : IAdaptiveHealthTuningPolicy
     {
+        /// <summary>
+        /// A tuning policy which selects action based on replica's response verdict.
+        /// </summary>
         public static readonly IAdaptiveHealthTuningPolicy ByResponseVerdict = new ResponseVerdictTuningPolicy();
 
         /// <summary>
@@ -39,6 +45,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
 
         #region Useless implementation
 
+        /// <inheritdoc />
         public AdaptiveHealthAction SelectAction(ReplicaResult result) =>
             throw new NotImplementedException();
 

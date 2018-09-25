@@ -42,6 +42,9 @@ namespace Vostok.ClusterClient.Core.Model
         private bool hasQueryParameters;
         private Uri result;
 
+        /// <param name="initialUrl">The initial Url.</param>
+        /// <param name="encode">An external delegate which will be used for query parameters encoding. This parameter is optional.</param>
+        /// <exception cref="ArgumentNullException"></exception>
         public RequestUrlBuilder([NotNull] string initialUrl = "", Func<string, string> encode = null)
         {
             if (initialUrl == null)
@@ -55,8 +58,14 @@ namespace Vostok.ClusterClient.Core.Model
             hasQueryParameters = initialUrl.IndexOf("?", StringComparison.Ordinal) >= 0;
         }
 
+        /// <summary>
+        /// Check that builder instance is disposed.
+        /// </summary>
         public bool IsDisposed => builder == null;
 
+        /// <summary>
+        /// Releases underlying buffer.
+        /// </summary>
         public void Dispose()
         {
             var oldBuilder = Interlocked.Exchange(ref builder, null);
@@ -189,12 +198,18 @@ namespace Vostok.ClusterClient.Core.Model
             AppendToQuery(key, value);
         }
 
+        /// <summary>
+        /// Throws if builder is disposed.
+        /// </summary>
         protected void EnsureNotDisposed()
         {
             if (builder == null)
                 throw new ObjectDisposedException(nameof(builder), "Can not reuse a builder which already built an url.");
         }
 
+        /// <summary>
+        /// Throws if request url already has query parameters
+        /// </summary>
         protected void EnsureQueryNotStarted()
         {
             if (hasQueryParameters)

@@ -10,9 +10,11 @@ namespace Vostok.ClusterClient.Core.Ordering
     /// </summary>
     public class AsIsReplicaOrdering : IReplicaOrdering
     {
+        /// <inheritdoc />
         public IEnumerable<Uri> Order(IList<Uri> replicas, IReplicaStorageProvider storageProvider, Request request) =>
             replicas;
 
+        /// <inheritdoc />
         public void Learn(ReplicaResult result, IReplicaStorageProvider storageProvider)
         {
         }

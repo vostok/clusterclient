@@ -7,6 +7,7 @@ namespace Vostok.ClusterClient.Core.Model
     /// <summary>
     /// <para>Represents an HTTP request (method, url, headers and body content).</para>
     /// <para>Every <see cref="Request"/> object is effectively immutable. Any modifications produce a new object.</para>
+    /// <para>Look at <see cref="RequestExtensions"/> to quickly validate request.</para>
     /// <para>Look at <see cref="RequestUrlBuilder"/> to quickly build request urls with collection initializer syntax.</para>
     /// <para>Look at <see cref="RequestHeadersExtensions"/> to quickly set common headers.</para>
     /// <para>Look at <see cref="RequestContentExtensions"/> to quickly add content to requests.</para>
@@ -15,6 +16,9 @@ namespace Vostok.ClusterClient.Core.Model
     [PublicAPI]
     public class Request
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="Request"/> class.
+        /// </summary>
         public Request(
             [NotNull] string method,
             [NotNull] Uri url,
@@ -24,6 +28,9 @@ namespace Vostok.ClusterClient.Core.Model
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="Request"/> class.
+        /// </summary>
         public Request(
             [NotNull] string method,
             [NotNull] Uri url,
@@ -168,11 +175,13 @@ namespace Vostok.ClusterClient.Core.Model
             return new Request(Method, Url, StreamContent, Content, headers);
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return ToString(false, false);
         }
 
+        /// <returns>String representation of <see cref="Request"/> instance.</returns>
         public string ToString(bool includeQuery, bool includeHeaders)
         {
             var builder = new StringBuilder();

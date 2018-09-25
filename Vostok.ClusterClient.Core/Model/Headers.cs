@@ -22,6 +22,7 @@ namespace Vostok.ClusterClient.Core.Model
 
         private readonly ImmutableArrayDictionary<string, Header> headers;
 
+        /// <param name="capacity">Initial capacity of headers collection.</param>
         [PublicAPI]
         public Headers(int capacity)
             : this(new ImmutableArrayDictionary<string, Header>(capacity, StringComparer.OrdinalIgnoreCase))
@@ -111,6 +112,12 @@ namespace Vostok.ClusterClient.Core.Model
                 : new Headers(newHeaders);
         }
 
+        /// <returns>
+        /// <para>Headers string representation in the following format:</para>
+        /// <para>Name1: Value1</para>
+        /// <para>Name2: Value2</para>
+        /// <para>...</para>
+        /// </returns>
         public override string ToString()
         {            
             if (headers.Count == 0)
@@ -135,6 +142,7 @@ namespace Vostok.ClusterClient.Core.Model
             return builder.ToString();
         }
 
+        /// <inheritdoc />
         public IEnumerator<Header> GetEnumerator()
         {
             foreach (var pair in headers)

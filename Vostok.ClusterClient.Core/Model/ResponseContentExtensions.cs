@@ -4,6 +4,9 @@ using JetBrains.Annotations;
 
 namespace Vostok.ClusterClient.Core.Model
 {
+    /// <summary>
+    /// A set of <see cref="Content"/>-related extensions for <see cref="Response"/>.
+    /// </summary>
     [PublicAPI]
     public static class ResponseContentExtensions
     {

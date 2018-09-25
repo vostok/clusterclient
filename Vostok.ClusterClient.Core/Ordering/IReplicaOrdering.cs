@@ -6,6 +6,9 @@ using Vostok.ClusterClient.Core.Ordering.Storage;
 
 namespace Vostok.ClusterClient.Core.Ordering
 {
+    /// <summary>
+    /// Represent a replica ordering which will be used to determine order of replicas for request sending attempts.
+    /// </summary>
     [PublicAPI]
     public interface IReplicaOrdering
     {

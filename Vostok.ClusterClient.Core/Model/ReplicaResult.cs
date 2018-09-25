@@ -9,6 +9,10 @@ namespace Vostok.ClusterClient.Core.Model
     [PublicAPI]
     public class ReplicaResult
     {
+        /// <param name="replica">Replica address.</param>
+        /// <param name="response">Replica response.</param>
+        /// <param name="verdict">Response verdict.</param>
+        /// <param name="time">Request execution time.</param>
         public ReplicaResult([NotNull] Uri replica, [NotNull] Response response, ResponseVerdict verdict, TimeSpan time)
         {
             Replica = replica;

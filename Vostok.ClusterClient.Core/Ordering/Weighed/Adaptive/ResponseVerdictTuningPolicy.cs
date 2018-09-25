@@ -11,6 +11,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
     /// </summary>
     public class ResponseVerdictTuningPolicy : IAdaptiveHealthTuningPolicy
     {
+        /// <inheritdoc />
         public AdaptiveHealthAction SelectAction(ReplicaResult result)
         {
             if (result.Response.Code == ResponseCode.StreamReuseFailure ||
