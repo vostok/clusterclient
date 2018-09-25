@@ -131,7 +131,6 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             configuration.Logging.Returns(new LoggingOptions());
             
-//            configuration.Modules.Returns(null as List<IRequestModule>);
             configuration.Modules.Returns(new Dictionary<RequestPipelinePoint, List<IRequestModule>>
             {
                 [RequestPipelinePoint.BeforeSend] = new List<IRequestModule>
