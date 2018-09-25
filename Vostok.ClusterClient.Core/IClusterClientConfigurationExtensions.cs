@@ -25,15 +25,18 @@ namespace Vostok.ClusterClient.Core
         }
 
         /// <summary>
-        /// Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.Modules"/> list.
+        /// Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.Modules"/> collection.
         /// </summary>
-        public static void AddRequestModule(this IClusterClientConfiguration configuration, IRequestModule module, RequestPipelinePoint after = RequestPipelinePoint.AfterPrepareRequest)
+        /// <param name="module">A module to insert into request pipeline.</param>
+        /// <param name="point">An request pipeline extension point in which <paramref name="module"/> will be inserted.</param>
+        /// <param name="configuration">A configuration instance.</param>
+        public static void AddRequestModule(this IClusterClientConfiguration configuration, IRequestModule module, RequestPipelinePoint point = RequestPipelinePoint.AfterPrepareRequest)
         {
             if (configuration.Modules == null)
                 configuration.Modules = new Dictionary<RequestPipelinePoint, List<IRequestModule>>();
-            if (!configuration.Modules.ContainsKey(after))
-                configuration.Modules[after] = new List<IRequestModule>();
-            configuration.Modules[after].Add(module);
+            if (!configuration.Modules.ContainsKey(point))
+                configuration.Modules[point] = new List<IRequestModule>();
+            configuration.Modules[point].Add(module);
         }
 
         /// <summary>
