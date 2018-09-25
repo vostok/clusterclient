@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Vostok.ClusterClient.Core.Model;
-using Vostok.Commons.Helpers.Extensions;
+using Vostok.Commons.Time;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Modules

@@ -2,7 +2,7 @@
 using System.Linq;
 using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
-using Vostok.Commons.Helpers.Extensions;
+using Vostok.Commons.Time;
 
 namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
 {
@@ -48,9 +48,9 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
             if (currentReplicaIndex >= timeouts.Length)
                 return tailBehaviour == TailTimeoutBehaviour.UseRemainingBudget
                     ? budget.Remaining()
-                    : TimeSpanExtensions.Min(timeouts.Last(), budget.Remaining());
+                    : TimeSpanArithmetics.Min(timeouts.Last(), budget.Remaining());
 
-            return TimeSpanExtensions.Min(timeouts[currentReplicaIndex], budget.Remaining());
+            return TimeSpanArithmetics.Min(timeouts[currentReplicaIndex], budget.Remaining());
         }
 
         /// <inheritdoc />

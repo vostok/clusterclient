@@ -12,6 +12,7 @@ notests *default:
     - vostok.commons.threading/src
     - vostok.commons.collections/src
     - vostok.commons.helpers/src
+    - vostok.commons.time/src
     - vostok.context
     - vostok.logging.abstractions
     - vostok.logging.context

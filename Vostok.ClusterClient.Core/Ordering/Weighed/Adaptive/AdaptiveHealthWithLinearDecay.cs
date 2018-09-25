@@ -1,6 +1,6 @@
 ﻿using System;
 using Vostok.ClusterClient.Core.Helpers;
-using Vostok.Commons.Helpers.Extensions;
+using Vostok.Commons.Time;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
@@ -103,7 +103,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
             if (healthDamage <= 0.0)
                 return;
 
-            var timeSinceDecayPivot = TimeSpanExtensions.Max(timeProvider.GetCurrentTime() - health.DecayPivot, TimeSpan.Zero);
+            var timeSinceDecayPivot = TimeSpanArithmetics.Max(timeProvider.GetCurrentTime() - health.DecayPivot, TimeSpan.Zero);
             if (timeSinceDecayPivot >= DecayDuration)
                 return;
 

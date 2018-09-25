@@ -1,6 +1,6 @@
 ﻿using System;
 using Vostok.ClusterClient.Core.Model;
-using Vostok.Commons.Helpers.Extensions;
+using Vostok.Commons.Time;
 
 namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
 {

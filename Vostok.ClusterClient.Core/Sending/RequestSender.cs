@@ -8,7 +8,7 @@ using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.ClusterClient.Core.Transport;
 using Vostok.ClusterClient.Core.Criteria;
 using Vostok.ClusterClient.Core.Helpers;
-using Vostok.Commons.Helpers.Extensions;
+using Vostok.Commons.Time;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Sending

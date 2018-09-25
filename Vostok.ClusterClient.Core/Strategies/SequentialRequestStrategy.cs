@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Sending;
 using Vostok.ClusterClient.Core.Strategies.TimeoutProviders;
-using Vostok.Commons.Helpers.Extensions;
+using Vostok.Commons.Time;
 
 namespace Vostok.ClusterClient.Core.Strategies
 {
@@ -49,7 +49,7 @@ namespace Vostok.ClusterClient.Core.Strategies
                 if (request.ContainsAlreadyUsedStream())
                     break;
 
-                var timeout = TimeSpanExtensions.Min(timeoutsProvider.GetTimeout(request, budget, currentReplicaIndex++, replicasCount), budget.Remaining());
+                var timeout = TimeSpanArithmetics.Min(timeoutsProvider.GetTimeout(request, budget, currentReplicaIndex++, replicasCount), budget.Remaining());
 
                 var result = await sender.SendToReplicaAsync(replica, request, timeout, cancellationToken).ConfigureAwait(false);
                 if (result.Verdict == ResponseVerdict.Accept)

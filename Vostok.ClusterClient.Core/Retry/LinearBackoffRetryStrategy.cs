@@ -1,6 +1,6 @@
 ﻿using System;
-using Vostok.Commons.Helpers.Extensions;
 using Vostok.Commons.Threading;
+using Vostok.Commons.Time;
 
 namespace Vostok.ClusterClient.Core.Retry
 {
@@ -67,7 +67,7 @@ namespace Vostok.ClusterClient.Core.Retry
             if (ThreadSafeRandom.NextDouble() <= 0.5)
                 jitterAmount = jitterAmount.Negate();
 
-            return TimeSpanExtensions.Min(MaximumRetryDelay, delay + jitterAmount);
+            return TimeSpanArithmetics.Min(MaximumRetryDelay, delay + jitterAmount);
         }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-using Vostok.Commons.Helpers.Extensions;
+using Vostok.Commons.Time;
 
 namespace Vostok.ClusterClient.Core.Model
 {
@@ -56,7 +56,7 @@ namespace Vostok.ClusterClient.Core.Model
         public TimeSpan Elapsed() => watch.Elapsed;
 
         public TimeSpan TryAcquireTime(TimeSpan neededTime) =>
-            TimeSpanExtensions.Min(neededTime, Remaining());
+            TimeSpanArithmetics.Min(neededTime, Remaining());
 
         public bool HasExpired() => Remaining() <= TimeSpan.Zero;
     }
