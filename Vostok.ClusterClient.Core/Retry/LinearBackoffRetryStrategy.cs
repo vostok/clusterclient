@@ -32,16 +32,32 @@ namespace Vostok.ClusterClient.Core.Retry
         {
         }
 
+        /// <summary>
+        /// Maximum attempts count.
+        /// </summary>
         public int AttemptsCount { get; }
 
+        /// <summary>
+        /// Delay before first and second attempts.
+        /// </summary>
         public TimeSpan InitialRetryDelay { get; }
 
+        /// <summary>
+        /// Upper bound for delay growth.
+        /// </summary>
         public TimeSpan MaximumRetryDelay { get; }
 
+        /// <summary>
+        /// A value added to delay on each retry except the first one.
+        /// </summary>
         public TimeSpan RetryDelayIncrement { get; }
 
+        /// <summary>
+        /// A maximum relative amount of jitter applied to resulting delays.
+        /// </summary>
         public double Jitter { get; }
 
+        /// <inheritdoc />
         public TimeSpan GetRetryDelay(int attemptsUsed)
         {
             var delay = InitialRetryDelay + RetryDelayIncrement.Multiply(Math.Max(0, attemptsUsed - 1));

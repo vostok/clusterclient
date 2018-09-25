@@ -23,18 +23,22 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Leadership
         private readonly ILeaderResultDetector resultDetector;
         private readonly ILog log;
 
+        /// <param name="resultDetector">A leader result detector.</param>
+        /// <param name="log">A instance of <see cref="ILog"/>,</param>
         public LeadershipWeightModifier(ILeaderResultDetector resultDetector, ILog log)
         {
             this.resultDetector = resultDetector ?? throw new ArgumentNullException(nameof(resultDetector));
             this.log = log ?? new SilentLog();
         }
 
+        /// <inheritdoc />
         public void Modify(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request, ref double weight)
         {
             if (!IsLeader(replica, storageProvider.Obtain<bool>(StorageKey)))
                 weight = 0.0;
         }
 
+        /// <inheritdoc />
         public void Learn(ReplicaResult result, IReplicaStorageProvider storageProvider)
         {
             var storage = storageProvider.Obtain<bool>(StorageKey);

@@ -4,6 +4,9 @@ using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
 {
+    /// <summary>
+    /// Represents a timeout provider which issues timeouts for <see cref="SequentialRequestStrategy"/>.
+    /// </summary>
     public interface ISequentialTimeoutsProvider
     {
         /// <summary>

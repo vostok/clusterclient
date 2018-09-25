@@ -7,6 +7,7 @@ namespace Vostok.ClusterClient.Core.Criteria
     /// </summary>
     public class RejectThrottlingErrorsCriterion : IResponseCriterion
     {
+        /// <inheritdoc />
         public ResponseVerdict Decide(Response response) =>
             response.Code == ResponseCode.TooManyRequests ? ResponseVerdict.Reject : ResponseVerdict.DontKnow;
     }

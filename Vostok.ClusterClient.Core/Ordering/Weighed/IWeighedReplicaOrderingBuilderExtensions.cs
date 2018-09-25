@@ -6,7 +6,10 @@ using Vostok.ClusterClient.Core.Ordering.Weighed.Leadership;
 
 namespace Vostok.ClusterClient.Core.Ordering.Weighed
 {
-    public static class IWeighedReplicaOrderingBuilderExtensions
+    /// <summary>
+    /// A set of extensions for <see cref="IWeighedReplicaOrderingBuilder"/>.
+    /// </summary>
+    public static class WeighedReplicaOrderingBuilderExtensions
     {
         /// <summary>
         /// Adds a <see cref="GrayListModifier"/> with given <paramref name="grayPeriodProvider"/> to the chain.

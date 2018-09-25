@@ -4,6 +4,9 @@ using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Misc
 {
+    /// <summary>
+    /// <para>Selects a response which will be returned as a part of <see cref="ClusterResult"/> from given possibilities.</para>
+    /// </summary>
     [PublicAPI]
     public interface IResponseSelector
     {

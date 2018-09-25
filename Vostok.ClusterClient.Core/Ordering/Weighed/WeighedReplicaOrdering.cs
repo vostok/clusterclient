@@ -30,6 +30,10 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
         private readonly IList<IReplicaWeightModifier> modifiers;
         private readonly IReplicaWeightCalculator weightCalculator;
 
+        /// <param name="modifiers">A chain of <see cref="IReplicaWeightModifier"/> which will be used to modify replica weight.</param>
+        /// <param name="minimumWeight">A minimal possible weight of replica. This parameter is optional and has default value <see cref="ClusterClientDefaults.MinimumReplicaWeight"/>.</param>
+        /// <param name="maximumWeight">A maximal possible weight of replica. This parameter is optional and has default value <see cref="ClusterClientDefaults.MaximumReplicaWeight"/>.</param>
+        /// <param name="initialWeight">A initial weight of replica. This parameter is optional and has default value <see cref="ClusterClientDefaults.InitialReplicaWeight"/>.</param>
         public WeighedReplicaOrdering(
             [NotNull] IList<IReplicaWeightModifier> modifiers,
             double minimumWeight = ClusterClientDefaults.MinimumReplicaWeight,
@@ -47,12 +51,14 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
             this.weightCalculator = weightCalculator;
         }
 
+        /// <inheritdoc />
         public void Learn(ReplicaResult result, IReplicaStorageProvider storageProvider)
         {
             foreach (var modifier in modifiers)
                 modifier.Learn(result, storageProvider);
         }
 
+        /// <inheritdoc />
         public IEnumerable<Uri> Order(IList<Uri> replicas, IReplicaStorageProvider storageProvider, Request request)
         {
             if (replicas.Count < 2)

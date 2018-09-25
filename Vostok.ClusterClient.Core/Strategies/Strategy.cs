@@ -9,6 +9,9 @@ using Vostok.ClusterClient.Core.Strategies.TimeoutProviders;
 
 namespace Vostok.ClusterClient.Core.Strategies
 {
+    /// <summary>
+    /// A set of predefined <see cref="IRequestStrategy">request strategies</see>.
+    /// </summary>
     public sealed class Strategy : IRequestStrategy
     {
         /// <summary>
@@ -92,6 +95,7 @@ namespace Vostok.ClusterClient.Core.Strategies
 
         #region IRequestStrategy implementation stub
 
+        /// <inheritdoc />
         public Task SendAsync(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken) =>
             throw new NotImplementedException();
 

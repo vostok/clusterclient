@@ -7,6 +7,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Leadership
     /// </summary>
     public class AcceptedVerdictOr503LeaderDetector : ILeaderResultDetector
     {
+        /// <inheritdoc />
         public bool IsLeaderResult(ReplicaResult result) =>
             result.Verdict == ResponseVerdict.Accept || result.Response.Code == ResponseCode.ServiceUnavailable;
     }

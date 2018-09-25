@@ -13,6 +13,9 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
         private readonly Func<TimeSpan>[] providers;
         private readonly TailDelayBehaviour tailBehaviour;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="AdHocDelaysProvider"/> class.
+        /// </summary>
         public AdHocDelaysProvider(TailDelayBehaviour tailBehaviour, [NotNull] params Func<TimeSpan>[] providers)
         {
             if (providers == null)
@@ -25,6 +28,7 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
             this.tailBehaviour = tailBehaviour;
         }
 
+        /// <inheritdoc />
         public TimeSpan? GetForkingDelay(Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas)
         {
             if (currentReplicaIndex < providers.Length)
@@ -43,6 +47,7 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
             }
         }
 
+        /// <inheritdoc />
         public override string ToString() => "ad-hoc";
     }
 }

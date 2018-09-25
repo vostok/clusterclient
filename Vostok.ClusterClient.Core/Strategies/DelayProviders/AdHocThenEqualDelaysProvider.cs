@@ -13,6 +13,9 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
         private readonly EqualDelaysProvider equalProvider;
         private readonly int fixedDelaysCount;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="AdHocThenEqualDelaysProvider"/> class.
+        /// </summary>
         public AdHocThenEqualDelaysProvider(int tailDivisionFactor, [NotNull] params Func<TimeSpan>[] firstDelays)
         {
             equalProvider = new EqualDelaysProvider(tailDivisionFactor);
@@ -20,6 +23,7 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
             fixedDelaysCount = firstDelays.Length;
         }
 
+        /// <inheritdoc />
         public TimeSpan? GetForkingDelay(Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas)
         {
             return currentReplicaIndex < fixedDelaysCount
@@ -27,6 +31,7 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
                 : equalProvider.GetForkingDelay(request, budget, currentReplicaIndex, totalReplicas);
         }
 
+        /// <inheritdoc />
         public override string ToString() => $"{adHocProvider} + {equalProvider}";
     }
 }

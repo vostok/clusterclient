@@ -13,6 +13,11 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
         private readonly EqualTimeoutsProvider equalProvider;
         private readonly int fixedTimeoutsCount;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="FixedThenEqualTimeoutsProvider"/> class.
+        /// </summary>
+        /// <param name="tailDivisionFactor">A division factor for <see cref="EqualTimeoutsProvider"/></param>
+        /// <param name="firstTimeouts">A list of timeouts which will be returned for first requests.</param>
         public FixedThenEqualTimeoutsProvider(int tailDivisionFactor, [NotNull] params TimeSpan[] firstTimeouts)
         {
             equalProvider = new EqualTimeoutsProvider(tailDivisionFactor);
@@ -20,11 +25,13 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
             fixedTimeoutsCount = firstTimeouts.Length;
         }
 
+        /// <inheritdoc />
         public TimeSpan GetTimeout(Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas) =>
             currentReplicaIndex < fixedTimeoutsCount
                 ? fixedProvider.GetTimeout(request, budget, currentReplicaIndex, totalReplicas)
                 : equalProvider.GetTimeout(request, budget, currentReplicaIndex - fixedTimeoutsCount, totalReplicas);
 
+        /// <inheritdoc />
         public override string ToString() => $"{fixedProvider} + {equalProvider}";
     }
 }

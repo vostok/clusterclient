@@ -14,6 +14,10 @@ namespace Vostok.ClusterClient.Core.Model
     {
         private readonly Response selectedResponse;
 
+        /// <param name="status">Result status.</param>
+        /// <param name="replicaResults">The results of replica requests made during request execution.</param>
+        /// <param name="selectedResponse">The final selected response.</param>
+        /// <param name="request">A request which has been sent with this result.</param>
         [PublicAPI]
         public ClusterResult(
             ClusterResultStatus status,
@@ -70,6 +74,9 @@ namespace Vostok.ClusterClient.Core.Model
         [NotNull]
         public Request Request { get; }
 
+        /// <summary>
+        /// Disposes all response streams which linked with this <see cref="ClusterResult"/>.
+        /// </summary>
         public void Dispose()
         {
             selectedResponse?.Dispose();

@@ -9,6 +9,8 @@ namespace Vostok.ClusterClient.Core.Model
     [PublicAPI]
     public class Header : IEquatable<Header>
     {
+        /// <param name="name">Header name.</param>
+        /// <param name="value">Header value.</param>
         public Header([NotNull] string name, [NotNull] string value)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
@@ -27,6 +29,7 @@ namespace Vostok.ClusterClient.Core.Model
         [NotNull]
         public string Value { get; }
 
+        /// <returns>String representation of header in "<see cref="Name"/>: <see cref="Value"/>" format.</returns>
         public override string ToString()
         {
             return Name + ": " + Value;

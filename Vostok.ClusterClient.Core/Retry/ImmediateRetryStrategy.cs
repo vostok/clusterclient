@@ -7,13 +7,18 @@ namespace Vostok.ClusterClient.Core.Retry
     /// </summary>
     public class ImmediateRetryStrategy : IRetryStrategy
     {
+        /// <param name="attemptsCount">Maximum attempts count.</param>
         public ImmediateRetryStrategy(int attemptsCount)
         {
             AttemptsCount = attemptsCount;
         }
 
+        /// <summary>
+        /// Maximum attempts count.
+        /// </summary>
         public int AttemptsCount { get; }
 
+        /// <inheritdoc />
         public TimeSpan GetRetryDelay(int attemptsUsed) => TimeSpan.Zero;
     }
 }

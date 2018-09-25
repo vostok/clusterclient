@@ -18,6 +18,11 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
     {
         private readonly int divisionFactor;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="EqualTimeoutsProvider"/> class.
+        /// </summary>
+        /// <param name="divisionFactor">A division factor. See more in <see cref="EqualTimeoutsProvider"/> doc. Must be > 0.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="divisionFactor"/> is not a positive number.</exception>
         public EqualTimeoutsProvider(int divisionFactor)
         {
             if (divisionFactor <= 0)
@@ -26,6 +31,7 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
             this.divisionFactor = divisionFactor;
         }
 
+        /// <inheritdoc />
         public TimeSpan GetTimeout(Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas)
         {
             if (currentReplicaIndex >= divisionFactor)
@@ -36,6 +42,10 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
             return TimeSpanExtensions.Max(TimeSpan.Zero, budget.Remaining().Divide(effectiveDivisionFactor));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString() => "equal-" + divisionFactor;
     }
 }

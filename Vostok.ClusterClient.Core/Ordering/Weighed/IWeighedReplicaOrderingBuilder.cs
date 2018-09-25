@@ -8,6 +8,9 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
     /// </summary>
     public interface IWeighedReplicaOrderingBuilder
     {
+        /// <summary>
+        /// Gets log instance.
+        /// </summary>
         ILog Log { get; }
 
         /// <summary>

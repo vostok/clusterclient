@@ -7,6 +7,7 @@ namespace Vostok.ClusterClient.Core.Criteria
     /// </summary>
     public class AlwaysAcceptCriterion : IResponseCriterion
     {
+        /// <inheritdoc />
         public ResponseVerdict Decide(Response response) => ResponseVerdict.Accept;
     }
 }

@@ -11,8 +11,16 @@ namespace Vostok.ClusterClient.Core.Model
     [PublicAPI]
     public class Content
     {
+        /// <summary>
+        /// Represents an empty <see cref="Content"/>.
+        /// </summary>
         public static readonly Content Empty = new Content(new byte[0]);
 
+        /// <param name="buffer">An underlying buffer which contains content data.</param>
+        /// <param name="offset">A content data offset in <paramref name="buffer"/>.</param>
+        /// <param name="length">A length of content.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">A data with specified <paramref name="offset"/> and <paramref name="length"/> doesn't fit into <paramref name="buffer"/>.</exception>
         public Content([NotNull] byte[] buffer, int offset, int length)
         {
             if (buffer == null)
@@ -29,16 +37,16 @@ namespace Vostok.ClusterClient.Core.Model
             Length = length;
         }
 
+        /// <param name="buffer">A buffer with content data.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="buffer"/> is null.</exception>
         public Content([NotNull] byte[] buffer)
         {
-            if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer));
-
-            Buffer = buffer;
+            Buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
             Offset = 0;
             Length = buffer.Length;
         }
 
+        /// <param name="segment">An <see cref="ArraySegment{T}"/> which refers to content data.</param>
         public Content(ArraySegment<byte> segment)
             : this(segment.Array, segment.Offset, segment.Count)
         {

@@ -11,6 +11,9 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
     {
         private readonly int divisionFactor;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="EqualDelaysProvider"/> class.
+        /// </summary>
         public EqualDelaysProvider(int divisionFactor)
         {
             if (divisionFactor <= 0)
@@ -19,9 +22,11 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
             this.divisionFactor = divisionFactor;
         }
 
+        /// <inheritdoc />
         public TimeSpan? GetForkingDelay(Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas) =>
             budget.Total.Divide(Math.Min(divisionFactor, totalReplicas));
 
+        /// <inheritdoc />
         public override string ToString() => "equal-" + divisionFactor;
     }
 }

@@ -4,6 +4,9 @@ using JetBrains.Annotations;
 
 namespace Vostok.ClusterClient.Core.Topology
 {
+    /// <summary>
+    /// Represents a storage of cluster replica urls.
+    /// </summary>
     [PublicAPI]
     public interface IClusterProvider
     {

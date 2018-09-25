@@ -23,11 +23,15 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Gray
         private readonly ITimeProvider timeProvider;
         private readonly ILog log;
 
+        /// <param name="grayPeriodProvider">A gray periods provider</param>
+        /// <param name="log"><see cref="ILog"/> instance.</param>
         public GrayListModifier([NotNull] IGrayPeriodProvider grayPeriodProvider, [CanBeNull] ILog log)
             : this(grayPeriodProvider, new TimeProvider(), log)
         {
         }
 
+        /// <param name="grayPeriod">A constant gray period.</param>
+        /// <param name="log"><see cref="ILog"/> instance.</param>
         public GrayListModifier(TimeSpan grayPeriod, [CanBeNull] ILog log)
             : this(new FixedGrayPeriodProvider(grayPeriod), log)
         {
@@ -40,6 +44,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Gray
             this.log = log ?? new SilentLog();
         }
 
+        /// <inheritdoc />
         public void Modify(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request, ref double weight)
         {
             var storage = storageProvider.Obtain<DateTime>(StorageKey);
@@ -55,6 +60,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Gray
                 LogReplicaIsNoLongerGray(replica);
         }
 
+        /// <inheritdoc />
         public void Learn(ReplicaResult result, IReplicaStorageProvider storageProvider)
         {
             if (result.Verdict != ResponseVerdict.Reject)

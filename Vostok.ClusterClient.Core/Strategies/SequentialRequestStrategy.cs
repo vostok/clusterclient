@@ -27,11 +27,16 @@ namespace Vostok.ClusterClient.Core.Strategies
     {
         private readonly ISequentialTimeoutsProvider timeoutsProvider;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="SequentialRequestStrategy"/> class.
+        /// </summary>
+        /// <param name="timeoutsProvider">A timeout provider which will be used by strategy.</param>
         public SequentialRequestStrategy([NotNull] ISequentialTimeoutsProvider timeoutsProvider)
         {
             this.timeoutsProvider = timeoutsProvider ?? throw new ArgumentNullException(nameof(timeoutsProvider));
         }
 
+        /// <inheritdoc />
         public async Task SendAsync(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken)
         {
             var currentReplicaIndex = 0;
@@ -54,6 +59,7 @@ namespace Vostok.ClusterClient.Core.Strategies
             }
         }
 
+        /// <inheritdoc />
         public override string ToString() => $"Sequential({timeoutsProvider})";
     }
 }

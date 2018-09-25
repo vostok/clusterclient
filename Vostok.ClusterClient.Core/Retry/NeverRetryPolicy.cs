@@ -8,6 +8,7 @@ namespace Vostok.ClusterClient.Core.Retry
     /// </summary>
     public class NeverRetryPolicy : IRetryPolicy
     {
+        /// <inheritdoc />
         public bool NeedToRetry(Request request, IList<ReplicaResult> results) => false;
     }
 }

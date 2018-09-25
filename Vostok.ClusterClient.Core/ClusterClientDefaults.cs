@@ -13,6 +13,9 @@ using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core
 {
+    /// <summary>
+    /// A class with default values of ClusterClient settings
+    /// </summary>
     public static class ClusterClientDefaults
     {
 #region WeighedReplicaOrdering

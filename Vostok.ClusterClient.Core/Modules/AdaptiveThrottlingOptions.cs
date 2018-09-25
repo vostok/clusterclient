@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 
 namespace Vostok.ClusterClient.Core.Modules
 {
@@ -15,7 +16,7 @@ namespace Vostok.ClusterClient.Core.Modules
         /// <exception cref="ArgumentNullException"><paramref name="storageKey"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="minutesToTrack"/>, <paramref name="criticalRatio"/> or <paramref name="maximumRejectProbability"/> does not lie in expected range.</exception>
         public AdaptiveThrottlingOptions(
-            string storageKey,
+            [NotNull] string storageKey,
             int minutesToTrack = ClusterClientDefaults.AdaptiveThrottlingMinutesToTrack,
             int minimumRequests = ClusterClientDefaults.AdaptiveThrottlingMinimumRequests,
             double criticalRatio = ClusterClientDefaults.AdaptiveThrottlingCriticalRatio,
@@ -43,6 +44,7 @@ namespace Vostok.ClusterClient.Core.Modules
         /// <summary>
         /// A key used to decouple statistics for different services.
         /// </summary>
+        [NotNull]
         public string StorageKey { get; }
 
         /// <summary>

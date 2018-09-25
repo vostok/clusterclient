@@ -7,6 +7,7 @@ namespace Vostok.ClusterClient.Core.Criteria
     /// </summary>
     public class RejectRedirectionsCriterion : IResponseCriterion
     {
+        /// <inheritdoc />
         public ResponseVerdict Decide(Response response) =>
             response.Code.IsRedirection() && response.Code != ResponseCode.NotModified
                 ? ResponseVerdict.Reject

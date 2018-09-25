@@ -7,6 +7,7 @@ namespace Vostok.ClusterClient.Core.Criteria
     /// </summary>
     public class RejectUnknownErrorsCriterion : IResponseCriterion
     {
+        /// <inheritdoc />
         public ResponseVerdict Decide(Response response)
         {
             switch (response.Code)

@@ -8,6 +8,9 @@ using Vostok.ClusterClient.Core.Sending;
 
 namespace Vostok.ClusterClient.Core.Strategies
 {
+    /// <summary>
+    /// Represent a strategy which will be used to send a <see cref="Request"/>.
+    /// </summary>
     [PublicAPI]
     public interface IRequestStrategy
     {

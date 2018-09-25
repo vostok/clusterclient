@@ -7,6 +7,7 @@ namespace Vostok.ClusterClient.Core.Criteria
     /// </summary>
     public class AcceptNonRetriableCriterion : IResponseCriterion
     {
+        /// <inheritdoc />
         public ResponseVerdict Decide(Response response) =>
             response.Headers[HeaderNames.DontRetry] != null ? ResponseVerdict.Accept : ResponseVerdict.DontKnow;
     }

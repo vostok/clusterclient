@@ -13,6 +13,9 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
         private readonly TimeSpan[] delays;
         private readonly TailDelayBehaviour tailBehaviour;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="FixedDelaysProvider"/> class.
+        /// </summary>
         public FixedDelaysProvider(TailDelayBehaviour tailBehaviour, [NotNull] params TimeSpan[] delays)
         {
             if (delays == null)
@@ -25,6 +28,7 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
             this.tailBehaviour = tailBehaviour;
         }
 
+        /// <inheritdoc />
         public TimeSpan? GetForkingDelay(Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas)
         {
             if (currentReplicaIndex < delays.Length)
@@ -41,6 +45,7 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
             }
         }
 
+        /// <inheritdoc />
         public override string ToString() => "fixed";
     }
 }

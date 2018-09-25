@@ -7,6 +7,7 @@ namespace Vostok.ClusterClient.Core.Criteria
     /// </summary>
     public class RejectNetworkErrorsCriterion : IResponseCriterion
     {
+        /// <inheritdoc />
         public ResponseVerdict Decide(Response response) =>
             response.Code.IsNetworkError() ? ResponseVerdict.Reject : ResponseVerdict.DontKnow;
     }

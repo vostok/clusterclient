@@ -14,6 +14,13 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
         private readonly TimeSpan[] timeouts;
         private readonly TailTimeoutBehaviour tailBehaviour;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="FixedTimeoutsProvider"/> class.
+        /// </summary>
+        /// <param name="tailBehaviour">A behaviour in case when provided timeout values are exhausted.</param>
+        /// <param name="timeouts">A timeouts which this provider should return.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="timeouts"/> is null.</exception>
+        /// <exception cref="ArgumentException"><paramref name="timeouts"/> is empty.</exception>
         public FixedTimeoutsProvider(TailTimeoutBehaviour tailBehaviour, [NotNull] params TimeSpan[] timeouts)
         {
             if (timeouts == null)
@@ -26,11 +33,16 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
             this.tailBehaviour = tailBehaviour;
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="FixedTimeoutsProvider"/> class.
+        /// </summary>
+        /// <param name="timeouts">A timeouts which this provider should return.</param>
         public FixedTimeoutsProvider([NotNull] params TimeSpan[] timeouts)
             : this(TailTimeoutBehaviour.UseRemainingBudget, timeouts)
         {
         }
 
+        /// <inheritdoc />
         public TimeSpan GetTimeout(Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas)
         {
             if (currentReplicaIndex >= timeouts.Length)
@@ -41,6 +53,7 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
             return TimeSpanExtensions.Min(timeouts[currentReplicaIndex], budget.Remaining());
         }
 
+        /// <inheritdoc />
         public override string ToString() => "fixed";
     }
 }

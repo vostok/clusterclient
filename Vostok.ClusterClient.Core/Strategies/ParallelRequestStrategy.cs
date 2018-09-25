@@ -24,6 +24,10 @@ namespace Vostok.ClusterClient.Core.Strategies
     /// </example>
     public class ParallelRequestStrategy : IRequestStrategy
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="ParallelRequestStrategy"/> class.
+        /// </summary>
+        /// <param name="parallelismLevel">A maximal parallelism level.</param>
         public ParallelRequestStrategy(int parallelismLevel)
         {
             if (parallelismLevel <= 0)
@@ -32,8 +36,12 @@ namespace Vostok.ClusterClient.Core.Strategies
             ParallelismLevel = parallelismLevel;
         }
 
+        /// <summary>
+        /// A maximal parallelism level.
+        /// </summary>
         public int ParallelismLevel { get; }
 
+        /// <inheritdoc />
         public async Task SendAsync(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken)
         {
             var initialRequestCount = Math.Min(ParallelismLevel, replicasCount);
@@ -75,6 +83,7 @@ namespace Vostok.ClusterClient.Core.Strategies
             }
         }
 
+        /// <inheritdoc />
         public override string ToString() => "Parallel-" + ParallelismLevel;
 
         private static void TryLaunchNextRequest(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerator<Uri> replicas, List<Task<ReplicaResult>> currentTasks, CancellationToken cancellationToken)

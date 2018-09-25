@@ -4,6 +4,9 @@ using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
 {
+    /// <summary>
+    /// Represents a provider which provides next request delays for <see cref="ForkingRequestStrategy"/>.
+    /// </summary>
     public interface IForkingDelaysProvider
     {
         /// <summary>

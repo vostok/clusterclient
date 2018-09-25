@@ -14,6 +14,11 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
         private readonly Func<TimeSpan>[] providers;
         private readonly TailTimeoutBehaviour tailBehaviour;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="AdHocTimeoutsProvider"/> class.
+        /// </summary>
+        /// <param name="tailBehaviour">>A behaviour in case when provided timeout values are exhausted.</param>
+        /// <param name="providers">An external delegates which will be used to obtain request timeouts.</param>
         public AdHocTimeoutsProvider(TailTimeoutBehaviour tailBehaviour, [NotNull] params Func<TimeSpan>[] providers)
         {
             if (providers == null)
@@ -26,11 +31,16 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
             this.tailBehaviour = tailBehaviour;
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="AdHocTimeoutsProvider"/> class.
+        /// </summary>
+        /// <param name="providers">An external delegates which will be used to obtain request timeouts.</param>
         public AdHocTimeoutsProvider([NotNull] params Func<TimeSpan>[] providers)
             : this(TailTimeoutBehaviour.UseRemainingBudget, providers)
         {
         }
 
+        /// <inheritdoc />
         public TimeSpan GetTimeout(Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas)
         {
             if (currentReplicaIndex >= providers.Length)
@@ -41,6 +51,7 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
             return TimeSpanExtensions.Min(providers[currentReplicaIndex](), budget.Remaining());
         }
 
+        /// <inheritdoc />
         public override string ToString() => "ad-hoc";
     }
 }

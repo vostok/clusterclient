@@ -16,7 +16,7 @@ namespace Vostok.ClusterClient.Core.Modules
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="minutesToTrack"/> less than 1 or <paramref name="criticalRatio"/> not in (1; +inf) range.</exception>
 
         public ReplicaBudgetingOptions(
-            string storageKey,
+            [NotNull] string storageKey,
             int minutesToTrack = ClusterClientDefaults.ReplicaBudgetingMinutesToTrack,
             int minimumRequests = ClusterClientDefaults.ReplicaBudgetingMinimumRequests,
             double criticalRatio = ClusterClientDefaults.ReplicaBudgetingCriticalRatio)

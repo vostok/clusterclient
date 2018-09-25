@@ -35,6 +35,9 @@ namespace Vostok.ClusterClient.Core.Strategies
         private readonly IForkingDelaysPlanner delaysPlanner;
         private readonly int maximumParallelism;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="ForkingRequestStrategy"/> class.
+        /// </summary>
         public ForkingRequestStrategy([NotNull] IForkingDelaysProvider delaysProvider, int maximumParallelism)
             : this(delaysProvider, ForkingDelaysPlanner.Instance, maximumParallelism)
         {
@@ -56,6 +59,7 @@ namespace Vostok.ClusterClient.Core.Strategies
             this.maximumParallelism = maximumParallelism;
         }
 
+        /// <inheritdoc />
         public async Task SendAsync(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken)
         {
             var currentTasks = new List<Task>(Math.Min(maximumParallelism, replicasCount));
@@ -95,6 +99,7 @@ namespace Vostok.ClusterClient.Core.Strategies
             }
         }
 
+        /// <inheritdoc />
         public override string ToString() => $"Forking({delaysProvider})";
 
         private void LaunchRequest(List<Task> currentTasks, Request request, IRequestTimeBudget budget, IRequestSender sender, IEnumerator<Uri> replicasEnumerator, CancellationToken cancellationToken)
