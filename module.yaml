@@ -19,8 +19,6 @@ notests *default:
 full-build > notests:
   deps:
     - vostok.logging.console
-    - vostok.logging.context
-    - vostok.context
   build:
     target: Vostok.ClusterClient.Core.sln
     configuration: Release
