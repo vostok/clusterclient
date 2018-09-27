@@ -27,6 +27,6 @@ namespace Vostok.ClusterClient.Core.Model
         /// <summary>
         /// Returns <c>true</c> if budget has already expired, or <c>false</c> otherwise.
         /// </summary>
-        bool HasExpired();
+        bool HasExpired { get; }
     }
 }

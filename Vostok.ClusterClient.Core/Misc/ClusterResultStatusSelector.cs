@@ -11,7 +11,7 @@ namespace Vostok.ClusterClient.Core.Misc
             if (results.Any(result => result.Verdict == ResponseVerdict.Accept))
                 return ClusterResultStatus.Success;
 
-            if (budget.HasExpired())
+            if (budget.HasExpired)
                 return ClusterResultStatus.TimeExpired;
 
             return ClusterResultStatus.ReplicasExhausted;

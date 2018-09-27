@@ -43,7 +43,7 @@ namespace Vostok.ClusterClient.Core.Strategies
 
             foreach (var replica in replicas)
             {
-                if (budget.HasExpired())
+                if (budget.HasExpired)
                     break;
 
                 if (request.ContainsAlreadyUsedStream())

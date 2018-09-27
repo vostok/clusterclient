@@ -73,7 +73,7 @@ namespace Vostok.ClusterClient.Core.Strategies
                 {
                     for (var i = 0; i < replicasCount; i++)
                     {
-                        if (budget.HasExpired())
+                        if (budget.HasExpired)
                             break;
 
                         if (request.ContainsAlreadyUsedStream())
@@ -94,7 +94,7 @@ namespace Vostok.ClusterClient.Core.Strategies
                 }
 
                 while (currentTasks.Count > 0)
-                    if (budget.HasExpired() || await WaitForAcceptedResultAsync(currentTasks).ConfigureAwait(false))
+                    if (budget.HasExpired || await WaitForAcceptedResultAsync(currentTasks).ConfigureAwait(false))
                         return;
             }
         }

@@ -16,7 +16,7 @@ namespace Vostok.ClusterClient.Core.Modules
                 return Task.FromResult(ClusterResult.IncorrectArguments(context.Request));
             }
 
-            if (context.Budget.HasExpired())
+            if (context.Budget.HasExpired)
             {
                 LogExpiredTimeout(context);
                 return Task.FromResult(ClusterResult.TimeExpired(context.Request));

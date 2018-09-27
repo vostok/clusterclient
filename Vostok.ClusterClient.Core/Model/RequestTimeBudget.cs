@@ -6,58 +6,47 @@ namespace Vostok.ClusterClient.Core.Model
 {
     internal class RequestTimeBudget : IRequestTimeBudget
     {
-        public static readonly RequestTimeBudget Infinite = new RequestTimeBudget(TimeSpan.MaxValue);
-        public static readonly RequestTimeBudget Expired = new RequestTimeBudget(TimeSpan.Zero);
+        public static RequestTimeBudget Infinite = new RequestTimeBudget(TimeBudget.Infinite);
+        
+        private readonly TimeBudget budget;
 
         public static RequestTimeBudget StartNew(TimeSpan budget, TimeSpan precision) =>
-            new RequestTimeBudget(budget, precision).Start();
+            new RequestTimeBudget(budget, precision);
 
         public static RequestTimeBudget StartNew(TimeSpan budget) =>
-            new RequestTimeBudget(budget).Start();
+            new RequestTimeBudget(budget);
 
         public static RequestTimeBudget StartNew(int budgetMs, int precisionMs) =>
-            new RequestTimeBudget(TimeSpan.FromMilliseconds(budgetMs), TimeSpan.FromMilliseconds(precisionMs)).Start();
+            new RequestTimeBudget(TimeSpan.FromMilliseconds(budgetMs), TimeSpan.FromMilliseconds(precisionMs));
 
         public static RequestTimeBudget StartNew(int budgetMs) =>
-            new RequestTimeBudget(TimeSpan.FromMilliseconds(budgetMs)).Start();
+            new RequestTimeBudget(TimeSpan.FromMilliseconds(budgetMs));
 
         private readonly Stopwatch watch;
 
-        public RequestTimeBudget(TimeSpan budget, TimeSpan precision)
-        {
-            Total = budget;
-            Precision = precision;
-            watch = new Stopwatch();
-        }
-
-        public RequestTimeBudget(TimeSpan budget)
-            : this(budget, TimeSpan.FromMilliseconds(5))
+        private RequestTimeBudget(TimeSpan budget, TimeSpan precision)
+            : this(TimeBudget.StartNew(budget, precision))
         {
         }
 
-        public TimeSpan Total { get; }
-
-        public TimeSpan Precision { get; }
-
-        public RequestTimeBudget Start()
+        private RequestTimeBudget(TimeSpan budget)
+            : this(TimeBudget.StartNew(budget))
         {
-            watch.Start();
-            return this;
         }
 
-        public TimeSpan Remaining()
-        {
-            var remaining = Total - watch.Elapsed;
-            return remaining < Precision
-                ? TimeSpan.Zero
-                : remaining;
-        }
+        private RequestTimeBudget(TimeBudget budget)
+            => this.budget = budget;
+
+        public TimeSpan Total => budget.Total;
+
+        public TimeSpan Precision => budget.Precision;
+
+        public TimeSpan Remaining() => budget.Remaining;
 
         public TimeSpan Elapsed() => watch.Elapsed;
 
-        public TimeSpan TryAcquireTime(TimeSpan neededTime) =>
-            TimeSpanArithmetics.Min(neededTime, Remaining());
+        public TimeSpan TryAcquire(TimeSpan neededTime) => budget.TryAcquire(neededTime);
 
-        public bool HasExpired() => Remaining() <= TimeSpan.Zero;
+        public bool HasExpired => budget.HasExpired;
     }
 }

@@ -30,7 +30,7 @@ namespace Vostok.ClusterClient.Core.Modules
                 if (result.Status != ClusterResultStatus.ReplicasExhausted)
                     return result;
 
-                if (context.Budget.HasExpired())
+                if (context.Budget.HasExpired)
                     return result;
 
                 if (context.Request.ContainsAlreadyUsedStream())

@@ -88,7 +88,7 @@ namespace Vostok.ClusterClient.Core.Strategies
 
         private static void TryLaunchNextRequest(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerator<Uri> replicas, List<Task<ReplicaResult>> currentTasks, CancellationToken cancellationToken)
         {
-            if (budget.HasExpired())
+            if (budget.HasExpired)
                 return;
 
             if (request.ContainsAlreadyUsedStream())
