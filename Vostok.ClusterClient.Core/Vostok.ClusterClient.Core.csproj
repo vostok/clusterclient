@@ -30,22 +30,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\ThreadSafeRandom.cs">
-      <Link>Threading\ThreadSafeRandom.cs</Link>
+      <Link>Commons\ThreadSafeRandom.cs</Link>
     </Compile>
     <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\UnboundedObjectPool.cs">
-      <Link>Collections\UnboundedObjectPool.cs</Link>
+      <Link>Commons\UnboundedObjectPool.cs</Link>
     </Compile>
     <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ImmutableArrayDictionary.cs">
-      <Link>Collections\ImmutableArrayDictionary.cs</Link>
+      <Link>Commons\ImmutableArrayDictionary.cs</Link>
     </Compile>
     <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanConversions.cs">
-      <Link>Helpers\TimeSpanExtensions.cs</Link>
+      <Link>Commons\TimeSpanExtensions.cs</Link>
     </Compile>
     <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanArithmetics.cs">
-      <Link>Helpers\TimeSpanArithmetics.cs</Link>
+      <Link>Commons\TimeSpanArithmetics.cs</Link>
     </Compile>
     <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanFormatting.cs">
-      <Link>Helpers\TimeSpanFormatting.cs</Link>
+      <Link>Commons\TimeSpanFormatting.cs</Link>
     </Compile>
   </ItemGroup>
 </Project>
