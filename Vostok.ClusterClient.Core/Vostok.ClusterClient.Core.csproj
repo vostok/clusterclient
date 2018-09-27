@@ -42,6 +42,9 @@
     <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ImmutableArrayDictionary.cs">
       <Link>Commons\ImmutableArrayDictionary.cs</Link>
     </Compile>
+    <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ConcurrentDictionaryExtensions.cs">
+      <Link>Commons\ConcurrentDictionaryExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanArithmetics.cs">
       <Link>Commons\TimeSpanArithmetics.cs</Link>
     </Compile>
