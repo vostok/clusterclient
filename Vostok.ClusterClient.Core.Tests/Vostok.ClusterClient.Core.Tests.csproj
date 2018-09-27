@@ -18,9 +18,6 @@
     <ProjectReference Include="..\Vostok.ClusterClient.Core\Vostok.ClusterClient.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Vostok.Context">
-      <HintPath>..\..\vostok.context\Vostok.Context\bin\Release\netstandard2.0\Vostok.Context.dll</HintPath>
-    </Reference>
     <Reference Include="Vostok.Logging.Abstractions">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\vostok.logging.abstractions\Vostok.Logging.Abstractions\bin\Release\netstandard2.0\Vostok.Logging.Abstractions.dll</HintPath>
