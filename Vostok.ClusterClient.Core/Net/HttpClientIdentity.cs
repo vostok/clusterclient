@@ -1,27 +1,20 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 using Vostok.ClusterClient.Core.Utilities;
 
 namespace Vostok.ClusterClient.Core.Net
 {
-    internal static class HttpClientIdentity
+    internal static class ApplicationIdentity
     {
-        private static string identity;
-        private static volatile bool init;
+        private static readonly Lazy<string> Identity = new Lazy<string>(GetIdentity, LazyThreadSafetyMode.PublicationOnly);
 
         public static string Get()
         {
-            if (!init)
-                Initialize();
-            return identity;
+            return Identity.Value;
         }
 
-        private static void Initialize()
-        {
-            identity = GetIdentity();
-            init = true;
-        }
-        
         private static string GetIdentity()
         {
             try
