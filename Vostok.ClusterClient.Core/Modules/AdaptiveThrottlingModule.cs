@@ -72,6 +72,10 @@ namespace Vostok.ClusterClient.Core.Modules
             }
             catch (OperationCanceledByServerException)
             {
+                throw;
+            }
+            catch (OperationCanceledException)
+            {
                 counter.AddAccept();
                 throw;
             }
