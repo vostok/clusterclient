@@ -10,25 +10,16 @@ namespace Vostok.ClusterClient.Core.Modules
     {
         private static long currentOperationId;
 
-        private readonly bool addPrefix;
         private readonly bool logRequests;
         private readonly bool logResults;
 
-        public LoggingModule(bool addPrefix, bool logRequests, bool logResults)
+        public LoggingModule(bool logRequests, bool logResults)
         {
-            this.addPrefix = addPrefix;
             this.logRequests = logRequests;
             this.logResults = logResults;
         }
 
-        public async Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
-        {
-            //TODO: contextual log prefix
-
-            return await ExecuteInternalAsync(context, next).ConfigureAwait(false);
-        }
-
-        private async Task<ClusterResult> ExecuteInternalAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
+        public  async Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
             if (logRequests)
                 LogRequestDetails(context);

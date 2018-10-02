@@ -28,11 +28,5 @@ namespace Vostok.ClusterClient.Core.Misc
         /// <para>This parameter is optional and has a default value (see <see cref="ClusterClientDefaults.LogReplicaResults"/>).</para>
         /// </summary>
         public bool LogReplicaResults { get; set; } = ClusterClientDefaults.LogReplicaResults;
-
-        /// <summary>
-        /// <para>Gets or sets whether to add sequential log prefix to each request message.</para>
-        /// <para>This parameter is optional and has a default value (see <see cref="ClusterClientDefaults.LogPrefixEnabled"/>).</para>
-        /// </summary>
-        public bool LogPrefixEnabled { get; set; } = ClusterClientDefaults.LogPrefixEnabled;
     }
 }

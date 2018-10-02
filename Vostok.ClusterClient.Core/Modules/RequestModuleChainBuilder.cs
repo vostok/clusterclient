@@ -32,7 +32,7 @@ namespace Vostok.ClusterClient.Core.Modules
             
             // -->> user-defined modules by default inserted here <<-- //
 
-            modules.Add(new LoggingModule(config.Logging.LogPrefixEnabled, config.Logging.LogRequestDetails, config.Logging.LogResultDetails));
+            modules.Add(new LoggingModule(config.Logging.LogRequestDetails, config.Logging.LogResultDetails));
             modules.Add(new ResponseTransformationModule(config.ResponseTransforms));
             modules.Add(new ErrorCatchingModule());
             modules.Add(new RequestValidationModule());

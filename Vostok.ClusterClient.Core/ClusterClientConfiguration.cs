@@ -37,7 +37,6 @@ namespace Vostok.ClusterClient.Core
                 LogResultDetails = ClusterClientDefaults.LogResultDetails,
                 LogReplicaRequests = ClusterClientDefaults.LogReplicaRequests,
                 LogReplicaResults = ClusterClientDefaults.LogReplicaResults,
-                LogPrefixEnabled = ClusterClientDefaults.LogPrefixEnabled
             };
             MaxReplicasUsedPerRequest = ClusterClientDefaults.MaxReplicasUsedPerRequest;
             DeduplicateRequestUrl = ClusterClientDefaults.DeduplicateRequestUrl;
