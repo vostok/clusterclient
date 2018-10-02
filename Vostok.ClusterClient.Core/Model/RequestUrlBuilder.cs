@@ -30,7 +30,7 @@ namespace Vostok.ClusterClient.Core.Model
     [PublicAPI]
     public class RequestUrlBuilder : IDisposable, IEnumerable
     {
-        private readonly Func<string, string> escape;
+        private static readonly Func<string, string> escape = Uri.EscapeDataString;
         private static readonly UnboundedObjectPool<StringBuilder> builders;
 
         static RequestUrlBuilder()
@@ -45,11 +45,10 @@ namespace Vostok.ClusterClient.Core.Model
         /// <param name="initialUrl">The initial Url.</param>
         /// <param name="encode">An external delegate which will be used for query parameters encoding. This parameter is optional.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public RequestUrlBuilder([NotNull] string initialUrl = "", Func<string, string> encode = null)
+        public RequestUrlBuilder([NotNull] string initialUrl = "")
         {
             if (initialUrl == null)
                 throw new ArgumentNullException(nameof(initialUrl));
-            this.escape = encode ?? Uri.EscapeDataString;
 
             builder = builders.Acquire();
             builder.Clear();
