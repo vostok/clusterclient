@@ -48,8 +48,6 @@ namespace Vostok.ClusterClient.Core.Modules
         
         public RequestParameters Parameters { get; }
 
-        public IReadOnlyDictionary<string, object> Properties { get; }
-
         public void SetReplicaResult(ReplicaResult result)
         {
             lock (resultsLock)
