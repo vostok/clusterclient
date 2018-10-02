@@ -21,13 +21,13 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Gray
         private static readonly string StorageKey = typeof(GrayListModifier).FullName;
 
         private readonly IGrayPeriodProvider grayPeriodProvider;
-        private readonly ITimeProvider timeProvider;
+        private readonly Func<DateTime> getCurrentTime;
         private readonly ILog log;
 
         /// <param name="grayPeriodProvider">A gray periods provider</param>
         /// <param name="log"><see cref="ILog"/> instance.</param>
         public GrayListModifier([NotNull] IGrayPeriodProvider grayPeriodProvider, [CanBeNull] ILog log)
-            : this(grayPeriodProvider, new TimeProvider(), log)
+            : this(grayPeriodProvider, () => DateTime.UtcNow, log)
         {
         }
 
@@ -38,10 +38,10 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Gray
         {
         }
 
-        internal GrayListModifier([NotNull] IGrayPeriodProvider grayPeriodProvider, [NotNull] ITimeProvider timeProvider, [CanBeNull] ILog log)
+        internal GrayListModifier([NotNull] IGrayPeriodProvider grayPeriodProvider, [NotNull] Func<DateTime> getCurrentTime, [CanBeNull] ILog log)
         {
             this.grayPeriodProvider = grayPeriodProvider ?? throw new ArgumentNullException(nameof(grayPeriodProvider));
-            this.timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
+            this.getCurrentTime = getCurrentTime ?? throw new ArgumentNullException(nameof(getCurrentTime));
             this.log = log ?? new SilentLog();
         }
 
@@ -52,7 +52,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Gray
             if (!storage.TryGetValue(replica, out var lastGrayTimestamp))
                 return;
 
-            var currentTime = timeProvider.GetCurrentTime();
+            var currentTime = getCurrentTime();
             var grayPeriod = grayPeriodProvider.GetGrayPeriod();
 
             if (lastGrayTimestamp + grayPeriod >= currentTime)
@@ -74,7 +74,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Gray
             var storage = storageProvider.Obtain<DateTime>(StorageKey);
             var wasGray = storage.ContainsKey(result.Replica);
 
-            storage[result.Replica] = timeProvider.GetCurrentTime();
+            storage[result.Replica] = getCurrentTime();
 
             if (!wasGray)
                 LogReplicaIsGrayNow(result.Replica);

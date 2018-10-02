@@ -13,16 +13,16 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
     internal class AdaptiveHealthWithLinearDecay_Tests
     {
         private DateTime currentTime;
-        private ITimeProvider timeProvider;
+        private Func<DateTime> getCurrentTime;
         private AdaptiveHealthWithLinearDecay implementation;
 
         [SetUp]
         public void TestSetup()
         {
-            timeProvider = Substitute.For<ITimeProvider>();
-            timeProvider.GetCurrentTime().Returns(currentTime = DateTime.UtcNow);
+            currentTime = DateTime.UtcNow;
+            getCurrentTime = () => currentTime;
 
-            implementation = new AdaptiveHealthWithLinearDecay(timeProvider, 5.Minutes(), 2, 0.25, 0.002);
+            implementation = new AdaptiveHealthWithLinearDecay(getCurrentTime, 5.Minutes(), 2, 0.25, 0.002);
         }
 
         [TestCase(-1.0)]
@@ -31,7 +31,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
         [TestCase(1.0)]
         public void Ctor_should_throw_an_error_when_up_multiplier_is_incorrect(double value)
         {
-            Action action = () => implementation = new AdaptiveHealthWithLinearDecay(timeProvider, 5.Minutes(), value, 0.5, 0.01);
+            Action action = () => implementation = new AdaptiveHealthWithLinearDecay(getCurrentTime, 5.Minutes(), value, 0.5, 0.01);
 
             action.Should().Throw<ArgumentOutOfRangeException>().Which.ShouldBePrinted();
         }
@@ -42,7 +42,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
         [TestCase(1.1)]
         public void Ctor_should_throw_an_error_when_down_multiplier_is_incorrect(double value)
         {
-            Action action = () => implementation = new AdaptiveHealthWithLinearDecay(timeProvider, 5.Minutes(), 2, value, 0.01);
+            Action action = () => implementation = new AdaptiveHealthWithLinearDecay(getCurrentTime, 5.Minutes(), 2, value, 0.01);
 
             action.Should().Throw<ArgumentOutOfRangeException>().Which.ShouldBePrinted();
         }
@@ -53,7 +53,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
         [TestCase(1.1)]
         public void Ctor_should_throw_an_error_when_minimum_health_value_is_incorrect(double value)
         {
-            Action action = () => implementation = new AdaptiveHealthWithLinearDecay(timeProvider, 5.Minutes(), 2, 0.5, value);
+            Action action = () => implementation = new AdaptiveHealthWithLinearDecay(getCurrentTime, 5.Minutes(), 2, 0.5, value);
 
             action.Should().Throw<ArgumentOutOfRangeException>().Which.ShouldBePrinted();
         }
@@ -61,7 +61,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
         [Test]
         public void Ctor_should_throw_an_error_when_decay_duration_is_negative()
         {
-            Action action = () => implementation = new AdaptiveHealthWithLinearDecay(timeProvider, -5.Minutes(), 2, 0.5, 0.002);
+            Action action = () => implementation = new AdaptiveHealthWithLinearDecay(getCurrentTime, -5.Minutes(), 2, 0.5, 0.002);
 
             action.Should().Throw<ArgumentOutOfRangeException>().Which.ShouldBePrinted();
         }
@@ -69,7 +69,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
         [Test]
         public void Ctor_should_throw_an_error_when_decay_duration_is_zero()
         {
-            Action action = () => implementation = new AdaptiveHealthWithLinearDecay(timeProvider, TimeSpan.Zero, 2, 0.5, 0.002);
+            Action action = () => implementation = new AdaptiveHealthWithLinearDecay(getCurrentTime, TimeSpan.Zero, 2, 0.5, 0.002);
 
             action.Should().Throw<ArgumentOutOfRangeException>().Which.ShouldBePrinted();
         }

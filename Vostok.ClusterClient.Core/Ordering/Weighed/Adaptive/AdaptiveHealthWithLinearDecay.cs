@@ -28,7 +28,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
     {
         private const double MaximumHealthValue = 1.0;
 
-        private readonly ITimeProvider timeProvider;
+        private readonly Func<DateTime> getCurrentTime;
 
         /// <param name="decayDuration">A duration during which health damage fully decays.</param>
         /// <param name="upMultiplier">A multiplier used to increase health. Must be in <c>(1; +infinity)</c> range.</param>
@@ -39,12 +39,12 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
             double upMultiplier = ClusterClientDefaults.AdaptiveHealthUpMultiplier,
             double downMultiplier = ClusterClientDefaults.AdaptiveHealthDownMultiplier,
             double minimumHealthValue = ClusterClientDefaults.AdaptiveHealthMinimumValue)
-            : this(new TimeProvider(), decayDuration, upMultiplier, downMultiplier, minimumHealthValue)
+            : this(() => DateTime.UtcNow, decayDuration, upMultiplier, downMultiplier, minimumHealthValue)
         {
         }
 
         internal AdaptiveHealthWithLinearDecay(
-            ITimeProvider timeProvider,
+            Func<DateTime> getCurrentTime,
             TimeSpan decayDuration,
             double upMultiplier = ClusterClientDefaults.AdaptiveHealthUpMultiplier,
             double downMultiplier = ClusterClientDefaults.AdaptiveHealthDownMultiplier,
@@ -68,7 +68,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
             if (minimumHealthValue >= 1)
                 throw new ArgumentOutOfRangeException(nameof(minimumHealthValue), $"Minimum health must be < 1. Given value = '{minimumHealthValue}'.");
 
-            this.timeProvider = timeProvider;
+            this.getCurrentTime = getCurrentTime;
 
             DecayDuration = decayDuration;
             UpMultiplier = upMultiplier;
@@ -103,7 +103,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
             if (healthDamage <= 0.0)
                 return;
 
-            var timeSinceDecayPivot = TimeSpanArithmetics.Max(timeProvider.GetCurrentTime() - health.DecayPivot, TimeSpan.Zero);
+            var timeSinceDecayPivot = TimeSpanArithmetics.Max(getCurrentTime() - health.DecayPivot, TimeSpan.Zero);
             if (timeSinceDecayPivot >= DecayDuration)
                 return;
 
@@ -122,7 +122,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
 
         /// <inheritdoc />
         public HealthWithDecay DecreaseHealth(HealthWithDecay current) =>
-            new HealthWithDecay(Math.Max(MinimumHealthValue, current.Value * DownMultiplier), timeProvider.GetCurrentTime());
+            new HealthWithDecay(Math.Max(MinimumHealthValue, current.Value * DownMultiplier), getCurrentTime());
 
         /// <inheritdoc />
         public bool AreEqual(HealthWithDecay x, HealthWithDecay y) =>

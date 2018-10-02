@@ -85,7 +85,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
             double upMultiplier = ClusterClientDefaults.AdaptiveHealthUpMultiplier,
             double downMultiplier = ClusterClientDefaults.AdaptiveHealthDownMultiplier,
             double minimumHealthValue = ClusterClientDefaults.AdaptiveHealthMinimumValue) =>
-            builder.AddModifier(new AdaptiveHealthModifier<HealthWithDecay>(new AdaptiveHealthWithLinearDecay(new TimeProvider(), decayDuration, upMultiplier, downMultiplier, minimumHealthValue), tuningPolicy, builder.Log));
+            builder.AddModifier(new AdaptiveHealthModifier<HealthWithDecay>(new AdaptiveHealthWithLinearDecay(() => DateTime.UtcNow, decayDuration, upMultiplier, downMultiplier, minimumHealthValue), tuningPolicy, builder.Log));
 
         /// <summary>
         /// Adds a <see cref="LeadershipWeightModifier"/> with given <paramref name="leaderResultDetector"/> to the chain.

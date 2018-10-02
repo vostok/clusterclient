@@ -26,7 +26,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
 
         private IReplicaStorageProvider storageProvider;
         private IGrayPeriodProvider periodProvider;
-        private ITimeProvider timeProvider;
+        private Func<DateTime> getCurrentTime;
 
         private GrayListModifier modifier;
 
@@ -36,20 +36,20 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
             weight = 1.0;
             request = Request.Get("foo/bar");
             replica1 = new Uri("http://replica1");
-            replica2 = new Uri("http://replica2");
-            replicas = new List<Uri> {replica1, replica2};
             storage = new ConcurrentDictionary<Uri, DateTime>();
-
+           
             storageProvider = Substitute.For<IReplicaStorageProvider>();
             storageProvider.Obtain<DateTime>(Arg.Any<string>()).Returns(storage);
-
+            replica2 = new Uri("http://replica2");
+            replicas = new List<Uri> {replica1, replica2};
+         
             periodProvider = Substitute.For<IGrayPeriodProvider>();
             periodProvider.GetGrayPeriod().Returns(5.Minutes());
 
-            timeProvider = Substitute.For<ITimeProvider>();
-            timeProvider.GetCurrentTime().Returns(currentTime = DateTime.UtcNow);
+            currentTime = DateTime.UtcNow;
+            getCurrentTime = () => currentTime;
 
-            modifier = new GrayListModifier(periodProvider, timeProvider, new ConsoleLog());
+            modifier = new GrayListModifier(periodProvider, getCurrentTime, new ConsoleLog());
         }
 
         [Test]
@@ -156,7 +156,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
 
         private void ShiftCurrentTime(TimeSpan delta)
         {
-            timeProvider.GetCurrentTime().Returns(currentTime = currentTime + delta);
+            currentTime = currentTime + delta;
         }
 
         private static ReplicaResult CreateResult(Uri replica, ResponseVerdict verdict, Response response = null)
