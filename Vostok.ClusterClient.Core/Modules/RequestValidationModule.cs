@@ -44,7 +44,7 @@ namespace Vostok.ClusterClient.Core.Modules
             if (context.Request.StreamContent == null)
                 return false;
 
-            var parallelStrategy = context.Strategy as ParallelRequestStrategy;
+            var parallelStrategy = context.Parameters.Strategy as ParallelRequestStrategy;
 
             return parallelStrategy?.ParallelismLevel > 1;
         }

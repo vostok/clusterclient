@@ -11,6 +11,12 @@ namespace Vostok.ClusterClient.Core.Model
     [PublicAPI]
     public class RequestParameters
     {
+        public RequestParameters(IRequestStrategy strategy=null, RequestPriority? priority=null)
+        {
+            Strategy = strategy;
+            Priority = priority;
+        }
+
         /// <summary>
         /// Represents an empty <see cref="RequestParameters"/> object. Useful to start building request properties from scratch.
         /// </summary>

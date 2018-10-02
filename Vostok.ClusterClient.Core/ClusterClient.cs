@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using Vostok.ClusterClient.Core.Model;
@@ -59,15 +60,25 @@ namespace Vostok.ClusterClient.Core
         {
             return pipelineDelegate(new RequestContext(
                 request,
-                parameters?.Strategy ?? configuration.DefaultRequestStrategy,
+                CompleteParameters(parameters),
                 RequestTimeBudget.StartNew(timeout ?? configuration.DefaultTimeout, BudgetPrecision),
                 configuration.Log,
                 configuration.Transport,
-                parameters?.Priority ?? configuration.DefaultPriority,
                 configuration.MaxReplicasUsedPerRequest,
                 configuration.ClientApplicationName,
-                parameters?.Properties ?? ImmutableArrayDictionary<string, object>.Empty,
                 cancellationToken));
+        }
+
+        private RequestParameters CompleteParameters(RequestParameters parameters)
+        {
+            if (parameters == null)
+                return new RequestParameters(configuration.DefaultRequestStrategy, configuration.DefaultPriority);
+            
+            if (parameters.Strategy == null)
+                parameters = parameters.WithStrategy(configuration.DefaultRequestStrategy);
+            if (parameters.Priority == null)
+                parameters = parameters.WithPriority(configuration.DefaultPriority);
+            return parameters;
         }
     }
 }

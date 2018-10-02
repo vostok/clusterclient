@@ -20,7 +20,7 @@ namespace Vostok.ClusterClient.Core.Tests.Retry
         [Test]
         public void NeedToRetry_should_always_return_false()
         {
-            policy.NeedToRetry(null, new List<ReplicaResult>()).Should().BeFalse();
+            policy.NeedToRetry(null, null, new List<ReplicaResult>()).Should().BeFalse();
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             context = Substitute.For<IRequestContext>();
             context.Log.Returns(log = Substitute.For<ILog>());
             context.Transport.Returns(Substitute.For<ITransport>());
-            context.Strategy.Returns(new SingleReplicaRequestStrategy());
+            context.Parameters.Returns(RequestParameters.Empty.WithStrategy(new SingleReplicaRequestStrategy()));
             
             log.IsEnabledFor(default).ReturnsForAnyArgs(true);
 
@@ -76,7 +76,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             context.Transport.Capabilities.Returns(TransportCapabilities.RequestStreaming);
 
-            context.Strategy = new ParallelRequestStrategy(2);
+            context.Parameters.Returns(RequestParameters.Empty.WithStrategy(new ParallelRequestStrategy(2)));
 
             ShouldFailChecks();
         }
@@ -98,7 +98,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             context.Transport.Capabilities.Returns(TransportCapabilities.RequestStreaming);
 
-            context.Strategy = new ParallelRequestStrategy(1);
+            context.Parameters.Returns(RequestParameters.Empty.WithStrategy(new ParallelRequestStrategy(1)));
 
             ShouldPassChecks();
         }

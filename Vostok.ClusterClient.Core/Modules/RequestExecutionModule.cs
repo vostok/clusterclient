@@ -52,7 +52,7 @@ namespace Vostok.ClusterClient.Core.Modules
             var orderedReplicas = replicaOrdering.Order(replicas, storageProvider, contextImpl.Request);
             var limitedReplicas = orderedReplicas.Take(maxReplicasToUse);
 
-            await contextImpl.Strategy.SendAsync(
+            await contextImpl.Parameters.Strategy.SendAsync(
                     contextImpl.Request,
                     contextualSender,
                     contextImpl.Budget,
@@ -65,7 +65,7 @@ namespace Vostok.ClusterClient.Core.Modules
 
             var replicaResults = contextImpl.FreezeReplicaResults();
 
-            var selectedResponse = responseSelector.Select(contextImpl.Request, replicaResults);
+            var selectedResponse = responseSelector.Select(contextImpl.Request, context.Parameters, replicaResults);
 
             var resultStatus = resultStatusSelector.Select(replicaResults, contextImpl.Budget);
 

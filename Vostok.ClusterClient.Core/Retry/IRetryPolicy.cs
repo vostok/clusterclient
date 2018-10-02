@@ -17,6 +17,6 @@ namespace Vostok.ClusterClient.Core.Retry
         /// <para>Implementations of this method MUST BE thread-safe.</para>
         /// </summary>
         [Pure]
-        bool NeedToRetry([NotNull] Request request, [NotNull] [ItemNotNull] IList<ReplicaResult> results);
+        bool NeedToRetry([NotNull] Request request, [NotNull] RequestParameters parameters, [NotNull] [ItemNotNull] IList<ReplicaResult> results);
     }
 }

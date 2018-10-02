@@ -30,7 +30,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
         private bool IsValid(Request request)
         {
-            var context = new RequestContext(request, Strategy.Sequential1, RequestTimeBudget.Infinite, new SilentLog(), null, null, 0);
+            var context = new RequestContext(request, RequestParameters.Empty.WithStrategy(Strategy.Sequential1), RequestTimeBudget.Infinite, new SilentLog(), null, 0);
             var result = module.ExecuteAsync(context, c => Task.FromResult(ClusterResult.Canceled(request))).GetAwaiter().GetResult();
 
             return result.Status != ClusterResultStatus.IncorrectArguments;

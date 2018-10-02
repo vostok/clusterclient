@@ -21,12 +21,6 @@ namespace Vostok.ClusterClient.Core.Modules
         Request Request { get; set; }
 
         /// <summary>
-        /// Gets or sets used request strategy.
-        /// </summary>
-        [NotNull]
-        IRequestStrategy Strategy { get; set; }
-
-        /// <summary>
         /// Returns request time budget. Use <see cref="IRequestTimeBudget.Remaining"/> method to check remaining time.
         /// </summary>
         [NotNull]
@@ -50,12 +44,6 @@ namespace Vostok.ClusterClient.Core.Modules
         CancellationToken CancellationToken { get; }
 
         /// <summary>
-        /// Returns used request priority.
-        /// </summary>
-        [CanBeNull]
-        RequestPriority? Priority { get; }
-
-        /// <summary>
         /// Gets or sets the maximum count of replicas a request may use.
         /// </summary>
         int MaximumReplicasToUse { get; set; }
@@ -66,8 +54,8 @@ namespace Vostok.ClusterClient.Core.Modules
         string ClientApplicationName { get; }
         
         /// <summary>
-        /// Returns request custom properties.
+        /// Gets or sets used request parameters.
         /// </summary>
-        IReadOnlyDictionary<string, object> Properties { get; }
+        RequestParameters Parameters { get; }
     }
 }

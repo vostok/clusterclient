@@ -42,7 +42,7 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
             baseSender = Substitute.For<IRequestSenderInternal>();
             baseSender.SendToReplicaAsync(null, null, null, TimeSpan.Zero, CancellationToken.None).ReturnsForAnyArgs(_ => resultSource.Task);
 
-            context = new RequestContext(request, Strategy.SingleReplica, Budget.WithRemaining(timeout), new ConsoleLog(), Substitute.For<ITransport>(), null, int.MaxValue, null, ImmutableArrayDictionary<string, object>.Empty, CancellationToken.None);
+            context = new RequestContext(request, new RequestParameters(Strategy.SingleReplica), Budget.WithRemaining(timeout), new ConsoleLog(), Substitute.For<ITransport>(), int.MaxValue, null, CancellationToken.None);
             contextualSender = new ContextualRequestSender(baseSender, context);
         }
 

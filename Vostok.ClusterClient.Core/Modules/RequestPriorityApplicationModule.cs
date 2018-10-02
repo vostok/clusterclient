@@ -8,9 +8,7 @@ namespace Vostok.ClusterClient.Core.Modules
     {
         public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
-            //TODO: priority from context
-            var priority = context.Priority;
-            //TODO: set priority in headers
+            var priority = context.Parameters.Priority;
             if (priority.HasValue)
                 context.Request = context.Request.WithHeader(HeaderNames.RequestPriority, priority.Value);
 
