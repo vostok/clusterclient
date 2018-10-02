@@ -269,6 +269,7 @@ namespace Vostok.ClusterClient.Core.Model
         /// Returns the value of <see cref="HeaderNames.WWWAuthenticate"/> header or <c>null</c> if it's not specified.
         /// </summary>
         [CanBeNull]
+        // ReSharper disable once InconsistentNaming
         public string WWWAuthenticate => this[HeaderNames.WWWAuthenticate];
 
         #endregion
