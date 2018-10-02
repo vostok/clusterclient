@@ -47,7 +47,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
 
             strategy.SendAsync(request, sender, budget, replicas, replicas.Length, token).Wait();
 
-            sender.Received().SendToReplicaAsync(replicas[0], request, budget.Remaining(), token);
+            sender.Received().SendToReplicaAsync(replicas[0], request, budget.Remaining, token);
         }
 
         [Test]

@@ -17,12 +17,12 @@ namespace Vostok.ClusterClient.Core.Model
         /// <summary>
         /// Returns elapsed amount of time since the beginning of request execution.
         /// </summary>
-        TimeSpan Elapsed();
+        TimeSpan Elapsed { get; }
 
         /// <summary>
         /// Returns remaining amount of time for request execution or <see cref="TimeSpan.Zero"/> if budget has already expired.
         /// </summary>
-        TimeSpan Remaining();
+        TimeSpan Remaining { get; }
 
         /// <summary>
         /// Returns <c>true</c> if budget has already expired, or <c>false</c> otherwise.

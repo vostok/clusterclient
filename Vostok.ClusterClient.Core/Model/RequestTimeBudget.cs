@@ -10,29 +10,17 @@ namespace Vostok.ClusterClient.Core.Model
         
         private readonly TimeBudget budget;
 
-        public static RequestTimeBudget StartNew(TimeSpan budget, TimeSpan precision) =>
-            new RequestTimeBudget(budget, precision);
+        public static RequestTimeBudget StartNew(TimeSpan budget, TimeSpan precision)
+            => new RequestTimeBudget(TimeBudget.StartNew(budget, precision));
 
         public static RequestTimeBudget StartNew(TimeSpan budget) =>
-            new RequestTimeBudget(budget);
+            new RequestTimeBudget(TimeBudget.StartNew(budget));
 
-        public static RequestTimeBudget StartNew(int budgetMs, int precisionMs) =>
-            new RequestTimeBudget(TimeSpan.FromMilliseconds(budgetMs), TimeSpan.FromMilliseconds(precisionMs));
-
-        public static RequestTimeBudget StartNew(int budgetMs) =>
-            new RequestTimeBudget(TimeSpan.FromMilliseconds(budgetMs));
-
-        private readonly Stopwatch watch;
-
-        private RequestTimeBudget(TimeSpan budget, TimeSpan precision)
-            : this(TimeBudget.StartNew(budget, precision))
-        {
-        }
-
-        private RequestTimeBudget(TimeSpan budget)
-            : this(TimeBudget.StartNew(budget))
-        {
-        }
+        public static RequestTimeBudget StartNew(int budgetMs, int precisionMs)
+            => StartNew(TimeSpan.FromMilliseconds(budgetMs), TimeSpan.FromMilliseconds(precisionMs));
+        
+        public static RequestTimeBudget StartNew(int budgetMs)
+            => StartNew(TimeSpan.FromMilliseconds(budgetMs));
 
         private RequestTimeBudget(TimeBudget budget)
             => this.budget = budget;
@@ -41,9 +29,9 @@ namespace Vostok.ClusterClient.Core.Model
 
         public TimeSpan Precision => budget.Precision;
 
-        public TimeSpan Remaining() => budget.Remaining;
+        public TimeSpan Remaining => budget.Remaining;
 
-        public TimeSpan Elapsed() => watch.Elapsed;
+        public TimeSpan Elapsed => budget.Elapsed;
 
         public TimeSpan TryAcquire(TimeSpan neededTime) => budget.TryAcquire(neededTime);
 

@@ -14,7 +14,7 @@ namespace Vostok.ClusterClient.Core.Tests.Helpers
             var budget = Substitute.For<IRequestTimeBudget>();
 
             budget.Total.Returns(remaining);
-            budget.Remaining().Returns(remaining);
+            budget.Remaining.Returns(remaining);
             budget.HasExpired.Returns(remaining <= TimeSpan.Zero);
 
             return budget;
