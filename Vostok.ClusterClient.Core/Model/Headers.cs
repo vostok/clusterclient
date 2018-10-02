@@ -18,18 +18,18 @@ namespace Vostok.ClusterClient.Core.Model
         /// <summary>
         /// Represents an empty <see cref="Headers"/> object. Useful to start building headers from scratch.
         /// </summary>
-        public static readonly Headers Empty = new Headers(new ImmutableArrayDictionary<string, Header>(0, StringComparer.OrdinalIgnoreCase));
+        public static readonly Headers Empty = new Headers(new ImmutableArrayDictionary<string, string>(0, StringComparer.OrdinalIgnoreCase));
 
-        private readonly ImmutableArrayDictionary<string, Header> headers;
+        private readonly ImmutableArrayDictionary<string, string> headers;
 
         /// <param name="capacity">Initial capacity of headers collection.</param>
         [PublicAPI]
         public Headers(int capacity)
-            : this(new ImmutableArrayDictionary<string, Header>(capacity, StringComparer.OrdinalIgnoreCase))
+            : this(new ImmutableArrayDictionary<string, string>(capacity, StringComparer.OrdinalIgnoreCase))
         {
         }
         
-        private Headers(ImmutableArrayDictionary<string, Header> headers)
+        private Headers(ImmutableArrayDictionary<string, string> headers)
         {
             this.headers = headers;
         }
@@ -56,7 +56,7 @@ namespace Vostok.ClusterClient.Core.Model
         /// <param name="name">Header name.</param>
         /// <returns>Header value if found, <c>null</c> otherwise.</returns>
         [CanBeNull]
-        public string this[string name] => headers.TryGetValue(name, out var v) ? v.Value : null;
+        public string this[string name] => headers.TryGetValue(name, out var v) ? v : null;
 
         /// <summary>
         /// <para>Produces a new <see cref="Headers"/> instance where the header with given name will have given value.</para>
@@ -71,7 +71,7 @@ namespace Vostok.ClusterClient.Core.Model
         [NotNull]
         public Headers Set<T>([NotNull] string name, [NotNull] T value)
         {
-            return new Headers(headers.Set(name, new Header(name, value.ToString())));
+            return new Headers(headers.Set(name, value.ToString()));
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Vostok.ClusterClient.Core.Model
         [NotNull]
         public Headers Set([NotNull] string name, [NotNull] string value)
         {
-            var newHeaders = headers.Set(name, new Header(name, value), true);
+            var newHeaders = headers.Set(name, value, true);
             
             return ReferenceEquals(headers, newHeaders)
                 ? this
@@ -147,7 +147,7 @@ namespace Vostok.ClusterClient.Core.Model
         {
             foreach (var pair in headers)
             {
-                yield return pair.Value;
+                yield return new Header(pair.Key, pair.Value);
             }
         }
 

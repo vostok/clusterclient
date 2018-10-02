@@ -7,27 +7,30 @@ namespace Vostok.ClusterClient.Core.Model
     /// Represents an HTTP header in the form of a simple string key-value pair.
     /// </summary>
     [PublicAPI]
-    public class Header : IEquatable<Header>
+    public struct Header : IEquatable<Header>
     {
+        private string name;
+        private string value;        
+        
         /// <param name="name">Header name.</param>
         /// <param name="value">Header value.</param>
         public Header([NotNull] string name, [NotNull] string value)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
-            Value = value ?? throw new ArgumentNullException(nameof(value));
+            this.name = name ?? throw new ArgumentNullException(nameof(name));
+            this.value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>
         /// Returns header name.
         /// </summary>
         [NotNull]
-        public string Name { get; }
+        public string Name => name ?? string.Empty;
 
         /// <summary>
         /// Returns header value.
         /// </summary>
         [NotNull]
-        public string Value { get; }
+        public string Value => value ?? string.Empty;
 
         /// <returns>String representation of header in "<see cref="Name"/>: <see cref="Value"/>" format.</returns>
         public override string ToString()
@@ -42,11 +45,7 @@ namespace Vostok.ClusterClient.Core.Model
         /// </summary>
         public bool Equals(Header other)
         {
-            if (ReferenceEquals(null, other))
-                return false;
-            if (ReferenceEquals(this, other))
-                return true;
-            return string.Equals(Name, other.Name) && string.Equals(Value, other.Value);
+            return string.Equals(Name, other.Name, StringComparison.OrdinalIgnoreCase) && string.Equals(Value, other.Value);
         }
 
         /// <inheritdoc />
@@ -54,8 +53,6 @@ namespace Vostok.ClusterClient.Core.Model
         {
             if (ReferenceEquals(null, obj))
                 return false;
-            if (ReferenceEquals(this, obj))
-                return true;
             if (obj.GetType() != GetType())
                 return false;
             return Equals((Header) obj);
@@ -63,12 +60,7 @@ namespace Vostok.ClusterClient.Core.Model
 
         /// <inheritdoc />
         public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (Name.GetHashCode()*397) ^ Value.GetHashCode();
-            }
-        }
+            => unchecked (StringComparer.OrdinalIgnoreCase.GetHashCode(Name)*397) ^ Value.GetHashCode();
 
         #endregion
     }

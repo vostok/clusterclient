@@ -33,16 +33,30 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         }
 
         [Test]
-        public void Should_have_case_sensitive_equality()
+        public void Should_be_equal_if_key_and_value_equals()
         {
             var header1 = new Header("name", "value");
             var header2 = new Header("name", "value");
-            var header3 = new Header("Name", "value");
-            var header4 = new Header("name", "Value");
 
             header1.Should().Be(header2);
-            header1.Should().NotBe(header3);
-            header1.Should().NotBe(header4);
+        }
+        
+        [Test]
+        public void Should_have_case_insensitive_equality_for_key()
+        {
+            var header1 = new Header("name", "value");
+            var header2 = new Header("Name", "value");
+
+            header1.Should().Be(header2);
+        }
+        
+        [Test]
+        public void Should_have_case_sensitive_equality_for_value()
+        {
+            var header1 = new Header("name", "value");
+            var header2 = new Header("name", "Value");
+
+            header1.Should().NotBe(header2);
         }
     }
 }
