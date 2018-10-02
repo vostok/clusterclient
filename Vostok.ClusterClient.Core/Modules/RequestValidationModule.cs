@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Transport;
 using Vostok.ClusterClient.Core.Strategies;
@@ -13,8 +14,8 @@ namespace Vostok.ClusterClient.Core.Modules
     {
         public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
-            if (!context.Request.IsValid())
-                return OnInvalidRequest(context, context.Request.Validate());
+            if (!RequestValidator.IsValid(context.Request))
+                return OnInvalidRequest(context, RequestValidator.Validate(context.Request));
             
             if (HasStreamUnsupportedByTransport(context))
                 return OnInvalidRequest(context, "Request has a body stream, which is not supported by transport implementation.");

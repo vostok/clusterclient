@@ -3,11 +3,12 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Tests.Model
+namespace Vostok.ClusterClient.Core.Tests.Misc
 {
-    public class RequestExtensions_Tests
+    public class RequestValidator_Tests
     {
         private Request request;
 
@@ -20,9 +21,9 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [Test]
         public void Validation_procedures_should_pass_on_a_well_formed_http_request()
         {
-            request.Validate().Should().BeEmpty();
+            RequestValidator.Validate(request).Should().BeEmpty();
 
-            request.IsValid().Should().BeTrue();
+            RequestValidator.IsValid(request).Should().BeTrue();
         }
 
         [Test]
@@ -30,9 +31,9 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         {
             request = new Request(request.Method, new Uri("https://foo/bar"));
 
-            request.Validate().Should().BeEmpty();
+            RequestValidator.Validate(request).Should().BeEmpty();
 
-            request.IsValid().Should().BeTrue();
+            RequestValidator.IsValid(request).Should().BeTrue();
         }
 
         [Test]
@@ -40,9 +41,9 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         {
             request = new Request(request.Method, new Uri("ftp://foo/bar"));
 
-            request.IsValid().Should().BeFalse();
+            RequestValidator.IsValid(request).Should().BeFalse();
 
-            Console.Out.WriteLine(request.Validate().Single());
+            Console.Out.WriteLine(RequestValidator.Validate(request).Single());
         }
 
         [Test]
@@ -50,9 +51,9 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         {
             request = Request.Get(request.Url).WithContent(new Content(new byte[16]));
 
-            request.IsValid().Should().BeFalse();
+            RequestValidator.IsValid(request).Should().BeFalse();
 
-            Console.Out.WriteLine(request.Validate().Single());
+            Console.Out.WriteLine(RequestValidator.Validate(request).Single());
         }
 
         [Test]
@@ -60,9 +61,9 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         {
             request = Request.Get(request.Url).WithContent(new StreamContent(Stream.Null, 123));
 
-            request.IsValid().Should().BeFalse();
+            RequestValidator.IsValid(request).Should().BeFalse();
 
-            Console.Out.WriteLine(request.Validate().Single());
+            Console.Out.WriteLine(RequestValidator.Validate(request).Single());
         }
 
         [Test]
@@ -70,9 +71,9 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         {
             request = Request.Head(request.Url).WithContent(new Content(new byte[16]));
 
-            request.IsValid().Should().BeFalse();
+            RequestValidator.IsValid(request).Should().BeFalse();
 
-            Console.Out.WriteLine(request.Validate().Single());
+            Console.Out.WriteLine(RequestValidator.Validate(request).Single());
         }
     }
 }

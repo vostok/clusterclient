@@ -1,18 +1,16 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Vostok.ClusterClient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.ClusterClient.Core.Misc
 {
-    /// <summary>
-    /// A set of extensions for <see cref="Request"/>
-    /// </summary>
-    public static class RequestExtensions
+    internal static class RequestValidator
     {
         /// <summary>
         /// Returns all validation errors for this <see cref="Request"/> instance. An empty sequence is returned for a valid request.
         /// </summary>
-        public static IEnumerable<string> Validate(this Request request)
+        public static IEnumerable<string> Validate(Request request)
         {
             if (request.Url.IsAbsoluteUri)
             {
@@ -29,7 +27,6 @@ namespace Vostok.ClusterClient.Core.Model
         /// <para>Returns true if current <see cref="Request"/> instance is valid, or false otherwise.</para>
         /// <para><see cref="Validate"/> method can be used to obtain error messages.</para>
         /// </summary>
-        public static bool IsValid(this Request request) => !request.Validate().Any();
-        
+        public static bool IsValid(Request request) => !Validate(request).Any();
     }
 }
