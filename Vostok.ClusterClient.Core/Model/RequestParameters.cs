@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Strategies;
@@ -11,7 +12,10 @@ namespace Vostok.ClusterClient.Core.Model
     [PublicAPI]
     public class RequestParameters
     {
-        public RequestParameters(IRequestStrategy strategy=null, RequestPriority? priority=null)
+        /// <summary>
+        /// Create a new instance of <see cref="RequestParameters"/> with specified <paramref name="strategy"/> and <paramref name="priority"/>.
+        /// </summary>
+        public RequestParameters([CanBeNull] IRequestStrategy strategy=null, [CanBeNull] RequestPriority? priority=null)
         {
             Strategy = strategy;
             Priority = priority;
@@ -27,6 +31,7 @@ namespace Vostok.ClusterClient.Core.Model
         /// <para>Uses <see cref="IClusterClientConfiguration.DefaultRequestStrategy"/> if value is <c>null</c>.</para>
         /// <para>See <see cref="Strategy"/> class for some prebuilt strategies and convenient factory methods.</para>
         /// </summary>
+        [CanBeNull]
         public IRequestStrategy Strategy { get; }
         
         /// <summary>
@@ -37,7 +42,7 @@ namespace Vostok.ClusterClient.Core.Model
         /// <summary>
         /// A set of additional request properties.
         /// </summary>
-        [PublicAPI]
+        [NotNull]
         public IReadOnlyDictionary<string, object> Properties => properties;
         
         private readonly ImmutableArrayDictionary<string, object> properties = new ImmutableArrayDictionary<string, object>();
@@ -55,19 +60,15 @@ namespace Vostok.ClusterClient.Core.Model
         }
 
         /// <returns>New instance of <see cref="RequestParameters"/> with specified <paramref name="strategy"/>.</returns>
-        [PublicAPI]
-        public RequestParameters WithStrategy(IRequestStrategy strategy)
+        public RequestParameters WithStrategy([NotNull] IRequestStrategy strategy)
             => new RequestParameters(strategy, Priority, properties);
-    
+
         /// <returns>New instance of <see cref="RequestParameters"/> with specified <paramref name="priority"/>.</returns>
-        [PublicAPI]
         public RequestParameters WithPriority(RequestPriority? priority)
             => new RequestParameters(Strategy, priority, properties);
-        
-        
+
         /// <returns>New instance of <see cref="RequestParameters"/> with specified property.</returns>
-        [PublicAPI]
-        public RequestParameters WithProperty(string key, object value)
-            => new RequestParameters(Strategy, Priority, properties.Set(key, value));
+        public RequestParameters WithProperty([NotNull] string key, object value)
+            => new RequestParameters(Strategy, Priority, properties.Set(key ?? throw new ArgumentNullException(nameof(key)), value));
     }
 }
