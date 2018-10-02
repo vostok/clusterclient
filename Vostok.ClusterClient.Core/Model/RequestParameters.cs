@@ -6,7 +6,7 @@ using Vostok.Commons.Collections;
 namespace Vostok.ClusterClient.Core.Model
 {
     /// <summary>
-    /// Represents a clusterclient specific parameters of request (strategy, priority and custom properties).
+    /// Represents clusterclient specific parameters of request (strategy, priority and custom properties).
     /// </summary>
     [PublicAPI]
     public class RequestParameters

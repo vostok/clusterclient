@@ -3,7 +3,7 @@
 namespace Vostok.ClusterClient.Core.Model
 {
     /// <summary>
-    /// A set if query parameters-related extensions for <see cref="Request"/>.
+    /// A set of query parameters-related extensions for <see cref="Request"/>.
     /// </summary>
     [PublicAPI]
     public static class RequestQueryExtensions
