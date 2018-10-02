@@ -50,7 +50,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
 
             headers.Should().HaveCount(1);
 
-            headers.Names.Should().Equal("KEY");
+            headers.Names.Should().Equal("key");
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
 
             headers.Should().HaveCount(1);
 
-            headers.Names.Should().Equal("KEY");
+            headers.Names.Should().Equal("key");
         }
 
         [Test]
