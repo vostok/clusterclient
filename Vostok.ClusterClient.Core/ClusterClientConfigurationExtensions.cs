@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Criteria;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
@@ -12,6 +13,7 @@ namespace Vostok.ClusterClient.Core
     /// <summary>
     /// A set of extensions for IClusterClientConfiguration interface.
     /// </summary>
+    [PublicAPI]
     public static class ClusterClientConfigurationExtensions
     {
         /// <summary>
