@@ -7,7 +7,9 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 {
     internal class RequestParameters_Tests
     {
-        private readonly RequestParameters parameters = RequestParameters.Empty;
+        private readonly RequestParameters parameters = new RequestParameters(Strategy.Forking3, RequestPriority.Sheddable)
+            .WithProperty("a", "a")
+            .WithProperty("b", 1);
         
         [Test]
         public void WithStrategy_Should_return_updated_parameters_with_updated_strategy()
@@ -15,6 +17,14 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             var newParameters = parameters.WithStrategy(Strategy.Sequential3);
             newParameters.Should().NotBeSameAs(parameters);
             newParameters.Strategy.Should().Be(Strategy.Sequential3);
+        }
+        
+        [Test]
+        public void WithStrategy_Should_preserve_priority_and_properties()
+        {            
+            var newParameters = parameters.WithStrategy(Strategy.Sequential3);
+            newParameters.Properties.Should().BeEquivalentTo(parameters.Properties);
+            newParameters.Priority.Should().Be(parameters.Priority);
         }
         
         [TestCase(RequestPriority.Critical)]
@@ -27,13 +37,31 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             newParameters.Priority.Should().Be(priority);
         }
         
+        [Test]
+        public void WithPriority_Should_preserve_strategy_and_properties()
+        {            
+            var newParameters = parameters.WithPriority(RequestPriority.Critical);
+            newParameters.Properties.Should().BeEquivalentTo(parameters.Properties);
+            newParameters.Strategy.Should().BeSameAs(parameters.Strategy);
+        }
+        
         [TestCase("key", 1)]
         [TestCase("xyz", "abc")]
+        [TestCase("a", "b")]
         public void WithProperty_Should_return_updated_parameters_with_updated_properties(string key, object value)
         {
             var newParameters = parameters.WithProperty(key, value);
             newParameters.Should().NotBeSameAs(parameters);
             newParameters.Properties[key].Should().Be(value);
+        }
+        
+        [Test]
+        public void WithProperty_Should_preserve_strategy_parameters_and_properties()
+        {            
+            var newParameters = parameters.WithProperty("c", 2);
+            newParameters.Strategy.Should().BeSameAs(parameters.Strategy);
+            newParameters.Priority.Should().Be(parameters.Priority);
+            newParameters.Properties.Should().Contain(parameters.Properties);
         }
     }
 }
