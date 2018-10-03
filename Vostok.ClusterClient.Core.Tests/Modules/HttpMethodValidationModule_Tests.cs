@@ -9,7 +9,7 @@ using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Tests.Modules
 {
-    public class HttpMethodValidationModule_Tests
+    internal class HttpMethodValidationModule_Tests
     {
         private HttpMethodValidationModule module = new HttpMethodValidationModule();
 

@@ -8,7 +8,7 @@ using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Tests.Misc
 {
-    public class RequestValidator_Tests
+    internal class RequestValidator_Tests
     {
         private Request request;
 

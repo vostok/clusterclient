@@ -5,7 +5,7 @@ using Vostok.ClusterClient.Core.Strategies;
 
 namespace Vostok.ClusterClient.Core.Tests.Modules
 {
-    public class RequestParameters_Tests
+    internal class RequestParameters_Tests
     {
         private readonly RequestParameters parameters = RequestParameters.Empty;
         

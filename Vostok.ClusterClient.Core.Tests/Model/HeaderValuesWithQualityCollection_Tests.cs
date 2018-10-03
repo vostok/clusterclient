@@ -7,7 +7,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
 {
     [TestFixture]
     [SetCulture("ru-RU")]
-    public class HeaderValuesWithQualityCollection_Tests
+    internal class HeaderValuesWithQualityCollection_Tests
     {
         [Test]
         public void ParseTest()
