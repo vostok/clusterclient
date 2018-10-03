@@ -40,12 +40,6 @@ namespace Vostok.ClusterClient.Core
         }
 
         /// <summary>
-        /// Adds an <see cref="AdHocResponseTransform"/> with given <paramref name="transform"/> function to configuration's <see cref="IClusterClientConfiguration.ResponseTransforms"/> list.
-        /// </summary>
-        public static void AddResponseTransform(this IClusterClientConfiguration configuration, Func<Response, Response> transform) =>
-            configuration.AddResponseTransform(new AdHocResponseTransform(transform));
-
-        /// <summary>
         /// Modifies configuration's <see cref="IClusterClientConfiguration.ClusterProvider"/> to repeat all of its replicas <paramref name="repeatCount"/> times.
         /// </summary>
         public static void RepeatReplicas(this IClusterClientConfiguration configuration, int repeatCount)
@@ -137,7 +131,7 @@ namespace Vostok.ClusterClient.Core
             var options = new ReplicaBudgetingOptions(configuration.ServiceName, minutesToTrack, minimumRequests, criticalRatio);
             configuration.AddRequestModule(new ReplicaBudgetingModule(options));
         }
-        
+
         /// <summary>
         /// Enables HTTP request method validation. Valid HTTP methods listed in <see cref="RequestMethods" /> class.
         /// </summary>
@@ -146,7 +140,7 @@ namespace Vostok.ClusterClient.Core
         {
             configuration.AddRequestModule(new HttpMethodValidationModule(), RequestPipelinePoint.AfterRequestValidation);
         }
-        
+
         /// <summary>
         /// Initializes configuration's <see cref="IClusterClientConfiguration.ResponseCriteria"/> list with given <paramref name="criteria"/>.
         /// </summary>
@@ -154,6 +148,7 @@ namespace Vostok.ClusterClient.Core
         {
             configuration.ResponseCriteria = new List<IResponseCriterion>(criteria);
         }
+
         /// <summary>
         /// Adds given <paramref name="transform"/> to configuration's <see cref="IClusterClientConfiguration.RequestTransforms"/> list.
         /// </summary>
@@ -163,11 +158,25 @@ namespace Vostok.ClusterClient.Core
         }
 
         /// <summary>
+        /// Adds an <see cref="AdHocRequestTransform"/> with given <paramref name="transform"/> function to configuration's <see cref="IClusterClientConfiguration.RequestTransforms"/> list.
+        /// </summary>
+        public static void AddRequestTransform(this IClusterClientConfiguration configuration, Func<Request, Request> transform)
+        {
+            AddRequestTransform(configuration, new AdHocRequestTransform(transform));
+        }
+
+        /// <summary>
         /// Adds given <paramref name="transform"/> to configuration's <see cref="IClusterClientConfiguration.ResponseTransforms"/> list.
         /// </summary>
         public static void AddResponseTransform(this IClusterClientConfiguration configuration, IResponseTransform transform)
         {
             (configuration.ResponseTransforms ?? (configuration.ResponseTransforms = new List<IResponseTransform>())).Add(transform);
         }
+
+        /// <summary>
+        /// Adds an <see cref="AdHocResponseTransform"/> with given <paramref name="transform"/> function to configuration's <see cref="IClusterClientConfiguration.ResponseTransforms"/> list.
+        /// </summary>
+        public static void AddResponseTransform(this IClusterClientConfiguration configuration, Func<Response, Response> transform) =>
+            configuration.AddResponseTransform(new AdHocResponseTransform(transform));
     }
 }
