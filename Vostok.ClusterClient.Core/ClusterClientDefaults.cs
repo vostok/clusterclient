@@ -110,11 +110,6 @@ namespace Vostok.ClusterClient.Core
         /// The default value of <see cref="LoggingOptions.LogReplicaResults"/>.
         /// </summary>
         public const bool LogReplicaResults = true;
-        
-        /// <summary>
-        /// The default value of <see cref="LoggingOptions.LogPrefixEnabled"/>.
-        /// </summary>
-        public const bool LogPrefixEnabled = true;
 #endregion
         
 #region IClusterClientConfiguration
