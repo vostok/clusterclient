@@ -13,14 +13,7 @@ namespace Vostok.ClusterClient.Core
     [PublicAPI]
     public static class ClusterClientExtensions
     {
-        /// <summary>
-        /// <para>Sends given request using given <paramref name="timeout"/>, <paramref name="parameters"/> and <paramref name="cancellationToken"/>.</para>
-        /// <para>Uses <see cref="IClusterClientConfiguration.DefaultTimeout"/> if provided <paramref name="timeout"/> is <c>null</c>.</para>
-        /// <para>Uses <see cref="IClusterClientConfiguration.DefaultRequestStrategy"/> if provided <see cref="RequestParameters.Strategy"/> is <c>null</c>.</para>
-        /// <para>Uses <see cref="IClusterClientConfiguration.DefaultPriority"/> or priority from current ambient context if provided <see cref="RequestParameters.Priority"/> is <c>null</c> (explicit > default > context).</para>
-        /// <para>See <see cref="IRequestStrategy.SendAsync"/> for more details about what a request strategy is.</para>
-        /// <para>See <see cref="Strategy"/> class for some prebuilt strategies and convenient factory methods.</para>
-        /// </summary>
+        /// <inheritdoc cref="IClusterClient.SendAsync"/>
         [NotNull]
         public static ClusterResult Send(
             [NotNull] this IClusterClient client,
@@ -38,7 +31,7 @@ namespace Vostok.ClusterClient.Core
         /// <para>Sends given request using given <paramref name="timeout"/>, <paramref name="strategy"/>, <paramref name="cancellationToken"/> and <paramref name="priority"/>.</para>
         /// <para>Uses <see cref="IClusterClientConfiguration.DefaultTimeout"/> if provided <paramref name="timeout"/> is <c>null</c>.</para>
         /// <para>Uses <see cref="IClusterClientConfiguration.DefaultRequestStrategy"/> if provided <paramref name="strategy"/> is <c>null</c>.</para>
-        /// <para>Uses <see cref="IClusterClientConfiguration.DefaultPriority"/> or priority from current ambient context if provided <paramref name="priority"/> is <c>null</c> (explicit > default > context).</para>
+        /// <para>Uses <see cref="IClusterClientConfiguration.DefaultPriority"/> if provided <paramref name="priority"/> is <c>null</c>.</para>
         /// <para>See <see cref="IRequestStrategy.SendAsync"/> for more details about what a request strategy is.</para>
         /// <para>See <see cref="Strategy"/> class for some prebuilt strategies and convenient factory methods.</para>
         /// </summary>
@@ -58,14 +51,7 @@ namespace Vostok.ClusterClient.Core
                 timeout,
                 cancellationToken);
         
-        /// <summary>
-        /// <para>Sends given request using given <paramref name="timeout"/>, <paramref name="strategy"/>, <paramref name="cancellationToken"/> and <paramref name="priority"/>.</para>
-        /// <para>Uses <see cref="IClusterClientConfiguration.DefaultTimeout"/> if provided <paramref name="timeout"/> is <c>null</c>.</para>
-        /// <para>Uses <see cref="IClusterClientConfiguration.DefaultRequestStrategy"/> if provided <paramref name="strategy"/> is <c>null</c>.</para>
-        /// <para>Uses <see cref="IClusterClientConfiguration.DefaultPriority"/> or priority from current ambient context if provided <paramref name="priority"/> is <c>null</c> (explicit > default > context).</para>
-        /// <para>See <see cref="IRequestStrategy.SendAsync"/> for more details about what a request strategy is.</para>
-        /// <para>See <see cref="Strategy"/> class for some prebuilt strategies and convenient factory methods.</para>
-        /// </summary>
+        /// <inheritdoc cref="SendAsync"/>
         public static ClusterResult Send(
             [NotNull] this IClusterClient client,
             [NotNull] Request request,
