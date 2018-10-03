@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Criteria;
 using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Modules;
@@ -16,6 +17,7 @@ namespace Vostok.ClusterClient.Core
     /// <summary>
     /// A class with default values of ClusterClient settings
     /// </summary>
+    [PublicAPI]
     public static class ClusterClientDefaults
     {
 #region WeighedReplicaOrdering
