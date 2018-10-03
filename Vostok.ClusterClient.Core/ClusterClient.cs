@@ -47,7 +47,7 @@ namespace Vostok.ClusterClient.Core
         /// <exception cref="ClusterClientException">Configuration was incomplete or invalid.</exception>
         public ClusterClient(ILog log, ClusterClientSetup setup)
         {
-            configuration = new ClusterClientConfiguration((log ?? new SilentLog()));
+            configuration = new ClusterClientConfiguration(log ?? new SilentLog());
 
             setup(configuration);
 
@@ -75,7 +75,7 @@ namespace Vostok.ClusterClient.Core
         public IReplicaStorageProvider ReplicaStorageProvider { get; }
 
         /// <inheritdoc />
-        public Task<ClusterResult> SendAsync(Request request, RequestParameters parameters, TimeSpan? timeout = null,
+        public Task<ClusterResult> SendAsync(Request request, RequestParameters parameters = null, TimeSpan? timeout = null,
             CancellationToken cancellationToken = new CancellationToken())
         {
             return pipelineDelegate(new RequestContext(

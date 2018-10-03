@@ -25,7 +25,7 @@ namespace Vostok.ClusterClient.Core
         public static ClusterResult Send(
             [NotNull] this IClusterClient client,
             [NotNull] Request request,
-            [CanBeNull] RequestParameters parameters,
+            [CanBeNull] RequestParameters parameters = null,
             [CanBeNull] TimeSpan? timeout = null,
             CancellationToken cancellationToken = default)
             => client.SendAsync(
