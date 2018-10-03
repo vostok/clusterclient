@@ -160,7 +160,6 @@ namespace Vostok.ClusterClient.Core
         /// <summary>
         /// <para>Gets or sets the options for request/response logging.</para>
         /// <para>This parameter is optional and has a <c>null</c> default value which implies default options will be used.</para>
-        /// <para>Use <see cref="ClusterClientConfigurationExtensions.SetupReplicaBudgeting"/> to set these options.</para>
         /// </summary>
         LoggingOptions Logging { get; set; }
 
