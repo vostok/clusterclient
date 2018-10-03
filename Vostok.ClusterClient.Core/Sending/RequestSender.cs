@@ -7,7 +7,6 @@ using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.ClusterClient.Core.Transport;
 using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Helpers;
 using Vostok.Commons.Time;
 using Vostok.Logging.Abstractions;
 
@@ -64,7 +63,7 @@ namespace Vostok.ClusterClient.Core.Sending
             {
                 var response = await transport.SendAsync(request, timeout, cancellationToken).ConfigureAwait(false);
                 if (response.Code == ResponseCode.Canceled)
-                    throw new OperationCanceledByServerException();
+                    throw new OperationCanceledException();
 
                 return response;
             }

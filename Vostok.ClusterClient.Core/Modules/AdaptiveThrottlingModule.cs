@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Helpers;
 using Vostok.Commons.Threading;
 using Vostok.Logging.Abstractions;
 
@@ -70,13 +69,10 @@ namespace Vostok.ClusterClient.Core.Modules
 
                 UpdateCounter(counter, result);
             }
-            catch (OperationCanceledByServerException)
-            {
-                throw;
-            }
             catch (OperationCanceledException)
             {
-                counter.AddAccept();
+                if (context.CancellationToken.IsCancellationRequested)
+                    counter.AddAccept();
                 throw;
             }
             finally
