@@ -43,7 +43,7 @@ namespace Vostok.ClusterClient.Core.Model
         private Request(
             [NotNull] string method,
             [NotNull] Uri url,
-            [NotNull] IStreamContent streamContent,
+            [CanBeNull] IStreamContent streamContent,
             [CanBeNull] Content content,
             [CanBeNull] Headers headers)
         {
