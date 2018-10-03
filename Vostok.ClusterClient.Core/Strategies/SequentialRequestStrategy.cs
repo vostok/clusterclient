@@ -28,9 +28,6 @@ namespace Vostok.ClusterClient.Core.Strategies
     {
         private readonly ISequentialTimeoutsProvider timeoutsProvider;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="SequentialRequestStrategy"/> class.
-        /// </summary>
         /// <param name="timeoutsProvider">A timeout provider which will be used by strategy.</param>
         public SequentialRequestStrategy([NotNull] ISequentialTimeoutsProvider timeoutsProvider)
         {

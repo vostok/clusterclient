@@ -26,9 +26,6 @@ namespace Vostok.ClusterClient.Core.Strategies
     [PublicAPI]
     public class ParallelRequestStrategy : IRequestStrategy
     {
-        /// <summary>
-        /// Initializes a new instance of <see cref="ParallelRequestStrategy"/> class.
-        /// </summary>
         /// <param name="parallelismLevel">A maximal parallelism level.</param>
         public ParallelRequestStrategy(int parallelismLevel)
         {

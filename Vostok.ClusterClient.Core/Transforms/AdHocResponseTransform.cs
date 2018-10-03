@@ -12,9 +12,6 @@ namespace Vostok.ClusterClient.Core.Transforms
     {
         private readonly Func<Response, Response> transform;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="AdHocResponseTransform"/> class.
-        /// </summary>
         /// <param name="transform">An external delegate which will be used to modify responses.</param>
         public AdHocResponseTransform(Func<Response, Response> transform)
         {

@@ -20,9 +20,6 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
     {
         private readonly int divisionFactor;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="EqualTimeoutsProvider"/> class.
-        /// </summary>
         /// <param name="divisionFactor">A division factor. See more in <see cref="EqualTimeoutsProvider"/> doc. Must be > 0.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="divisionFactor"/> is not a positive number.</exception>
         public EqualTimeoutsProvider(int divisionFactor)

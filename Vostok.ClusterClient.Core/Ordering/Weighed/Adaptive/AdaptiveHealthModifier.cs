@@ -21,9 +21,6 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
         private readonly ILog log;
         private readonly string storageKey;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="AdaptiveHealthModifier{THealth}"/> class.
-        /// </summary>
         public AdaptiveHealthModifier(IAdaptiveHealthImplementation<THealth> implementation, IAdaptiveHealthTuningPolicy tuningPolicy, ILog log)
         {
             this.implementation = implementation;

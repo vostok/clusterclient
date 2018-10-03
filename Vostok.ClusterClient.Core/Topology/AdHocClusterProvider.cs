@@ -12,9 +12,6 @@ namespace Vostok.ClusterClient.Core.Topology
     {
         private readonly Func<IList<Uri>> replicasProvider;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="AdHocClusterProvider"/> class.
-        /// </summary>
         /// <param name="replicasProvider">An external delegate which will provides replica urls.</param>
         public AdHocClusterProvider(Func<IList<Uri>> replicasProvider)
         {

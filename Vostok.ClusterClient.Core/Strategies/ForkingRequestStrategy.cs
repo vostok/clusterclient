@@ -36,9 +36,6 @@ namespace Vostok.ClusterClient.Core.Strategies
         private readonly IForkingDelaysPlanner delaysPlanner;
         private readonly int maximumParallelism;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="ForkingRequestStrategy"/> class.
-        /// </summary>
         public ForkingRequestStrategy([NotNull] IForkingDelaysProvider delaysProvider, int maximumParallelism)
             : this(delaysProvider, ForkingDelaysPlanner.Instance, maximumParallelism)
         {

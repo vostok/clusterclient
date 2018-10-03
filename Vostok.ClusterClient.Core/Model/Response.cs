@@ -16,9 +16,6 @@ namespace Vostok.ClusterClient.Core.Model
         private readonly Headers headers;
         private readonly Stream stream;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="Response"/> class.
-        /// </summary>
         public Response(
             ResponseCode code,
             [CanBeNull] Content content = null,

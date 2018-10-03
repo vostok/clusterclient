@@ -14,9 +14,6 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
         private readonly TimeSpan[] delays;
         private readonly TailDelayBehaviour tailBehaviour;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="FixedDelaysProvider"/> class.
-        /// </summary>
         public FixedDelaysProvider(TailDelayBehaviour tailBehaviour, [NotNull] params TimeSpan[] delays)
         {
             if (delays == null)

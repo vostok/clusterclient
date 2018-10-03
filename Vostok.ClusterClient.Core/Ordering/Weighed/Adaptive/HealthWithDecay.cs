@@ -17,9 +17,6 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
         /// </summary>
         public readonly DateTime DecayPivot;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="HealthWithDecay"/> class.
-        /// </summary>
         public HealthWithDecay(double value, DateTime decayPivot)
         {
             Value = value;

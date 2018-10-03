@@ -16,9 +16,6 @@ namespace Vostok.ClusterClient.Core.Model
     [PublicAPI]
     public class Request
     {
-        /// <summary>
-        /// Initializes a new instance of <see cref="Request"/> class.
-        /// </summary>
         public Request(
             [NotNull] string method,
             [NotNull] Uri url,
@@ -28,9 +25,6 @@ namespace Vostok.ClusterClient.Core.Model
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="Request"/> class.
-        /// </summary>
         public Request(
             [NotNull] string method,
             [NotNull] Uri url,

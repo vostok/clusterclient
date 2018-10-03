@@ -15,9 +15,6 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
         private readonly Func<TimeSpan>[] providers;
         private readonly TailTimeoutBehaviour tailBehaviour;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="AdHocTimeoutsProvider"/> class.
-        /// </summary>
         /// <param name="tailBehaviour">>A behaviour in case when provided timeout values are exhausted.</param>
         /// <param name="providers">An external delegates which will be used to obtain request timeouts.</param>
         public AdHocTimeoutsProvider(TailTimeoutBehaviour tailBehaviour, [NotNull] params Func<TimeSpan>[] providers)

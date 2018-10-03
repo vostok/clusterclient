@@ -14,9 +14,6 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
         private readonly EqualDelaysProvider equalProvider;
         private readonly int fixedDelaysCount;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="AdHocThenEqualDelaysProvider"/> class.
-        /// </summary>
         public AdHocThenEqualDelaysProvider(int tailDivisionFactor, [NotNull] params Func<TimeSpan>[] firstDelays)
         {
             equalProvider = new EqualDelaysProvider(tailDivisionFactor);

@@ -17,9 +17,6 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
     {
         private readonly IAdaptiveHealthTuningPolicy[] policies;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="CompositeTuningPolicy"/> class.
-        /// </summary>
         public CompositeTuningPolicy([NotNull] params IAdaptiveHealthTuningPolicy[] policies)
         {
             this.policies = policies ?? throw new ArgumentNullException(nameof(policies));

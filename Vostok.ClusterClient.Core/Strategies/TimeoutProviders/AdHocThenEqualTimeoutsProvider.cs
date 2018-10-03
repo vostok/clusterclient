@@ -14,9 +14,6 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
         private readonly EqualTimeoutsProvider equalProvider;
         private readonly int fixedTimeoutsCount;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="AdHocThenEqualTimeoutsProvider"/> class.
-        /// </summary>
         /// <param name="tailDivisionFactor">A division factor for <see cref="EqualTimeoutsProvider"/>.</param>
         /// <param name="firstTimeouts">An external delegates which will be used to obtain first request timeouts.</param>
         public AdHocThenEqualTimeoutsProvider(int tailDivisionFactor, [NotNull] params Func<TimeSpan>[] firstTimeouts)

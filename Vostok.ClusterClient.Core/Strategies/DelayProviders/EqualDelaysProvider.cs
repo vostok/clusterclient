@@ -13,9 +13,6 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
     {
         private readonly int divisionFactor;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="EqualDelaysProvider"/> class.
-        /// </summary>
         public EqualDelaysProvider(int divisionFactor)
         {
             if (divisionFactor <= 0)

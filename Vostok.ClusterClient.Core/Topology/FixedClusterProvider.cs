@@ -12,9 +12,6 @@ namespace Vostok.ClusterClient.Core.Topology
     {
         private readonly IList<Uri> replicas;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="FixedClusterProvider"/> class.
-        /// </summary>
         /// <param name="replicas">A list of replica <see cref="Uri"/> which this provider should return.</param>
         public FixedClusterProvider(IList<Uri> replicas)
         {
