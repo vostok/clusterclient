@@ -23,7 +23,6 @@ namespace Vostok.ClusterClient.Core.Model
         private readonly ImmutableArrayDictionary<string, string> headers;
 
         /// <param name="capacity">Initial capacity of headers collection.</param>
-        [PublicAPI]
         public Headers(int capacity)
             : this(new ImmutableArrayDictionary<string, string>(capacity, StringComparer.OrdinalIgnoreCase))
         {

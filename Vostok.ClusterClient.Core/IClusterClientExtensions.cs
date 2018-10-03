@@ -21,7 +21,7 @@ namespace Vostok.ClusterClient.Core
         /// <para>See <see cref="IRequestStrategy.SendAsync"/> for more details about what a request strategy is.</para>
         /// <para>See <see cref="Strategy"/> class for some prebuilt strategies and convenient factory methods.</para>
         /// </summary>
-        [PublicAPI, NotNull]
+        [NotNull]
         public static ClusterResult Send(
             [NotNull] this IClusterClient client,
             [NotNull] Request request,
@@ -42,7 +42,7 @@ namespace Vostok.ClusterClient.Core
         /// <para>See <see cref="IRequestStrategy.SendAsync"/> for more details about what a request strategy is.</para>
         /// <para>See <see cref="Strategy"/> class for some prebuilt strategies and convenient factory methods.</para>
         /// </summary>
-        [PublicAPI, ItemNotNull]
+        [ItemNotNull]
         public static Task<ClusterResult> SendAsync(
             [NotNull] this IClusterClient client,
             [NotNull] Request request,
@@ -66,7 +66,6 @@ namespace Vostok.ClusterClient.Core
         /// <para>See <see cref="IRequestStrategy.SendAsync"/> for more details about what a request strategy is.</para>
         /// <para>See <see cref="Strategy"/> class for some prebuilt strategies and convenient factory methods.</para>
         /// </summary>
-        [PublicAPI]
         public static ClusterResult Send(
             [NotNull] this IClusterClient client,
             [NotNull] Request request,
