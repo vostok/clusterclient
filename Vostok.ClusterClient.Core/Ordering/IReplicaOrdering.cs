@@ -13,7 +13,7 @@ namespace Vostok.ClusterClient.Core.Ordering
     public interface IReplicaOrdering
     {
         /// <summary>
-        /// <para>Returns given <paramref name="replicas"/> in the order they should be contacted for given <paramref name="request"/>.</para>
+        /// <para>Returns given <paramref name="replicas"/> in the order they should be contacted for given <paramref name="request"/> and <paramref name="parameters"/>.</para>
         /// <para>Replicas list is guaranteed to contain at least one replica.</para>
         /// <para>Implementations may use <paramref name="storageProvider"/> to fetch previously stored information about replicas.</para>
         /// <para>Implementations must satisfy following requirements:</para>
@@ -28,7 +28,8 @@ namespace Vostok.ClusterClient.Core.Ordering
         IEnumerable<Uri> Order(
             [NotNull] [ItemNotNull] IList<Uri> replicas,
             [NotNull] IReplicaStorageProvider storageProvider,
-            [NotNull] Request request);
+            [NotNull] Request request,
+            [NotNull] RequestParameters parameters);
 
         /// <summary>
         /// <para>Receives feedback via <see cref="ReplicaResult"/> obtained while sending request.</para>

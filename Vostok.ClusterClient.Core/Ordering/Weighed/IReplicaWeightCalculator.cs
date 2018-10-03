@@ -12,6 +12,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
             [NotNull] Uri replica,
             [NotNull] IList<Uri> allReplicas,
             [NotNull] IReplicaStorageProvider storageProvider,
-            [NotNull] Request request);
+            [NotNull] Request request,
+            [NotNull] RequestParameters parameters);
     }
 }

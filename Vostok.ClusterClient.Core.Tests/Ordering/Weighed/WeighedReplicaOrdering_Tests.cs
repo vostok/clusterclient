@@ -21,6 +21,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
         private Uri[] replicas;
 
         private Request request;
+        private RequestParameters parameters;
         private List<IReplicaWeightModifier> modifiers;
         private IReplicaWeightCalculator weightCalculator;
         private IReplicaStorageProvider storageProvider;
@@ -30,6 +31,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
         public void TestSetup()
         {
             request = Request.Get("foo/bar");
+            parameters = RequestParameters.Empty;
 
             replicas = new[]
             {
@@ -50,7 +52,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
             storageProvider = Substitute.For<IReplicaStorageProvider>();
 
             weightCalculator = Substitute.For<IReplicaWeightCalculator>();
-            weightCalculator.GetWeight(null, null, null, null).ReturnsForAnyArgs(1.0);
+            weightCalculator.GetWeight(null, null, null, null, null).ReturnsForAnyArgs(1.0);
 
             ordering = new WeighedReplicaOrdering(modifiers, weightCalculator);
         }
@@ -75,7 +77,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
 
             foreach (var replica in replicas)
             {
-                weightCalculator.Received(1).GetWeight(replica, replicas, storageProvider, request);
+                weightCalculator.Received(1).GetWeight(replica, replicas, storageProvider, request, parameters);
             }
         }
 
@@ -211,12 +213,12 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
 
         private void SetupWeight(Uri replica, double weight)
         {
-            weightCalculator.GetWeight(replica, Arg.Any<IList<Uri>>(), storageProvider, request).Returns(weight);
+            weightCalculator.GetWeight(replica, Arg.Any<IList<Uri>>(), storageProvider, request, parameters).Returns(weight);
         }
 
         private IEnumerable<Uri> Order()
         {
-            return ordering.Order(replicas, storageProvider, request);
+            return ordering.Order(replicas, storageProvider, request, parameters);
         }
 
         private Dictionary<Uri, int> ComputeDistribution(int iterations)

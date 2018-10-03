@@ -34,7 +34,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Leadership
         }
 
         /// <inheritdoc />
-        public void Modify(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request, ref double weight)
+        public void Modify(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request, RequestParameters parameters, ref double weight)
         {
             if (!IsLeader(replica, storageProvider.Obtain<bool>(StorageKey)))
                 weight = 0.0;

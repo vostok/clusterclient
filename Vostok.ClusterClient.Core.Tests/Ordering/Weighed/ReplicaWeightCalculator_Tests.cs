@@ -20,6 +20,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
         private Uri replica;
         private IList<Uri> replicas;
         private Request request;
+        private RequestParameters parameters;
         private IReplicaStorageProvider storageProvider;
         private List<IReplicaWeightModifier> modifiers;
         private ReplicaWeightCalculator calculator;
@@ -30,6 +31,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
             replica = new Uri("http://replica");
             replicas = new List<Uri> {replica};
             request = Request.Get("foo/bar");
+            parameters = RequestParameters.Empty;
             modifiers = new List<IReplicaWeightModifier>();
             storageProvider = Substitute.For<IReplicaStorageProvider>();
             calculator = new ReplicaWeightCalculator(modifiers, MinWeight, MaxWeight, InitialWeight);
@@ -78,7 +80,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
         [Test]
         public void GetWeight_should_return_initial_weight_when_there_are_no_modifiers()
         {
-            calculator.GetWeight(replica, replicas, storageProvider, request).Should().Be(InitialWeight);
+            calculator.GetWeight(replica, replicas, storageProvider, request, parameters).Should().Be(InitialWeight);
         }
 
         [Test]
@@ -88,7 +90,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
             modifiers.Add(CreateModifier(w => w*2));
             modifiers.Add(CreateModifier(w => w + 3));
 
-            calculator.GetWeight(replica, replicas, storageProvider, request).Should().Be(7.0);
+            calculator.GetWeight(replica, replicas, storageProvider, request, parameters).Should().Be(7.0);
 
             Received.InOrder(() =>
             {
@@ -96,9 +98,9 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
                 var w2 = w1 + 1;
                 var w3 = w2*2;
 
-                modifiers[0].Modify(replica, replicas, storageProvider, request, ref w1);
-                modifiers[1].Modify(replica, replicas, storageProvider, request, ref w2);
-                modifiers[2].Modify(replica, replicas, storageProvider, request, ref w3);
+                modifiers[0].Modify(replica, replicas, storageProvider, request, parameters, ref w1);
+                modifiers[1].Modify(replica, replicas, storageProvider, request, parameters, ref w2);
+                modifiers[2].Modify(replica, replicas, storageProvider, request, parameters, ref w3);
             });
         }
 
@@ -109,7 +111,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
             modifiers.Add(CreateModifier(w => -100.0));
             modifiers.Add(CreateModifier(w => w + 2));
 
-            calculator.GetWeight(replica, replicas, storageProvider, request).Should().Be(2.0);
+            calculator.GetWeight(replica, replicas, storageProvider, request, parameters).Should().Be(2.0);
 
             Received.InOrder(() =>
             {
@@ -117,9 +119,9 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
                 var w2 = MaxWeight;
                 var w3 = MinWeight;
 
-                modifiers[0].Modify(replica, replicas, storageProvider, request, ref w1);
-                modifiers[1].Modify(replica, replicas, storageProvider, request, ref w2);
-                modifiers[2].Modify(replica, replicas, storageProvider, request, ref w3);
+                modifiers[0].Modify(replica, replicas, storageProvider, request, parameters, ref w1);
+                modifiers[1].Modify(replica, replicas, storageProvider, request, parameters, ref w2);
+                modifiers[2].Modify(replica, replicas, storageProvider, request, parameters, ref w3);
             });
         }
 
@@ -128,7 +130,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
         {
             calculator = new ReplicaWeightCalculator(modifiers, MinWeight, MaxWeight, double.NaN);
 
-            calculator.GetWeight(replica, replicas, storageProvider, request).Should().Be(0);
+            calculator.GetWeight(replica, replicas, storageProvider, request, parameters).Should().Be(0);
         }
 
         private static IReplicaWeightModifier CreateModifier(Func<double, double> transform)
@@ -138,7 +140,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
             var dummy = 0.0;
 
             modifier
-                .WhenForAnyArgs(m => m.Modify(null, null, null, null, ref dummy))
+                .WhenForAnyArgs(m => m.Modify(null, null, null, null, null, ref dummy))
                 .Do(info => { info[4] = transform(info.Arg<double>()); });
 
             return modifier;

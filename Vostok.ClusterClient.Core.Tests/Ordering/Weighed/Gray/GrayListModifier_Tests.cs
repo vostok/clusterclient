@@ -21,6 +21,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
         private Uri replica2;
         private IList<Uri> replicas;
         private Request request;
+        private RequestParameters parameters;
         private DateTime currentTime;
         private ConcurrentDictionary<Uri, DateTime> storage;
 
@@ -36,6 +37,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
             weight = 1.0;
             request = Request.Get("foo/bar");
             replica1 = new Uri("http://replica1");
+            parameters = RequestParameters.Empty;
             storage = new ConcurrentDictionary<Uri, DateTime>();
            
             storageProvider = Substitute.For<IReplicaStorageProvider>();
@@ -109,7 +111,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
         {
             storage[replica1] = currentTime;
 
-            modifier.Modify(replica2, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica2, replicas, storageProvider, request, parameters, ref weight);
 
             weight.Should().Be(1.0);
         }
@@ -119,7 +121,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
         {
             storage[replica1] = currentTime - 5.Minutes() - 1.Seconds();
 
-            modifier.Modify(replica1, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica1, replicas, storageProvider, request, parameters, ref weight);
 
             weight.Should().Be(1.0);
         }
@@ -129,7 +131,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
         {
             storage[replica1] = currentTime - 5.Minutes() - 1.Seconds();
 
-            modifier.Modify(replica1, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica1, replicas, storageProvider, request, parameters, ref weight);
 
             storage.Should().NotContainKey(replica1);
         }
@@ -139,7 +141,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
         {
             storage[replica1] = currentTime - 4.Minutes();
 
-            modifier.Modify(replica1, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica1, replicas, storageProvider, request, parameters, ref weight);
 
             weight.Should().Be(0.0);
         }
@@ -149,7 +151,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
         {
             storage[replica1] = currentTime - 4.Minutes();
 
-            modifier.Modify(replica1, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica1, replicas, storageProvider, request, parameters, ref weight);
 
             storage.Should().ContainKey(replica1);
         }

@@ -49,7 +49,7 @@ namespace Vostok.ClusterClient.Core.Modules
             var contextualSender = new ContextualRequestSender(requestSender, contextImpl);
 
             var maxReplicasToUse = context.MaximumReplicasToUse;
-            var orderedReplicas = replicaOrdering.Order(replicas, storageProvider, contextImpl.Request);
+            var orderedReplicas = replicaOrdering.Order(replicas, storageProvider, contextImpl.Request, contextImpl.Parameters);
             var limitedReplicas = orderedReplicas.Take(maxReplicasToUse);
 
             await contextImpl.Parameters.Strategy.SendAsync(

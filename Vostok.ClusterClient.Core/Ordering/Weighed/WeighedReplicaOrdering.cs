@@ -60,26 +60,26 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
         }
 
         /// <inheritdoc />
-        public IEnumerable<Uri> Order(IList<Uri> replicas, IReplicaStorageProvider storageProvider, Request request)
+        public IEnumerable<Uri> Order(IList<Uri> replicas, IReplicaStorageProvider storageProvider, Request request, RequestParameters parameters)
         {
             if (replicas.Count < 2)
                 return replicas;
 
             var requiredCapacity = replicas.Count * 2;
             if (requiredCapacity > PooledArraySize)
-                return OrderInternal(replicas, storageProvider, request, new TreeNode[requiredCapacity]);
+                return OrderInternal(replicas, storageProvider, request, parameters, new TreeNode[requiredCapacity]);
 
-            return OrderUsingPooledArray(replicas, storageProvider, request);
+            return OrderUsingPooledArray(replicas, storageProvider, request, parameters);
         }
 
-        private IEnumerable<Uri> OrderUsingPooledArray(IList<Uri> replicas, IReplicaStorageProvider storageProvider, Request request)
+        private IEnumerable<Uri> OrderUsingPooledArray(IList<Uri> replicas, IReplicaStorageProvider storageProvider, Request request, RequestParameters parameters)
         {
             using (TreeArrays.Acquire(out var treeArray))
-                foreach (var replica in OrderInternal(replicas, storageProvider, request, treeArray))
+                foreach (var replica in OrderInternal(replicas, storageProvider, request, parameters, treeArray))
                     yield return replica;
         }
 
-        private IEnumerable<Uri> OrderInternal(IList<Uri> replicas, IReplicaStorageProvider storageProvider, Request request, TreeNode[] tree)
+        private IEnumerable<Uri> OrderInternal(IList<Uri> replicas, IReplicaStorageProvider storageProvider, Request request, RequestParameters parameters, TreeNode[] tree)
         {
             var replicasWithInfiniteWeight = null as List<Uri>;
             var replicasWithZeroWeight = null as List<Uri>;
@@ -87,7 +87,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
             CleanupTree(tree);
 
             // (iloktionov): Построим суммирующее дерево отрезков, листьями в котором будут являться реплики со своими весами. В корне этого дерева будет сумма весов всех реплик. 
-            BuildTree(tree, replicas, storageProvider, request, ref replicasWithInfiniteWeight, ref replicasWithZeroWeight);
+            BuildTree(tree, replicas, storageProvider, request, parameters, ref replicasWithInfiniteWeight, ref replicasWithZeroWeight);
 
             // (iloktionov): Реплики с бесконечным весом должны иметь безусловный приоритет, при этом случайно переупорядочиваясь между собой:
             if (replicasWithInfiniteWeight != null)
@@ -131,13 +131,14 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
             IList<Uri> replicas,
             IReplicaStorageProvider storageProvider,
             Request request,
+            RequestParameters parameters,
             ref List<Uri> replicasWithInfiniteWeight,
             ref List<Uri> replicasWithZeroWeight)
         {
             for (var i = 0; i < replicas.Count; i++)
             {
                 var replica = replicas[i];
-                var weight = weightCalculator.GetWeight(replica, replicas, storageProvider, request);
+                var weight = weightCalculator.GetWeight(replica, replicas, storageProvider, request, parameters);
 
                 if (weight < 0.0)
                     throw new BugcheckException($"A negative weight has been calculated for replica '{replica}': {weight}.");

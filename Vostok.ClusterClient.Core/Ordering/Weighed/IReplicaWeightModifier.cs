@@ -14,7 +14,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
     public interface IReplicaWeightModifier
     {
         /// <summary>
-        /// <para>Modifies current <paramref name="weight"/> of given <paramref name="replica"/> for given <paramref name="request"/></para>
+        /// <para>Modifies current <paramref name="weight"/> of given <paramref name="replica"/> for given <paramref name="request"/> and <paramref name="parameters"/>.</para>
         /// <para>Implementations may use <paramref name="storageProvider"/> to fetch previously stored information about replicas.</para>
         /// <para>Implementations of this method MUST BE thread-safe.</para>
         /// </summary>
@@ -23,6 +23,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
             [NotNull] IList<Uri> allReplicas,
             [NotNull] IReplicaStorageProvider storageProvider,
             [NotNull] Request request,
+            [NotNull] RequestParameters parameters,
             ref double weight);
 
         /// <summary>

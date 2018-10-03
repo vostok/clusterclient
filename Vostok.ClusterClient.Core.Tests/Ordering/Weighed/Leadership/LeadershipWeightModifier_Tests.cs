@@ -18,6 +18,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Leadership
         private IList<Uri> replicas;
         private Request request;
         private Response response;
+        private RequestParameters parameters;
         private ReplicaResult result;
 
         private double weight;
@@ -33,6 +34,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Leadership
             replica = new Uri("http://replica");
             replicas = new List<Uri> {replica};
             request = Request.Get("foo/bar");
+            parameters = RequestParameters.Empty;
             response = new Response(ResponseCode.Ok);
             result = new ReplicaResult(replica, response, ResponseVerdict.Accept, TimeSpan.Zero);
             weight = 1.0;
@@ -47,7 +49,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Leadership
         [Test]
         public void Modify_should_zero_out_the_weight_if_there_is_no_info_stored_about_replica()
         {
-            modifier.Modify(replica, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica, replicas, storageProvider, request, parameters, ref weight);
 
             weight.Should().Be(0.0);
         }
@@ -57,7 +59,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Leadership
         {
             storage[replica] = false;
 
-            modifier.Modify(replica, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica, replicas, storageProvider, request, parameters, ref weight);
 
             weight.Should().Be(0.0);
         }
@@ -67,7 +69,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Leadership
         {
             storage[replica] = true;
 
-            modifier.Modify(replica, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica, replicas, storageProvider, request, parameters, ref weight);
 
             weight.Should().Be(1.0);
         }

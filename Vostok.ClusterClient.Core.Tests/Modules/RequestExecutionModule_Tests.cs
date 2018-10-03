@@ -75,7 +75,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             requestSender.SendToReplicaAsync(Arg.Any<ITransport>(), replica2, Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).ReturnsTask(_ => result2);
 
             replicaOrdering = Substitute.For<IReplicaOrdering>();
-            replicaOrdering.Order(null, null, null).ReturnsForAnyArgs(info => info.Arg<IList<Uri>>().Reverse());
+            replicaOrdering.Order(null, null, null, null).ReturnsForAnyArgs(info => info.Arg<IList<Uri>>().Reverse());
 
             responseSelector = Substitute.For<IResponseSelector>();
             responseSelector.Select(null, null, null).ReturnsForAnyArgs(_ => selectedResponse);
@@ -109,7 +109,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             Execute();
 
-            replicaOrdering.Received().Order(Arg.Is<IList<Uri>>(urls => urls.SequenceEqual(new[] {replica1, replica2})), storageProvider, context.Request);
+            replicaOrdering.Received().Order(Arg.Is<IList<Uri>>(urls => urls.SequenceEqual(new[] {replica1, replica2})), storageProvider, context.Request, context.Parameters);
         }
 
         [Test]

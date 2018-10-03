@@ -34,7 +34,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
         }
 
         /// <inheritdoc />
-        public void Modify(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request, ref double weight)
+        public void Modify(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request, RequestParameters parameters, ref double weight)
         {
             if (storageProvider.Obtain<THealth>(storageKey).TryGetValue(replica, out var currentHealth))
                 implementation.ModifyWeight(currentHealth, ref weight);
