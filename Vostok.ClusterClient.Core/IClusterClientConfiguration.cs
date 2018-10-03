@@ -176,7 +176,7 @@ namespace Vostok.ClusterClient.Core
         string ServiceName { get; set; }
 
         /// <summary>
-        /// <para>Gets or sets the environment.</para>
+        /// <para>Gets or sets the target service environment.</para>
         /// <para>This parameter is optional and has no default value.</para>
         /// </summary>
         string Environment { get; set; }
