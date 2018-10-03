@@ -60,7 +60,7 @@ namespace Vostok.ClusterClient.Core.Model
         }
 
         /// <returns>New instance of <see cref="RequestParameters"/> with specified <paramref name="strategy"/>.</returns>
-        public RequestParameters WithStrategy([NotNull] IRequestStrategy strategy)
+        public RequestParameters WithStrategy([CanBeNull] IRequestStrategy strategy)
             => new RequestParameters(strategy, Priority, properties);
 
         /// <returns>New instance of <see cref="RequestParameters"/> with specified <paramref name="priority"/>.</returns>
