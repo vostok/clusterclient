@@ -11,15 +11,16 @@ namespace Vostok.ClusterClient.Core.Retry
     [PublicAPI]
     public class AdHocRetryPolicy : IRetryPolicy
     {
-        private readonly Predicate<IList<ReplicaResult>> criterion;
+        private readonly Func<Request, RequestParameters, IList<ReplicaResult>, bool> criterion;
 
         /// <param name="criterion">An external predicate which will be used to make a decision.</param>
-        public AdHocRetryPolicy(Predicate<IList<ReplicaResult>> criterion)
+        public AdHocRetryPolicy(Func<Request, RequestParameters, IList<ReplicaResult>, bool> criterion)
         {
             this.criterion = criterion;
         }
 
         /// <inheritdoc />
-        public bool NeedToRetry(Request request, RequestParameters parameters, IList<ReplicaResult> results) => criterion(results);
+        public bool NeedToRetry(Request request, RequestParameters parameters, IList<ReplicaResult> results)
+            => criterion(request, parameters, results);
     }
 }
