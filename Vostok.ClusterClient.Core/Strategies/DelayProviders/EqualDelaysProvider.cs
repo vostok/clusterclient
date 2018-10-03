@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.Commons.Time;
 
@@ -7,6 +8,7 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
     /// <summary>
     /// <para>Represents a delay provider which divides whole time budget by a fixed number (called division factor) and issues resulting value as a forking delay for all requests.</para>
     /// </summary>
+    [PublicAPI]
     public class EqualDelaysProvider : IForkingDelaysProvider
     {
         private readonly int divisionFactor;

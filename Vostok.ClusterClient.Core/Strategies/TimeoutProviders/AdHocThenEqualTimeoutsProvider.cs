@@ -7,6 +7,7 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
     /// <summary>
     /// Represents a timeout provider that combines a <see cref="AdHocTimeoutsProvider"/> for first few requests and uses an <see cref="EqualTimeoutsProvider"/> for the rest of them.
     /// </summary>
+    [PublicAPI]
     public class AdHocThenEqualTimeoutsProvider : ISequentialTimeoutsProvider
     {
         private readonly AdHocTimeoutsProvider adHocProvider;

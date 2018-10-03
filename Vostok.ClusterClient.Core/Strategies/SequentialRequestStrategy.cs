@@ -23,6 +23,7 @@ namespace Vostok.ClusterClient.Core.Strategies
     ///          ↑ failure(replica1)         ↑ failure(replica2)       ↑ success(replica3)
     /// </code>
     /// </example>
+    [PublicAPI]
     public class SequentialRequestStrategy : IRequestStrategy
     {
         private readonly ISequentialTimeoutsProvider timeoutsProvider;

@@ -1,10 +1,12 @@
-﻿using Vostok.ClusterClient.Core.Model;
+﻿using JetBrains.Annotations;
+using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Criteria
 {
     /// <summary>
     /// Represents a criterion which accepts any response with <see cref="HeaderNames.DontRetry" /> header.
     /// </summary>
+    [PublicAPI]
     public class AcceptNonRetriableCriterion : IResponseCriterion
     {
         /// <inheritdoc />

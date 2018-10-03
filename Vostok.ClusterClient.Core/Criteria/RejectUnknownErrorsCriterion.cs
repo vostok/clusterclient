@@ -1,10 +1,12 @@
-﻿using Vostok.ClusterClient.Core.Model;
+﻿using JetBrains.Annotations;
+using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Criteria
 {
     /// <summary>
     /// Represents a criterion which rejects responses with <see cref="ResponseCode.Unknown"/>, and <see cref="ResponseCode.UnknownFailure"/> codes.
     /// </summary>
+    [PublicAPI]
     public class RejectUnknownErrorsCriterion : IResponseCriterion
     {
         /// <inheritdoc />

@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 
 namespace Vostok.ClusterClient.Core.Model
 {
     /// <summary>
     /// Represents a multiple header values with quality defined in RFC 7231 5.3.1.
     /// </summary>
+    [PublicAPI]
     public class HeaderValuesWithQualityCollection : IEnumerable<HeaderValueWithQuality>
     {
         private static readonly char[] ValueSeparator = {','};

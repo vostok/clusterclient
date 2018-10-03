@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Sending;
 
@@ -17,6 +18,7 @@ namespace Vostok.ClusterClient.Core.Strategies
     /// o--------------------- (replica) -----------> V (success)
     /// </code>
     /// </example>
+    [PublicAPI]
     public class SingleReplicaRequestStrategy : IRequestStrategy
     {
         /// <inheritdoc />

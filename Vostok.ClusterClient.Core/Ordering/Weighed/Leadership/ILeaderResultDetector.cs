@@ -6,6 +6,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Leadership
     /// <summary>
     /// Determines leader of cluster by <see cref="ReplicaResult"/>.
     /// </summary>
+    [PublicAPI]
     public interface ILeaderResultDetector
     {
         /// <summary>

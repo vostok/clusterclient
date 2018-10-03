@@ -21,6 +21,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
     /// <para>Developer's goal is to manipulate replica weights via <see cref="IReplicaWeightModifier"/>s to produce best possible results.</para>
     /// <para>Feedback from <see cref="Learn"/> method is forwarded to all modifiers.</para>
     /// </summary>
+    [PublicAPI]
     public class WeighedReplicaOrdering : IReplicaOrdering
     {
         private const int PooledArraySize = 50;

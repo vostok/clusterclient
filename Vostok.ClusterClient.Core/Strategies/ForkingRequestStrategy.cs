@@ -29,6 +29,7 @@ namespace Vostok.ClusterClient.Core.Strategies
     /// | delay1  |  delay2 |             ↑ failure(replica2)  ↑ success(replica3)
     /// </code>
     /// </example>
+    [PublicAPI]
     public class ForkingRequestStrategy : IRequestStrategy
     {
         private readonly IForkingDelaysProvider delaysProvider;

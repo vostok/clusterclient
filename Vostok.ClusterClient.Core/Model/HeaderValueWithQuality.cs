@@ -1,12 +1,14 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using JetBrains.Annotations;
 
 namespace Vostok.ClusterClient.Core.Model
 {
     /// <summary>
     /// Represent a header Quality Value defined in RFC 7231 5.3.1.
     /// </summary>
+    [PublicAPI]
     public class HeaderValueWithQuality
     {
         /// <param name="value">Header value.</param>

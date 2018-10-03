@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using Vostok.Commons.Threading;
 using Vostok.Commons.Time;
 
@@ -7,6 +8,7 @@ namespace Vostok.ClusterClient.Core.Retry
     /// <summary>
     /// Represents a retry strategy with fixed attempts count and a linearly increasing delay between attempts.
     /// </summary>
+    [PublicAPI]
     public class LinearBackoffRetryStrategy : IRetryStrategy
     {
         /// <param name="attemptsCount">Maximum attempts count.</param>

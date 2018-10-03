@@ -8,6 +8,7 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
     /// <summary>
     /// Represents a delay provider which issues delays from a fixed set of values.
     /// </summary>
+    [PublicAPI]
     public class FixedDelaysProvider : IForkingDelaysProvider
     {
         private readonly TimeSpan[] delays;

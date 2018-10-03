@@ -7,6 +7,7 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
     /// <summary>
     /// Represents a delay provider that combines a <see cref="AdHocDelaysProvider"/> for first few requests and uses an <see cref="EqualDelaysProvider"/> for the rest of them.
     /// </summary>
+    [PublicAPI]
     public class AdHocThenEqualDelaysProvider : IForkingDelaysProvider
     {
         private readonly AdHocDelaysProvider adHocProvider;

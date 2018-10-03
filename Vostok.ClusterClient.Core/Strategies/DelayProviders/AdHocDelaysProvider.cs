@@ -8,6 +8,7 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
     /// <summary>
     /// Represents a delay provider which issues delays using a fixed set of external delegates.
     /// </summary>
+    [PublicAPI]
     public class AdHocDelaysProvider : IForkingDelaysProvider
     {
         private readonly Func<TimeSpan>[] providers;

@@ -1,4 +1,5 @@
-﻿using Vostok.ClusterClient.Core.Model;
+﻿using JetBrains.Annotations;
+using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
 {
@@ -9,6 +10,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
     /// <item><description><see cref="ResponseVerdict.Reject"/> verdict leads to <see cref="AdaptiveHealthAction.Decrease"/> of replica health.</description></item>
     /// </list>
     /// </summary>
+    [PublicAPI]
     public class ResponseVerdictTuningPolicy : IAdaptiveHealthTuningPolicy
     {
         /// <inheritdoc />

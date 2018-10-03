@@ -1,10 +1,12 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace Vostok.ClusterClient.Core.Retry
 {
     /// <summary>
     /// Represents a retry strategy with fixed attempts count and a constant delay between attempts.
     /// </summary>
+    [PublicAPI]
     public class ConstantDelayRetryStrategy : IRetryStrategy
     {
         /// <param name="attemptsCount">Maximum attempts count.</param>

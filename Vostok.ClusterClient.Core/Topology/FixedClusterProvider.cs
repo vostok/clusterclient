@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Vostok.ClusterClient.Core.Topology
 {
     /// <summary>
     /// Represents a cluster provider which always returns a fixed list of urls.
     /// </summary>
+    [PublicAPI]
     public class FixedClusterProvider : IClusterProvider
     {
         private readonly IList<Uri> replicas;

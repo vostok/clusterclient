@@ -7,6 +7,7 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
     /// <summary>
     /// Represents a timeout provider which issues timeouts for <see cref="SequentialRequestStrategy"/>.
     /// </summary>
+    [PublicAPI]
     public interface ISequentialTimeoutsProvider
     {
         /// <summary>

@@ -7,6 +7,7 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
     /// <summary>
     /// Represents a timeout provider that combines a <see cref="FixedDelaysProvider"/> for first few requests and uses an <see cref="EqualDelaysProvider"/> for the rest of them.
     /// </summary>
+    [PublicAPI]
     public class FixedThenEqualDelaysProvider : IForkingDelaysProvider
     {
         private readonly FixedDelaysProvider fixedProvider;

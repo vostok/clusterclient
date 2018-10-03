@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.Logging.Abstractions;
@@ -16,6 +17,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Leadership
     /// <para>A reservist becomes a leader when an implementation of <see cref="ILeaderResultDetector.IsLeaderResult"/> returns <c>true</c> for its response.</para>
     /// <para>A leader becomes a reservist when an implementation of <see cref="ILeaderResultDetector.IsLeaderResult"/> returns <c>false</c> for its response.</para>
     /// </summary>
+    [PublicAPI]
     public class LeadershipWeightModifier : IReplicaWeightModifier
     {
         private static readonly string StorageKey = typeof(LeadershipWeightModifier).FullName;

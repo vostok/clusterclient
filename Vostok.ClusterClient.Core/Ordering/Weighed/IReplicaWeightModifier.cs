@@ -10,6 +10,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
     /// <para>Represents a modifier used to manipulate replica weights in <see cref="WeighedReplicaOrdering"/>.</para>
     /// <para>Modifiers form a chain where each one sees the weight already modified by all previous modifiers.</para>
     /// </summary>
+    [PublicAPI]
     public interface IReplicaWeightModifier
     {
         /// <summary>

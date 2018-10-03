@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Criteria
@@ -5,6 +6,7 @@ namespace Vostok.ClusterClient.Core.Criteria
     /// <summary>
     /// Represents a criterion which rejects responses with <see cref="ResponseCode.TooManyRequests"/> code.
     /// </summary>
+    [PublicAPI]
     public class RejectThrottlingErrorsCriterion : IResponseCriterion
     {
         /// <inheritdoc />

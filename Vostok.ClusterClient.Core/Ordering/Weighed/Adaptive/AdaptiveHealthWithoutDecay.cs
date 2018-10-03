@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
@@ -11,6 +12,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
     /// <para>Health application is just a multiplication of health value and current weight (health = 0.5 causes weight = 2 to turn into 1).</para>
     /// <para>This health implementation can only decrease replica weights as it's aim is to avoid misbehaving replicas.</para>
     /// </summary>
+    [PublicAPI]
     public class AdaptiveHealthWithoutDecay : IAdaptiveHealthImplementation<double>
     {
         private const double MaximumHealthValue = 1.0;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.Logging.Abstractions;
@@ -12,6 +13,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
     /// <para>The actions to be taken on replica health in response to observed <see cref="ReplicaResult"/>s are defined by <see cref="IAdaptiveHealthTuningPolicy"/> instance.</para>
     /// </summary>
     /// <typeparam name="THealth">Type of health values used in <see cref="IAdaptiveHealthImplementation{THealth}"/>.</typeparam>
+    [PublicAPI]
     public class AdaptiveHealthModifier<THealth> : IReplicaWeightModifier
     {
         private readonly IAdaptiveHealthImplementation<THealth> implementation;

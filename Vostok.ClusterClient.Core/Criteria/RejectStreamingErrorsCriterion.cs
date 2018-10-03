@@ -1,10 +1,12 @@
-﻿using Vostok.ClusterClient.Core.Model;
+﻿using JetBrains.Annotations;
+using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Criteria
 {
     /// <summary>
     /// Represents a criterion which rejects responses with <see cref="ResponseCode.StreamInputFailure"/> and <see cref="ResponseCode.StreamReuseFailure"/> codes.
     /// </summary>
+    [PublicAPI]
     public class RejectStreamingErrorsCriterion : IResponseCriterion
     {
         /// <inheritdoc />

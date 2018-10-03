@@ -9,6 +9,7 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
     /// <summary>
     /// Represents a timeout provider which issues timeouts using a fixed set of external delegates.
     /// </summary>
+    [PublicAPI]
     public class AdHocTimeoutsProvider : ISequentialTimeoutsProvider
     {
         private readonly Func<TimeSpan>[] providers;

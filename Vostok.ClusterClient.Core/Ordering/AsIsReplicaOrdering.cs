@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Ordering.Storage;
 
@@ -8,6 +9,7 @@ namespace Vostok.ClusterClient.Core.Ordering
     /// <summary>
     /// Represents an ordering which never changes replicas order.
     /// </summary>
+    [PublicAPI]
     public class AsIsReplicaOrdering : IReplicaOrdering
     {
         /// <inheritdoc />

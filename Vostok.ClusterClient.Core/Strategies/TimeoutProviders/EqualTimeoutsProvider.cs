@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.Commons.Time;
 
@@ -14,6 +15,7 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
     /// <para>3 sec --> 4.5 sec --> 4.5 sec (first replica failed prematurely, redistribution occured).</para>
     /// <para>1 sec --> 1 sec --> 10 sec (first two replicas failed prematurely, redistribution occured).</para>
     /// </example>
+    [PublicAPI]
     public class EqualTimeoutsProvider : ISequentialTimeoutsProvider
     {
         private readonly int divisionFactor;

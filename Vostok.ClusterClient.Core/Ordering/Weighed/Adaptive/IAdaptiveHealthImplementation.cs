@@ -8,6 +8,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
     /// <para>Represents an exact replica health behaviour which uses immutable <typeparamref name="THealth"/> objects as health values.</para>
     /// <para>Implementations of all methods MUST BE thread-safe.</para>
     /// </summary>
+    [PublicAPI]
     public interface IAdaptiveHealthImplementation<THealth>
     {
         /// <summary>

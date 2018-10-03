@@ -6,6 +6,7 @@ namespace Vostok.ClusterClient.Core.Modules
     /// <summary>
     /// <para>Represents a configuration of <see cref="ReplicaBudgetingModule"/> instance.</para>
     /// </summary>
+    [PublicAPI]
     public class ReplicaBudgetingOptions
     {
         /// <param name="storageKey">A key used to decouple statistics for different services.</param>

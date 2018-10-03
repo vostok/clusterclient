@@ -11,6 +11,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
     /// <item><description>Response time greater than given threshold leads to <see cref="AdaptiveHealthAction.Decrease"/> of replica health.</description></item>
     /// </list>
     /// </summary>
+    [PublicAPI]
     public class ResponseTimeTuningPolicy : IAdaptiveHealthTuningPolicy
     {
         private readonly Func<TimeSpan> thresholdProvider;

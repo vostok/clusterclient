@@ -9,6 +9,7 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
     /// <summary>
     /// Represents a timeout provider which issues timeouts from a fixed set of values.
     /// </summary>
+    [PublicAPI]
     public class FixedTimeoutsProvider : ISequentialTimeoutsProvider
     {
         private readonly TimeSpan[] timeouts;

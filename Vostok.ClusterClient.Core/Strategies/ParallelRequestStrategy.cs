@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Sending;
 
@@ -22,6 +23,7 @@ namespace Vostok.ClusterClient.Core.Strategies
     ///                                ↑ failure(replica2)         ↑ success(replica3)
     /// </code>
     /// </example>
+    [PublicAPI]
     public class ParallelRequestStrategy : IRequestStrategy
     {
         /// <summary>

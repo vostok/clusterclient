@@ -1,8 +1,11 @@
+using JetBrains.Annotations;
+
 namespace Vostok.ClusterClient.Core.Misc
 {
     /// <summary>
     /// A set of ClusterClient logging settings.
     /// </summary>
+    [PublicAPI]
     public class LoggingOptions
     {
         /// <summary>

@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Transforms;
-using Vostok.ClusterClient.Core.Transport;
 using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.ClusterClient.Core.Topology;
-using Vostok.Commons.Collections;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core
 {
     /// <inheritdoc />
+    [PublicAPI]
     public class ClusterClient : IClusterClient
     {
         private static readonly TimeSpan BudgetPrecision = TimeSpan.FromMilliseconds(15);

@@ -6,6 +6,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
     /// <summary>
     /// Represents a builder used to construct a <see cref="WeighedReplicaOrdering"/> instance.
     /// </summary>
+    [PublicAPI]
     public interface IWeighedReplicaOrderingBuilder
     {
         /// <summary>

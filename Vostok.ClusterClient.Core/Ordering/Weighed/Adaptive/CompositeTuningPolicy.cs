@@ -12,6 +12,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
     /// <item><description>If none of policies select to increase or decrease replica health, it isn't changed.</description></item>
     /// </list>
     /// </summary>
+    [PublicAPI]
     public class CompositeTuningPolicy : IAdaptiveHealthTuningPolicy
     {
         private readonly IAdaptiveHealthTuningPolicy[] policies;

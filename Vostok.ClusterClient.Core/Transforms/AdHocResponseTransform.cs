@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Transforms
@@ -6,6 +7,7 @@ namespace Vostok.ClusterClient.Core.Transforms
     /// <summary>
     /// Represents a response transform which uses external delegate to modify responses.
     /// </summary>
+    [PublicAPI]
     public class AdHocResponseTransform : IResponseTransform
     {
         private readonly Func<Response, Response> transform;

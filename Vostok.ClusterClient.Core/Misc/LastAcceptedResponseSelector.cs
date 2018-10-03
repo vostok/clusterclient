@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
 
 namespace Vostok.ClusterClient.Core.Misc
@@ -13,6 +14,7 @@ namespace Vostok.ClusterClient.Core.Misc
     /// <item><description>As a last resort, it just returns response of last result in the list.</description></item>
     /// </list>
     /// </summary>
+    [PublicAPI]
     public class LastAcceptedResponseSelector : IResponseSelector
     {
         /// <inheritdoc />

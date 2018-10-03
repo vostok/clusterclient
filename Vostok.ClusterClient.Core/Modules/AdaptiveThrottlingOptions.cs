@@ -6,6 +6,7 @@ namespace Vostok.ClusterClient.Core.Modules
     /// <summary>
     /// Represents a configuration of <see cref="AdaptiveThrottlingModule"/> instance. 
     /// </summary>
+    [PublicAPI]
     public class AdaptiveThrottlingOptions
     {
         /// <param name="storageKey">A key used to decouple statistics for different services. This parameter is REQUIRED</param>

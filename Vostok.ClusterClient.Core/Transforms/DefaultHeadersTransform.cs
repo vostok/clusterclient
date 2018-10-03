@@ -8,6 +8,7 @@ namespace Vostok.ClusterClient.Core.Transforms
     /// <summary>
     /// A <see cref="IRequestTransform"/> which append default headers to <see cref="Request"/>.
     /// </summary>
+    [PublicAPI]
     public class DefaultHeadersTransform : IRequestTransform, IEnumerable<Header>
     {
         /// <summary>

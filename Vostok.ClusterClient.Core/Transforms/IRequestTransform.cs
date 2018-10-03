@@ -7,6 +7,7 @@ namespace Vostok.ClusterClient.Core.Transforms
     /// <para>Represents a transform used to modify request before it gets sent.</para>
     /// <para>Requests transforms form a chain where each transform works with a result of previous one.</para>
     /// </summary>
+    [PublicAPI]
     public interface IRequestTransform
     {
         /// <summary>

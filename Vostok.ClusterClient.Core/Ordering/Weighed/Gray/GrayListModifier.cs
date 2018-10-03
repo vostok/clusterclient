@@ -16,6 +16,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Gray
     /// <para>A replica is added to gray list when it returns a response with <see cref="ResponseVerdict.Reject"/> verdict.</para>
     /// <para>A replica remains in gray list for a period of time known as gray period, as given by the <see cref="IGrayPeriodProvider"/> implementation.</para>
     /// </summary>
+    [PublicAPI]
     public class GrayListModifier : IReplicaWeightModifier
     {
         private static readonly string StorageKey = typeof(GrayListModifier).FullName;

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Vostok.ClusterClient.Core.Topology
 {
     /// <summary>
     /// Represents a cluster provider which uses an external delegate to provide replica urls.
     /// </summary>
+    [PublicAPI]
     public class AdHocClusterProvider : IClusterProvider
     {
         private readonly Func<IList<Uri>> replicasProvider;
