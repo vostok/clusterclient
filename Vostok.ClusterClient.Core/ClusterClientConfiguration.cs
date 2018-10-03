@@ -6,7 +6,6 @@ using Vostok.ClusterClient.Core.Criteria;
 using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Net;
 using Vostok.ClusterClient.Core.Ordering;
 using Vostok.ClusterClient.Core.Ordering.Storage;
 using Vostok.ClusterClient.Core.Retry;
@@ -14,6 +13,7 @@ using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Topology;
 using Vostok.ClusterClient.Core.Transforms;
 using Vostok.ClusterClient.Core.Transport;
+using Vostok.Commons.Environment;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core

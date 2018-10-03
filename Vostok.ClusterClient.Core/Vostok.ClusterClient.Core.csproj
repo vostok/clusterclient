@@ -54,6 +54,17 @@
     <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeBudget.cs">
       <Link>Commons\TimeBudget.cs</Link>
     </Compile>
+    <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\RuntimeDetector.cs">
+      <Link>Commons\RuntimeDetector.cs</Link>
+    </Compile>
+    <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\ApplicationIdentity.cs">
+      <Link>Commons\ApplicationIdentity.cs</Link>
+    </Compile>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Net" />
+    <Folder Include="Utilities" />
   </ItemGroup>
   
 </Project>
