@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
+using Vostok.Commons.Collections;
 
 namespace Vostok.ClusterClient.Core.Topology
 {
     internal class RepeatingClusterProvider : IClusterProvider
     {
-        private readonly IClusterProvider provider;
-        private readonly int repeatCount;
-
-        private Tuple<IList<Uri>, IList<Uri>> cache;
+        private CachingTransform<IList<Uri>, IList<Uri>> cache;
 
         public RepeatingClusterProvider(IClusterProvider provider, int repeatCount)
         {
@@ -19,30 +16,17 @@ namespace Vostok.ClusterClient.Core.Topology
             if (repeatCount <= 0)
                 throw new ArgumentOutOfRangeException(nameof(repeatCount), "Repeat count must be positive.");
 
-            this.provider = provider;
-            this.repeatCount = repeatCount;
+            cache = new CachingTransform<IList<Uri>, IList<Uri>>(x => Repeat(x, repeatCount), provider.GetCluster);
         }
 
         public IList<Uri> GetCluster()
-        {
-            var currentReplicas = provider.GetCluster();
-            if (currentReplicas == null || currentReplicas.Count == 0)
-                return currentReplicas;
-
-            var currentCache = cache;
-
-            if (currentCache != null && ReferenceEquals(currentCache.Item1, currentReplicas))
-                return currentCache.Item2;
-
-            var repeatedReplicas = Repeat(currentReplicas, repeatCount);
-
-            Interlocked.CompareExchange(ref cache, Tuple.Create(currentReplicas, repeatedReplicas), currentCache);
-
-            return repeatedReplicas;
-        }
+            => cache.Get();
 
         private static IList<Uri> Repeat(IList<Uri> currentReplicas, int repeatCount)
         {
+            if (currentReplicas == null)
+                return null;
+            
             var repeatedReplicas = new List<Uri>(currentReplicas.Count * repeatCount);
 
             for (var i = 0; i < repeatCount; i++)
