@@ -16,15 +16,6 @@ namespace Vostok.ClusterClient.Core.Model
         public static RequestTimeBudget StartNew(TimeSpan budget, TimeSpan precision)
             => new RequestTimeBudget(TimeBudget.StartNew(budget, precision));
 
-        public static RequestTimeBudget StartNew(TimeSpan budget) =>
-            new RequestTimeBudget(TimeBudget.StartNew(budget));
-
-        public static RequestTimeBudget StartNew(int budgetMs, int precisionMs)
-            => StartNew(TimeSpan.FromMilliseconds(budgetMs), TimeSpan.FromMilliseconds(precisionMs));
-
-        public static RequestTimeBudget StartNew(int budgetMs)
-            => StartNew(TimeSpan.FromMilliseconds(budgetMs));
-
         public TimeSpan Total => budget.Total;
 
         public TimeSpan Precision => budget.Precision;
