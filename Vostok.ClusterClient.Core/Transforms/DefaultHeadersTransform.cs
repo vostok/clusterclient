@@ -51,7 +51,7 @@ namespace Vostok.ClusterClient.Core.Transforms
         /// <summary>
         /// Add <paramref name="header"/> to <see cref="DefaultHeaders"/>.
         /// </summary>
-        public void Add([NotNull] Header header) =>
+        public void Add(Header header) =>
             DefaultHeaders = DefaultHeaders.Set(header.Name, header.Value);
 
         /// <summary>
