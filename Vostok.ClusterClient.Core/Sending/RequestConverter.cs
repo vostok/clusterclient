@@ -146,11 +146,11 @@ namespace Vostok.ClusterClient.Core.Sending
         {
             public readonly int Offset;
             public readonly int Length;
-            private readonly string Origin;
+            private readonly string origin;
 
             public Segment(string origin, int offset, int length)
             {
-                Origin = origin;
+                this.origin = origin;
                 Offset = offset;
                 Length = length;
             }
@@ -167,7 +167,7 @@ namespace Vostok.ClusterClient.Core.Sending
                 return true;
             }
 
-            private char this[int index] => Origin[Offset + index];
+            private char this[int index] => origin[Offset + index];
         }
 
         #endregion

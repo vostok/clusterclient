@@ -30,8 +30,8 @@ namespace Vostok.ClusterClient.Core.Model
     [PublicAPI]
     public class RequestUrlBuilder : IDisposable, IEnumerable
     {
-        private static readonly Func<string, string> escape = Uri.EscapeDataString;
-        private static readonly UnboundedObjectPool<StringBuilder> builders;
+        private static readonly Func<string, string> Escape = Uri.EscapeDataString;
+        private static readonly UnboundedObjectPool<StringBuilder> Builders;
 
         private StringBuilder builder;
         private bool hasQueryParameters;
@@ -39,7 +39,7 @@ namespace Vostok.ClusterClient.Core.Model
 
         static RequestUrlBuilder()
         {
-            builders = new UnboundedObjectPool<StringBuilder>(() => new StringBuilder(128));
+            Builders = new UnboundedObjectPool<StringBuilder>(() => new StringBuilder(128));
         }
 
         /// <param name="initialUrl">The initial Url.</param>
@@ -49,7 +49,7 @@ namespace Vostok.ClusterClient.Core.Model
             if (initialUrl == null)
                 throw new ArgumentNullException(nameof(initialUrl));
 
-            builder = builders.Acquire();
+            builder = Builders.Acquire();
             builder.Clear();
             builder.Append(initialUrl);
 
@@ -70,7 +70,7 @@ namespace Vostok.ClusterClient.Core.Model
             if (oldBuilder == null)
                 return;
 
-            builders.Return(oldBuilder);
+            Builders.Return(oldBuilder);
         }
 
         /// <summary>
@@ -157,9 +157,9 @@ namespace Vostok.ClusterClient.Core.Model
                 hasQueryParameters = true;
             }
 
-            builder.Append(escape(key));
+            builder.Append(Escape(key));
             builder.Append('=');
-            builder.Append(escape(value));
+            builder.Append(Escape(value));
 
             return this;
         }
