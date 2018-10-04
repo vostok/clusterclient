@@ -26,11 +26,18 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             newParameters.Properties.Should().BeEquivalentTo(parameters.Properties);
             newParameters.Priority.Should().Be(parameters.Priority);
         }
+        
+        [Test]
+        public void WithStrategy_Should_return_this_if_strategy_has_not_changed()
+        {
+            var newParameters = parameters.WithStrategy(parameters.Strategy);
+            newParameters.Should().BeSameAs(parameters);
+        }
 
         [TestCase(RequestPriority.Critical)]
         [TestCase(RequestPriority.Ordinary)]
-        [TestCase(RequestPriority.Sheddable)]
-        public void WithPriority_Should_return_updated_parameters_with_updated_priority(RequestPriority priority)
+        [TestCase(null)]
+        public void WithPriority_Should_return_updated_parameters_with_updated_priority(RequestPriority? priority)
         {
             var newParameters = parameters.WithPriority(priority);
             newParameters.Should().NotBeSameAs(parameters);
@@ -43,6 +50,13 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             var newParameters = parameters.WithPriority(RequestPriority.Critical);
             newParameters.Properties.Should().BeEquivalentTo(parameters.Properties);
             newParameters.Strategy.Should().BeSameAs(parameters.Strategy);
+        }
+        
+        [Test]
+        public void WithPriority_Should_return_this_if_priority_has_not_changed()
+        {
+            var newParameters = parameters.WithPriority(parameters.Priority);
+            newParameters.Should().BeSameAs(parameters);
         }
 
         [TestCase("key", 1)]
@@ -63,5 +77,14 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             newParameters.Priority.Should().Be(parameters.Priority);
             newParameters.Properties.Should().Contain(parameters.Properties);
         }
+        
+        [Test]
+        public void WithProperty_Should_return_this_if_property_has_not_changed()
+        {
+            var newParameters = parameters.WithProperty("a", parameters.Properties["a"]);
+            newParameters.Should().BeSameAs(parameters);
+        }
+
+        
     }
 }

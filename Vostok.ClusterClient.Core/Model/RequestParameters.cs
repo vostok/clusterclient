@@ -63,14 +63,23 @@ namespace Vostok.ClusterClient.Core.Model
 
         /// <returns>New instance of <see cref="RequestParameters"/> with specified <paramref name="strategy"/>.</returns>
         public RequestParameters WithStrategy([CanBeNull] IRequestStrategy strategy)
-            => new RequestParameters(strategy, Priority, properties);
+            => ReferenceEquals(Strategy, strategy) 
+                ? this
+                : new RequestParameters(strategy, Priority, properties);
 
         /// <returns>New instance of <see cref="RequestParameters"/> with specified <paramref name="priority"/>.</returns>
         public RequestParameters WithPriority(RequestPriority? priority)
-            => new RequestParameters(Strategy, priority, properties);
+            => Nullable.Equals(Priority, priority)
+                ? this
+                : new RequestParameters(Strategy, priority, properties);
 
         /// <returns>New instance of <see cref="RequestParameters"/> with specified property.</returns>
         public RequestParameters WithProperty([NotNull] string key, object value)
-            => new RequestParameters(Strategy, Priority, properties.Set(key ?? throw new ArgumentNullException(nameof(key)), value));
+        {
+            var newProperties = properties.Set(key ?? throw new ArgumentNullException(nameof(key)), value);
+            return properties == newProperties
+                ? this
+                : new RequestParameters(Strategy, Priority, newProperties);
+        }
     }
 }
