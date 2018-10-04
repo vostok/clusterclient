@@ -141,7 +141,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
 
             modifier
                 .WhenForAnyArgs(m => m.Modify(null, null, null, null, null, ref dummy))
-                .Do(info => { info[4] = transform(info.Arg<double>()); });
+                .Do(info => { info[5] = transform(info.Arg<double>()); });
 
             return modifier;
         }
