@@ -33,8 +33,8 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             replica = new Uri("http://replica");
             request = Request.Get("foo/bar");
-            acceptedResult = new ClusterResult(ClusterResultStatus.Success, new [] { new ReplicaResult(replica, new Response(ResponseCode.Accepted), ResponseVerdict.Accept, TimeSpan.Zero) }, null, request);
-            rejectedResult = new ClusterResult(ClusterResultStatus.ReplicasExhausted, new [] { new ReplicaResult(replica, new Response(ResponseCode.TooManyRequests), ResponseVerdict.Reject, TimeSpan.Zero) }, null, request);
+            acceptedResult = new ClusterResult(ClusterResultStatus.Success, new[] {new ReplicaResult(replica, new Response(ResponseCode.Accepted), ResponseVerdict.Accept, TimeSpan.Zero)}, null, request);
+            rejectedResult = new ClusterResult(ClusterResultStatus.ReplicasExhausted, new[] {new ReplicaResult(replica, new Response(ResponseCode.TooManyRequests), ResponseVerdict.Reject, TimeSpan.Zero)}, null, request);
 
             context = Substitute.For<IRequestContext>();
             context.Log.Returns(new SilentLog());

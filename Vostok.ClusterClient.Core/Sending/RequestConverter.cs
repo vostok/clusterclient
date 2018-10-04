@@ -51,28 +51,6 @@ namespace Vostok.ClusterClient.Core.Sending
             }
         }
 
-        private Uri ConvertUrl(Uri requestUrl, Uri replica)
-        {
-            var baseUrl = replica.OriginalString;
-            var baseUrlEndsWithSlash = baseUrl.EndsWith("/");
-
-            var appendedUrl = requestUrl.OriginalString;
-
-            if (deduplicateSegments)
-                DeduplicateSegments(replica.AbsolutePath, ref appendedUrl);
-
-            var appendedUrlStartsWithSlash = appendedUrl.StartsWith("/");
-
-            if (baseUrlEndsWithSlash && appendedUrlStartsWithSlash)
-                appendedUrl = appendedUrl.Substring(1);
-
-            if (!baseUrlEndsWithSlash && !appendedUrlStartsWithSlash && !string.IsNullOrEmpty(appendedUrl)) 
-                // (deniaa): If appendedUrl is empty, we should not add slash to the end of the Uri. In RFC Uri's with a slash on the end are not equals to Uris without it.
-                appendedUrl = "/" + appendedUrl;
-
-            return new Uri(baseUrl + appendedUrl, UriKind.Absolute);
-        }
-
         private static void DeduplicateSegments(string replicaPath, ref string requestUrl)
         {
             var lastMatchingSegment = null as Segment?;
@@ -140,6 +118,28 @@ namespace Vostok.ClusterClient.Core.Sending
                 yield return new Segment(url, segmentBeginning, pathLength - segmentBeginning);
         }
 
+        private Uri ConvertUrl(Uri requestUrl, Uri replica)
+        {
+            var baseUrl = replica.OriginalString;
+            var baseUrlEndsWithSlash = baseUrl.EndsWith("/");
+
+            var appendedUrl = requestUrl.OriginalString;
+
+            if (deduplicateSegments)
+                DeduplicateSegments(replica.AbsolutePath, ref appendedUrl);
+
+            var appendedUrlStartsWithSlash = appendedUrl.StartsWith("/");
+
+            if (baseUrlEndsWithSlash && appendedUrlStartsWithSlash)
+                appendedUrl = appendedUrl.Substring(1);
+
+            if (!baseUrlEndsWithSlash && !appendedUrlStartsWithSlash && !string.IsNullOrEmpty(appendedUrl))
+                // (deniaa): If appendedUrl is empty, we should not add slash to the end of the Uri. In RFC Uri's with a slash on the end are not equals to Uris without it.
+                appendedUrl = "/" + appendedUrl;
+
+            return new Uri(baseUrl + appendedUrl, UriKind.Absolute);
+        }
+
         #region Segment
 
         private struct Segment
@@ -155,8 +155,6 @@ namespace Vostok.ClusterClient.Core.Sending
                 Length = length;
             }
 
-            private char this[int index] => Origin[Offset + index];
-
             public bool Equals(Segment other)
             {
                 if (Length != other.Length)
@@ -168,6 +166,8 @@ namespace Vostok.ClusterClient.Core.Sending
 
                 return true;
             }
+
+            private char this[int index] => Origin[Offset + index];
         }
 
         #endregion

@@ -32,29 +32,37 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             calledModules = new List<IRequestModule>();
 
-            module1.ExecuteAsync(null, null).ReturnsForAnyArgs(info =>
-            {
-                calledModules.Add(module1);
-                return info.Arg<Func<IRequestContext, Task<ClusterResult>>>()(info.Arg<IRequestContext>());
-            });
+            module1.ExecuteAsync(null, null)
+                .ReturnsForAnyArgs(
+                    info =>
+                    {
+                        calledModules.Add(module1);
+                        return info.Arg<Func<IRequestContext, Task<ClusterResult>>>()(info.Arg<IRequestContext>());
+                    });
 
-            module2.ExecuteAsync(null, null).ReturnsForAnyArgs(info =>
-            {
-                calledModules.Add(module2);
-                return info.Arg<Func<IRequestContext, Task<ClusterResult>>>()(info.Arg<IRequestContext>());
-            });
+            module2.ExecuteAsync(null, null)
+                .ReturnsForAnyArgs(
+                    info =>
+                    {
+                        calledModules.Add(module2);
+                        return info.Arg<Func<IRequestContext, Task<ClusterResult>>>()(info.Arg<IRequestContext>());
+                    });
 
-            module3.ExecuteAsync(null, null).ReturnsForAnyArgs(info =>
-            {
-                calledModules.Add(module3);
-                return info.Arg<Func<IRequestContext, Task<ClusterResult>>>()(info.Arg<IRequestContext>());
-            });
+            module3.ExecuteAsync(null, null)
+                .ReturnsForAnyArgs(
+                    info =>
+                    {
+                        calledModules.Add(module3);
+                        return info.Arg<Func<IRequestContext, Task<ClusterResult>>>()(info.Arg<IRequestContext>());
+                    });
 
-            module4.ExecuteAsync(null, null).ReturnsForAnyArgs(_ =>
-            {
-                calledModules.Add(module4);
-                return Task.FromResult(ClusterResult.UnexpectedException(context.Request));
-            });
+            module4.ExecuteAsync(null, null)
+                .ReturnsForAnyArgs(
+                    _ =>
+                    {
+                        calledModules.Add(module4);
+                        return Task.FromResult(ClusterResult.UnexpectedException(context.Request));
+                    });
 
             context = Substitute.For<IRequestContext>();
         }
@@ -79,7 +87,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             context.CancellationToken.Returns(token);
 
-            var chainDelegate = RequestModuleChainBuilder.BuildChainDelegate(new[] { module1, module2, module3, module4 });
+            var chainDelegate = RequestModuleChainBuilder.BuildChainDelegate(new[] {module1, module2, module3, module4});
 
             chainDelegate(context).Result.Status.Should().Be(ClusterResultStatus.Canceled);
 
@@ -91,17 +99,19 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             var configuration = Substitute.For<IClusterClientConfiguration>();
 
-            configuration.Modules.Returns(new Dictionary<RequestPipelinePoint, List<IRequestModule>>
-            {
-                [RequestPipelinePoint.AfterPrepareRequest] = new List<IRequestModule>
+            configuration.Modules.Returns(
+                new Dictionary<RequestPipelinePoint, List<IRequestModule>>
                 {
-                    module1, module2
-                }});
+                    [RequestPipelinePoint.AfterPrepareRequest] = new List<IRequestModule>
+                    {
+                        module1, module2
+                    }
+                });
 
             configuration.Logging.Returns(new LoggingOptions());
 
             var storageProvider = Substitute.For<IReplicaStorageProvider>();
-            
+
             var modules = RequestModuleChainBuilder.BuildChain(configuration, storageProvider);
 
             modules.Should().HaveCount(15);
@@ -129,14 +139,16 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             var configuration = Substitute.For<IClusterClientConfiguration>();
 
             configuration.Logging.Returns(new LoggingOptions());
-            
-            configuration.Modules.Returns(new Dictionary<RequestPipelinePoint, List<IRequestModule>>
-            {
-                [RequestPipelinePoint.BeforeSend] = new List<IRequestModule>
-            {
-                new AdaptiveThrottlingModule(new AdaptiveThrottlingOptions("foo")),
-                new ReplicaBudgetingModule(new ReplicaBudgetingOptions("foo"))
-            }});
+
+            configuration.Modules.Returns(
+                new Dictionary<RequestPipelinePoint, List<IRequestModule>>
+                {
+                    [RequestPipelinePoint.BeforeSend] = new List<IRequestModule>
+                    {
+                        new AdaptiveThrottlingModule(new AdaptiveThrottlingOptions("foo")),
+                        new ReplicaBudgetingModule(new ReplicaBudgetingOptions("foo"))
+                    }
+                });
 
             var storageProvider = Substitute.For<IReplicaStorageProvider>();
 

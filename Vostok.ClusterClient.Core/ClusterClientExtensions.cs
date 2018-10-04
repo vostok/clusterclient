@@ -22,10 +22,12 @@ namespace Vostok.ClusterClient.Core
             [CanBeNull] TimeSpan? timeout = null,
             CancellationToken cancellationToken = default)
             => client.SendAsync(
-                request,
-                parameters,
-                timeout,
-                cancellationToken).GetAwaiter().GetResult();
+                    request,
+                    parameters,
+                    timeout,
+                    cancellationToken)
+                .GetAwaiter()
+                .GetResult();
 
         /// <summary>
         /// <para>Sends given request using given <paramref name="timeout"/>, <paramref name="strategy"/>, <paramref name="cancellationToken"/> and <paramref name="priority"/>.</para>
@@ -50,7 +52,7 @@ namespace Vostok.ClusterClient.Core
                     .WithPriority(priority),
                 timeout,
                 cancellationToken);
-        
+
         /// <inheritdoc cref="SendAsync"/>
         public static ClusterResult Send(
             [NotNull] this IClusterClient client,
@@ -60,10 +62,12 @@ namespace Vostok.ClusterClient.Core
             [CanBeNull] RequestPriority? priority = null,
             CancellationToken cancellationToken = default)
             => client.SendAsync(
-                request,
-                timeout,
-                strategy,
-                priority,
-                cancellationToken).GetAwaiter().GetResult();
+                    request,
+                    timeout,
+                    strategy,
+                    priority,
+                    cancellationToken)
+                .GetAwaiter()
+                .GetResult();
     }
 }

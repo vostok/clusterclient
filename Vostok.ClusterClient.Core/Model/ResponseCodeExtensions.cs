@@ -15,7 +15,7 @@ namespace Vostok.ClusterClient.Core.Model
         {
             var numericCode = (int) code;
 
-            return (numericCode >= 100) && (numericCode < 200);
+            return numericCode >= 100 && numericCode < 200;
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Vostok.ClusterClient.Core.Model
         {
             var numericCode = (int) code;
 
-            return (numericCode >= 200) && (numericCode < 300);
+            return numericCode >= 200 && numericCode < 300;
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Vostok.ClusterClient.Core.Model
         {
             var numericCode = (int) code;
 
-            return (numericCode >= 300) && (numericCode < 400);
+            return numericCode >= 300 && numericCode < 400;
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Vostok.ClusterClient.Core.Model
         {
             var numericCode = (int) code;
 
-            return (numericCode >= 400) && (numericCode < 500);
+            return numericCode >= 400 && numericCode < 500;
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Vostok.ClusterClient.Core.Model
         {
             var numericCode = (int) code;
 
-            return (numericCode >= 500) && (numericCode < 600);
+            return numericCode >= 500 && numericCode < 600;
         }
 
         /// <summary>

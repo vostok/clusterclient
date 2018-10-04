@@ -10,10 +10,10 @@ namespace Vostok.ClusterClient.Core.Modules
         public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
             var method = context.Request.Method;
-            
+
             if (RequestMethods.All.Contains(method))
                 return next(context);
-            
+
             context.Log.Error($"Request HTTP method {method} is not valid.");
             return Task.FromResult(ClusterResult.IncorrectArguments(context.Request));
         }

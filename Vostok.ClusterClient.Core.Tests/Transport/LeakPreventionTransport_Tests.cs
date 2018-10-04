@@ -100,7 +100,7 @@ namespace Vostok.ClusterClient.Core.Tests.Transport
 
             var replicaResults = responses.Select(r => new ReplicaResult(new Uri("http://replica"), r, ResponseVerdict.Accept, TimeSpan.Zero));
 
-            var result = new ClusterResult(ClusterResultStatus.Success, replicaResults.ToList(), responses.FirstOrDefault(), Request.Get("")); 
+            var result = new ClusterResult(ClusterResultStatus.Success, replicaResults.ToList(), responses.FirstOrDefault(), Request.Get(""));
 
             leakTransport.CompleteRequest(result);
         }

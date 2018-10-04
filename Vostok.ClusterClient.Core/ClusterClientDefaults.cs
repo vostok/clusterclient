@@ -20,8 +20,13 @@ namespace Vostok.ClusterClient.Core
     [PublicAPI]
     public static class ClusterClientDefaults
     {
-#region WeighedReplicaOrdering
-        
+        /// <summary>
+        /// The default duration of full health damage decay. See <see cref="AdaptiveHealthWithLinearDecay"/> for details.
+        /// </summary>
+        public static readonly TimeSpan AdaptiveHealthDamageDecayDuration = TimeSpan.FromMinutes(10);
+
+        #region WeighedReplicaOrdering
+
         /// <summary>
         /// The default initial replica weight used by <see cref="WeighedReplicaOrdering"/>.
         /// </summary>
@@ -34,87 +39,97 @@ namespace Vostok.ClusterClient.Core
         /// The default maximum replica weight used by <see cref="WeighedReplicaOrdering"/>.
         /// </summary>
         public const double MaximumReplicaWeight = 10.0;
-#endregion
 
-#region AdaptiveHealthWithLinearDecay
+        #endregion
+
+        #region AdaptiveHealthWithLinearDecay
+
         /// <summary>
         /// The default value of <see cref="AdaptiveHealthWithLinearDecay.MinimumHealthValue"/>.
         /// </summary>
         public const double AdaptiveHealthMinimumValue = 0.001;
-        
+
         /// <summary>
         /// The default value of <see cref="AdaptiveHealthWithLinearDecay.UpMultiplier"/>.
         /// </summary>
         public const double AdaptiveHealthUpMultiplier = 1.5;
-        
+
         /// <summary>
         /// The default value of <see cref="AdaptiveHealthWithLinearDecay.DownMultiplier"/>.
         /// </summary>
         public const double AdaptiveHealthDownMultiplier = 0.5;
-#endregion
 
-#region AdaptiveThrottlingOptions
+        #endregion
+
+        #region AdaptiveThrottlingOptions
+
         /// <summary>
         /// The default value of <see cref="AdaptiveThrottlingOptions.MinimumRequests"/>.
         /// </summary>
         public const int AdaptiveThrottlingMinimumRequests = 30;
-        
+
         /// <summary>
         /// The default value of <see cref="AdaptiveThrottlingOptions.MinutesToTrack"/>.
         /// </summary>
         public const int AdaptiveThrottlingMinutesToTrack = 2;
-        
+
         /// <summary>
         /// The default value of <see cref="AdaptiveThrottlingOptions.CriticalRatio"/>.
         /// </summary>
         public const double AdaptiveThrottlingCriticalRatio = 2.0;
-        
+
         /// <summary>
         /// The default value of <see cref="AdaptiveThrottlingOptions.MaximumRejectProbability"/>.
         /// </summary>
         public const double AdaptiveThrottlingRejectProbabilityCap = 0.8;
-#endregion 
-        
-#region ReplicaBudgetingOptions
+
+        #endregion
+
+        #region ReplicaBudgetingOptions
+
         /// <summary>
         /// The default value of <see cref="ReplicaBudgetingOptions.MinimumRequests"/>.
         /// </summary>
         public const int ReplicaBudgetingMinimumRequests = 30;
-        
+
         /// <summary>
         /// The default value of <see cref="ReplicaBudgetingOptions.MinutesToTrack"/>.
         /// </summary>
         public const int ReplicaBudgetingMinutesToTrack = 2;
-        
+
         /// <summary>
         /// The default value of <see cref="ReplicaBudgetingOptions.CriticalRatio"/>.
         /// </summary>
         public const double ReplicaBudgetingCriticalRatio = 1.2;
-#endregion
-        
-#region LoggingOptions
+
+        #endregion
+
+        #region LoggingOptions
+
         /// <summary>
         /// The default value of <see cref="LoggingOptions.LogRequestDetails"/>.
         /// </summary>
         public const bool LogRequestDetails = true;
-        
+
         /// <summary>
         /// The default value of <see cref="LoggingOptions.LogResultDetails"/>.
         /// </summary>
         public const bool LogResultDetails = true;
-        
+
         /// <summary>
         /// The default value of <see cref="LoggingOptions.LogReplicaRequests"/>.
         /// </summary>
         public const bool LogReplicaRequests = true;
-        
+
         /// <summary>
         /// The default value of <see cref="LoggingOptions.LogReplicaResults"/>.
         /// </summary>
         public const bool LogReplicaResults = true;
-#endregion
-        
-#region IClusterClientConfiguration
+
+        #endregion
+
+        #region IClusterClientConfiguration
+
         /// <summary>
         /// The default value of <see cref="IClusterClientConfiguration.DeduplicateRequestUrl"/>.
         /// </summary>
@@ -179,11 +194,7 @@ namespace Vostok.ClusterClient.Core
 
             return builder.Build();
         }
-#endregion
-        
-        /// <summary>
-        /// The default duration of full health damage decay. See <see cref="AdaptiveHealthWithLinearDecay"/> for details.
-        /// </summary>
-        public static readonly TimeSpan AdaptiveHealthDamageDecayDuration = TimeSpan.FromMinutes(10);
+
+        #endregion
     }
 }

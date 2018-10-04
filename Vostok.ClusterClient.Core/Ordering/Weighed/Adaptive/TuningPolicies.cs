@@ -13,6 +13,10 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
         /// </summary>
         public static readonly IAdaptiveHealthTuningPolicy ByResponseVerdict = new ResponseVerdictTuningPolicy();
 
+        private TuningPolicies()
+        {
+        }
+
         /// <summary>
         /// Creates a <see cref="ResponseTimeTuningPolicy"/> configured by given <paramref name="timeThreshold"/> provider delegate.
         /// </summary>
@@ -38,10 +42,6 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
         /// <param name="timeThreshold">A fixed response time threshold to use for <see cref="ResponseTimeTuningPolicy"/>.</param>
         public static IAdaptiveHealthTuningPolicy ByResponseVerdictAndTime(TimeSpan timeThreshold) =>
             new CompositeTuningPolicy(ByResponseVerdict, ByResponseTime(timeThreshold));
-
-        private TuningPolicies()
-        {
-        }
 
         #region Useless implementation
 

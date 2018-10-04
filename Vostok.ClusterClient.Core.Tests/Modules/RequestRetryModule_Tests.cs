@@ -170,12 +170,15 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
         private ClusterResult Execute()
         {
-            return module.ExecuteAsync(context, ctx =>
-                {
-                    nextModuleCalls++;
-                    return Task.FromResult(result);
-                })
-                .GetAwaiter().GetResult();
+            return module.ExecuteAsync(
+                    context,
+                    ctx =>
+                    {
+                        nextModuleCalls++;
+                        return Task.FromResult(result);
+                    })
+                .GetAwaiter()
+                .GetResult();
         }
     }
 }

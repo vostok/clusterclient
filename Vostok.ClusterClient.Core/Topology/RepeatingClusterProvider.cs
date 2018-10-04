@@ -26,7 +26,7 @@ namespace Vostok.ClusterClient.Core.Topology
         {
             if (currentReplicas == null)
                 return null;
-            
+
             var repeatedReplicas = new List<Uri>(currentReplicas.Count * repeatCount);
 
             for (var i = 0; i < repeatCount; i++)

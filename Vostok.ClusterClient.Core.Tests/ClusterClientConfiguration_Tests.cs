@@ -537,7 +537,7 @@ namespace Vostok.ClusterClient.Core.Tests
 
             configuration.DefaultTimeout.Should().Be(1.Hours());
         }
-        
+
         [Test]
         public void Default_client_application_name_should_be_not_empty()
         {

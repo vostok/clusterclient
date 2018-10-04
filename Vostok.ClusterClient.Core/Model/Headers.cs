@@ -27,11 +27,12 @@ namespace Vostok.ClusterClient.Core.Model
             : this(new ImmutableArrayDictionary<string, string>(capacity, StringComparer.OrdinalIgnoreCase))
         {
         }
-        
+
         private Headers(ImmutableArrayDictionary<string, string> headers)
         {
             this.headers = headers;
         }
+
         /// <summary>
         /// Returns the count of headers in this <see cref="Headers"/> object.
         /// </summary>
@@ -48,14 +49,6 @@ namespace Vostok.ClusterClient.Core.Model
         /// </summary>
         [NotNull]
         public IEnumerable<string> Values => this.Select(header => header.Value);
-
-        /// <summary>
-        /// Attempts to fetch the value of header with given name.
-        /// </summary>
-        /// <param name="name">Header name.</param>
-        /// <returns>Header value if found, <c>null</c> otherwise.</returns>
-        [CanBeNull]
-        public string this[string name] => headers.TryGetValue(name, out var v) ? v : null;
 
         /// <summary>
         /// <para>Produces a new <see cref="Headers"/> instance where the header with given name will have given value.</para>
@@ -87,7 +80,7 @@ namespace Vostok.ClusterClient.Core.Model
         public Headers Set([NotNull] string name, [NotNull] string value)
         {
             var newHeaders = headers.Set(name, value, true);
-            
+
             return ReferenceEquals(headers, newHeaders)
                 ? this
                 : new Headers(newHeaders);
@@ -105,7 +98,7 @@ namespace Vostok.ClusterClient.Core.Model
         public Headers Remove([NotNull] string name)
         {
             var newHeaders = headers.Remove(name);
-            
+
             return ReferenceEquals(headers, newHeaders)
                 ? this
                 : new Headers(newHeaders);
@@ -118,7 +111,7 @@ namespace Vostok.ClusterClient.Core.Model
         /// <para>...</para>
         /// </returns>
         public override string ToString()
-        {            
+        {
             if (headers.Count == 0)
                 return string.Empty;
 
@@ -137,7 +130,7 @@ namespace Vostok.ClusterClient.Core.Model
                 builder.Append(": ");
                 builder.Append(header.Value);
             }
-            
+
             return builder.ToString();
         }
 
@@ -150,10 +143,19 @@ namespace Vostok.ClusterClient.Core.Model
             }
         }
 
+        /// <summary>
+        /// Attempts to fetch the value of header with given name.
+        /// </summary>
+        /// <param name="name">Header name.</param>
+        /// <returns>Header value if found, <c>null</c> otherwise.</returns>
+        [CanBeNull]
+        public string this[string name] => headers.TryGetValue(name, out var v) ? v : null;
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
+
         #region Specific header getters
 
         /// <summary>

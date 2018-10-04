@@ -275,7 +275,6 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
             delaysPlanner.ReceivedCalls().Should().HaveCount(1);
         }
 
-
         [Test]
         public void Should_forget_existing_forking_delays_upon_any_request_completion()
         {
@@ -329,12 +328,13 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         {
             delaysPlanner
                 .Plan(Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
-                .Returns(_ =>
-                {
-                    delaySourcesEnumerator.MoveNext();
+                .Returns(
+                    _ =>
+                    {
+                        delaySourcesEnumerator.MoveNext();
 
-                    return delaySourcesEnumerator.Current.Task;
-                });
+                        return delaySourcesEnumerator.Current.Task;
+                    });
         }
 
         private void SetupForkingDelays(TimeSpan? first, params TimeSpan?[] next)

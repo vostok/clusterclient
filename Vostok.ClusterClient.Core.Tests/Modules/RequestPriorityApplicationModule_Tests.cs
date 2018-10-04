@@ -38,7 +38,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             context.Parameters.Returns(new RequestParameters(priority: priority));
 
-            Request request= null;
+            Request request = null;
             context.When(x => x.Request = Arg.Any<Request>()).Do(x => request = x.Arg<Request>());
             Execute();
 

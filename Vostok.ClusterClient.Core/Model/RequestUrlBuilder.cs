@@ -33,14 +33,14 @@ namespace Vostok.ClusterClient.Core.Model
         private static readonly Func<string, string> escape = Uri.EscapeDataString;
         private static readonly UnboundedObjectPool<StringBuilder> builders;
 
+        private StringBuilder builder;
+        private bool hasQueryParameters;
+        private Uri result;
+
         static RequestUrlBuilder()
         {
             builders = new UnboundedObjectPool<StringBuilder>(() => new StringBuilder(128));
         }
-
-        private StringBuilder builder;
-        private bool hasQueryParameters;
-        private Uri result;
 
         /// <param name="initialUrl">The initial Url.</param>
         /// <param name="encode">An external delegate which will be used for query parameters encoding. This parameter is optional.</param>
@@ -112,12 +112,12 @@ namespace Vostok.ClusterClient.Core.Model
 
             if (segment.StartsWith("/"))
             {
-                if ((builder.Length > 0) && (builder[builder.Length - 1] == '/'))
+                if (builder.Length > 0 && builder[builder.Length - 1] == '/')
                     builder.Remove(builder.Length - 1, 1);
             }
             else
             {
-                if ((builder.Length > 0) && (builder[builder.Length - 1] != '/'))
+                if (builder.Length > 0 && builder[builder.Length - 1] != '/')
                     builder.Append('/');
             }
 
@@ -215,15 +215,15 @@ namespace Vostok.ClusterClient.Core.Model
                 throw new InvalidOperationException("Can not append to path after appending query parameters.");
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotSupportedException();
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string FormatValue<T>(T value)
         {
-            return value?.ToString(); 
+            return value?.ToString();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotSupportedException();
         }
     }
 }

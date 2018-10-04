@@ -27,9 +27,9 @@ namespace Vostok.ClusterClient.Core
         /// </summary>
         [ItemNotNull]
         Task<ClusterResult> SendAsync(
-            [NotNull] Request request, 
+            [NotNull] Request request,
             [CanBeNull] RequestParameters parameters = null,
-            [CanBeNull] TimeSpan? timeout = null, 
+            [CanBeNull] TimeSpan? timeout = null,
             CancellationToken cancellationToken = default);
     }
 }

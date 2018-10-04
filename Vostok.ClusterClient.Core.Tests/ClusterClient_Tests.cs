@@ -25,7 +25,7 @@ namespace Vostok.ClusterClient.Core.Tests
         [Test]
         public void Ctor_should_throw_an_error_when_created_with_incorrect_configuration()
         {
-            Action action = () => new ClusterClient(log, _ => { });
+            Action action = () => new ClusterClient(log, _ => {});
 
             action.Should().Throw<ClusterClientException>().Which.ShouldBePrinted();
         }
@@ -35,11 +35,13 @@ namespace Vostok.ClusterClient.Core.Tests
         {
             var clusterProvider = Substitute.For<IClusterProvider>();
 
-            var clusterClient = new ClusterClient(log, config =>
-            {
-                config.ClusterProvider = clusterProvider;
-                config.Transport = Substitute.For<ITransport>();
-            });
+            var clusterClient = new ClusterClient(
+                log,
+                config =>
+                {
+                    config.ClusterProvider = clusterProvider;
+                    config.Transport = Substitute.For<ITransport>();
+                });
 
             clusterClient.ClusterProvider.Should().BeSameAs(clusterProvider);
         }
@@ -47,12 +49,14 @@ namespace Vostok.ClusterClient.Core.Tests
         [Test]
         public void Should_wrap_cluser_provider_with_transforming_facade_if_there_is_a_replicas_transform()
         {
-            var clusterClient = new ClusterClient(log, config =>
-            {
-                config.ClusterProvider = Substitute.For<IClusterProvider>();
-                config.Transport = Substitute.For<ITransport>();
-                config.ReplicaTransform = Substitute.For<IReplicaTransform>();
-            });
+            var clusterClient = new ClusterClient(
+                log,
+                config =>
+                {
+                    config.ClusterProvider = Substitute.For<IClusterProvider>();
+                    config.Transport = Substitute.For<ITransport>();
+                    config.ReplicaTransform = Substitute.For<IReplicaTransform>();
+                });
 
             clusterClient.ClusterProvider.Should().BeOfType<TransformingClusterProvider>();
         }

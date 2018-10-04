@@ -68,7 +68,6 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
         [TestCase("http://replica:123", "/?k=v", "http://replica:123/?k=v")]
         [TestCase("http://replica:123/", "/?k=v", "http://replica:123/?k=v")]
         [TestCase("http://replica:123", "?k=v", "http://replica:123/?k=v")]
-
         [TestCase("http://replica:123", "foo/bar?k=v", "http://replica:123/foo/bar?k=v")]
         [TestCase("http://replica:123", "/foo/bar?k=v", "http://replica:123/foo/bar?k=v")]
         [TestCase("http://replica:123", "/foo/bar/?k=v", "http://replica:123/foo/bar/?k=v")]
@@ -79,14 +78,12 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
         [TestCase("http://replica:123/api/drive/v1/", "drive/foo/bar?k=v", "http://replica:123/api/drive/v1/drive/foo/bar?k=v")]
         [TestCase("http://replica:123/api-yuhapi/", "api-yuhapi/foo/bar?k=v", "http://replica:123/api-yuhapi/foo/bar?k=v")]
         [TestCase("http://replica:123/api-yuhapi/", "api_yuhapi/foo/bar?k=v", "http://replica:123/api-yuhapi/api_yuhapi/foo/bar?k=v")]
-
         [TestCase("http://replica:123/api-yuhapi/", "api-yuhapi", "http://replica:123/api-yuhapi/")]
         [TestCase("http://replica:123/api-yuhapi/", "api-yuhapi/", "http://replica:123/api-yuhapi/")]
         [TestCase("http://replica:123/api-yuhapi/", "api-yuhapi/foo", "http://replica:123/api-yuhapi/foo")]
         [TestCase("http://replica:123/api-yuhapi/", "api-yuhapi/foo/", "http://replica:123/api-yuhapi/foo/")]
         [TestCase("http://replica:123/api-yuhapi/", "", "http://replica:123/api-yuhapi/")]
         [TestCase("http://replica:123/api-yuhapi/", "/", "http://replica:123/api-yuhapi/")]
-
         [TestCase("http://replica:123/api-yuhapi", "api-yuhapi", "http://replica:123/api-yuhapi")]
         [TestCase("http://replica:123/api-yuhapi", "api-yuhapi/", "http://replica:123/api-yuhapi/")]
         [TestCase("http://replica:123/api-yuhapi", "api-yuhapi/foo", "http://replica:123/api-yuhapi/foo")]

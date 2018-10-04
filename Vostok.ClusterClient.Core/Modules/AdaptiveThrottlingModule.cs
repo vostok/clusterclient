@@ -18,11 +18,6 @@ namespace Vostok.ClusterClient.Core.Modules
         private static readonly ConcurrentDictionary<string, Counter> Counters = new ConcurrentDictionary<string, Counter>();
         private static readonly Stopwatch Watch = Stopwatch.StartNew();
 
-        public static void ClearCache()
-        {
-            Counters.Clear();
-        }
-
         private readonly AdaptiveThrottlingOptions options;
         private readonly Func<string, Counter> counterFactory;
 
@@ -30,6 +25,11 @@ namespace Vostok.ClusterClient.Core.Modules
         {
             this.options = options;
             counterFactory = _ => new Counter(options.MinutesToTrack);
+        }
+
+        public static void ClearCache()
+        {
+            Counters.Clear();
         }
 
         public int Requests => GetCounter().GetMetrics().Requests;
@@ -79,10 +79,9 @@ namespace Vostok.ClusterClient.Core.Modules
             {
                 counter.EndRequest();
             }
+
             return result;
         }
-
-        private Counter GetCounter() => Counters.GetOrAdd(options.StorageKey, counterFactory);
 
         private static double ComputeRatio(CounterMetrics metrics) =>
             1.0 * metrics.Requests / Math.Max(1.0, metrics.Accepts);
@@ -103,20 +102,12 @@ namespace Vostok.ClusterClient.Core.Modules
                 counter.AddAccept();
         }
 
+        private Counter GetCounter() => Counters.GetOrAdd(options.StorageKey, counterFactory);
+
         #region Logging
 
         private void LogThrottledRequest(IRequestContext context, double ratio, double rejectionProbability) =>
             context.Log.Warn($"Throttled request without sending it. Request/accept ratio = {ratio:F3}. Rejection probability = {rejectionProbability:F3}");
-
-        #endregion
-
-        #region CounterMetrics
-
-        private struct CounterMetrics
-        {
-            public int Requests;
-            public int Accepts;
-        }
 
         #endregion
 
@@ -173,6 +164,8 @@ namespace Vostok.ClusterClient.Core.Modules
 
             public void AddAccept() => Interlocked.Increment(ref ObtainBucket().Accepts);
 
+            private static int GetCurrentMinute() => (int) Math.Floor(Watch.Elapsed.TotalMinutes);
+
             private CounterBucket ObtainBucket()
             {
                 var minute = GetCurrentMinute();
@@ -187,8 +180,16 @@ namespace Vostok.ClusterClient.Core.Modules
                     Interlocked.CompareExchange(ref buckets[bucketIndex], new CounterBucket {Minute = minute}, currentBucket);
                 }
             }
+        }
 
-            private static int GetCurrentMinute() => (int)Math.Floor(Watch.Elapsed.TotalMinutes);
+        #endregion
+
+        #region CounterMetrics
+
+        private struct CounterMetrics
+        {
+            public int Requests;
+            public int Accepts;
         }
 
         #endregion

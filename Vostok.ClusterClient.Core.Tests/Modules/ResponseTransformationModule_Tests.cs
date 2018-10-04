@@ -70,11 +70,12 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             Execute().Response.Should().BeSameAs(response3);
 
-            Received.InOrder(() =>
-            {
-                transform1.Transform(response1);
-                transform2.Transform(response2);
-            });
+            Received.InOrder(
+                () =>
+                {
+                    transform1.Transform(response1);
+                    transform2.Transform(response2);
+                });
         }
 
         [Test]

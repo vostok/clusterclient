@@ -11,7 +11,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 {
     internal class HttpMethodValidationModule_Tests
     {
-        private HttpMethodValidationModule module = new HttpMethodValidationModule();
+        private readonly HttpMethodValidationModule module = new HttpMethodValidationModule();
 
         [TestCaseSource(typeof(RequestMethods), nameof(RequestMethods.All))]
         public void Validation_should_pass_if_request_has_supported_method(string method)
@@ -20,6 +20,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             IsValid(request).Should().BeTrue();
         }
+
         [Test]
         public void Validation_should_fail_if_request_has_unsupported_method()
         {

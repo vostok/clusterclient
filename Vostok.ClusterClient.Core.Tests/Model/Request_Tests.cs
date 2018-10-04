@@ -388,7 +388,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [TestCase(RequestMethods.Trace, nameof(RequestMethods.Trace))]
         public void Factory_method_should_work_correctly_for_uri_argument_and_given_method(string methodValue, string factoryMethodName)
         {
-            var factoryMethod = typeof (Request).GetMethod(factoryMethodName, new[] {typeof (Uri)});
+            var factoryMethod = typeof(Request).GetMethod(factoryMethodName, new[] {typeof(Uri)});
 
             factoryMethod.Should().NotBeNull();
 
@@ -410,7 +410,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [TestCase(RequestMethods.Trace, nameof(RequestMethods.Trace))]
         public void Factory_method_should_work_correctly_for_string_argument_and_given_method(string methodValue, string factoryMethodName)
         {
-            var factoryMethod = typeof (Request).GetMethod(factoryMethodName, new[] {typeof (string)});
+            var factoryMethod = typeof(Request).GetMethod(factoryMethodName, new[] {typeof(string)});
 
             factoryMethod.Should().NotBeNull();
 
@@ -432,7 +432,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [TestCase(nameof(RequestMethods.Trace))]
         public void Factory_method_should_work_correctly_for_string_argument_with_both_absolute_and_relative_urls(string factoryMethodName)
         {
-            var factoryMethod = typeof (Request).GetMethod(factoryMethodName, new[] {typeof (string)});
+            var factoryMethod = typeof(Request).GetMethod(factoryMethodName, new[] {typeof(string)});
 
             factoryMethod.Should().NotBeNull();
 

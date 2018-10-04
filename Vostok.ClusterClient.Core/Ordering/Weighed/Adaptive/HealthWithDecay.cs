@@ -11,7 +11,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
         /// Health value
         /// </summary>
         public readonly double Value;
-        
+
         /// <summary>
         /// Decay pivot
         /// </summary>

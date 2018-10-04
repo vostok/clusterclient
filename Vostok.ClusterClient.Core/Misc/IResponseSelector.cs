@@ -18,7 +18,8 @@ namespace Vostok.ClusterClient.Core.Misc
         /// <param name="parameters">Parameters used to sent a request.</param>
         /// <param name="results">All replica results obtained during request execution.</param>
         /// <returns>Selected response or <c>null</c> if none was selected.</returns>
-        [Pure, CanBeNull]
+        [Pure]
+        [CanBeNull]
         Response Select([NotNull] Request request, [NotNull] RequestParameters parameters, [NotNull] IList<ReplicaResult> results);
     }
 }

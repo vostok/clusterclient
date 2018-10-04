@@ -89,7 +89,7 @@ namespace Vostok.ClusterClient.Core.Sending
             configuration.Log.Info($"Sending request to replica '{replica}' with timeout {timeout.ToPrettyString()}.");
 
         private void LogResult(ReplicaResult result) =>
-            configuration.Log.Info($"Result: replica = '{result.Replica}'; code = {(int)result.Response.Code} ('{result.Response.Code}'); verdict = {result.Verdict}; time = {result.Time.ToPrettyString()}.");
+            configuration.Log.Info($"Result: replica = '{result.Replica}'; code = {(int) result.Response.Code} ('{result.Response.Code}'); verdict = {result.Verdict}; time = {result.Time.ToPrettyString()}.");
 
         private void LogStreamReuseFailure() =>
             configuration.Log.Warn("Detected an attempt to use request body stream more than once, which is not allowed.");

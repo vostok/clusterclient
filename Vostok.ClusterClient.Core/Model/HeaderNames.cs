@@ -71,6 +71,5 @@ namespace Vostok.ClusterClient.Core.Model
         public const string RequestTimeout = "Request-Timeout";
         public const string RequestPriority = "Request-Priority";
         public const string ClientApplication = "Client-Application";
-        
     }
 }

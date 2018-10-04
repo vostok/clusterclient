@@ -16,8 +16,6 @@ namespace Vostok.ClusterClient.Core.Modules
         private static readonly ConcurrentDictionary<string, Counter> Counters = new ConcurrentDictionary<string, Counter>();
         private static readonly Stopwatch Watch = Stopwatch.StartNew();
 
-        public static void ClearCache() => Counters.Clear();
-
         private readonly ReplicaBudgetingOptions options;
         private readonly Func<string, Counter> counterFactory;
 
@@ -26,6 +24,8 @@ namespace Vostok.ClusterClient.Core.Modules
             this.options = options;
             counterFactory = _ => new Counter(options.MinutesToTrack);
         }
+
+        public static void ClearCache() => Counters.Clear();
 
         public int Requests => GetCounter().GetMetrics().Requests;
 
@@ -56,25 +56,15 @@ namespace Vostok.ClusterClient.Core.Modules
             return result;
         }
 
-        private Counter GetCounter() => Counters.GetOrAdd(options.StorageKey, counterFactory);
-
         private static double ComputeRatio(CounterMetrics metrics) =>
             1.0 * metrics.Replicas / Math.Max(1.0, metrics.Requests);
+
+        private Counter GetCounter() => Counters.GetOrAdd(options.StorageKey, counterFactory);
 
         #region Logging
 
         private void LogLimitingReplicasToUse(IRequestContext context, double ratio) =>
             context.Log.Warn($"Limiting max used replicas for request to 1 due to current replicas/requests ratio = {ratio:F3}");
-
-        #endregion
-
-        #region CounterMetrics
-
-        private struct CounterMetrics
-        {
-            public int Requests;
-            public int Replicas;
-        }
 
         #endregion
 
@@ -124,6 +114,9 @@ namespace Vostok.ClusterClient.Core.Modules
 
             public void AddReplicas(int count) => Interlocked.Add(ref ObtainBucket().Replicas, count);
 
+            private static int GetCurrentMinute() =>
+                (int) Math.Floor(Watch.Elapsed.TotalMinutes);
+
             private CounterBucket ObtainBucket()
             {
                 var minute = GetCurrentMinute();
@@ -138,9 +131,16 @@ namespace Vostok.ClusterClient.Core.Modules
                     Interlocked.CompareExchange(ref buckets[bucketIndex], new CounterBucket {Minute = minute}, currentBucket);
                 }
             }
+        }
 
-            private static int GetCurrentMinute() =>
-                (int)Math.Floor(Watch.Elapsed.TotalMinutes);
+        #endregion
+
+        #region CounterMetrics
+
+        private struct CounterMetrics
+        {
+            public int Requests;
+            public int Replicas;
         }
 
         #endregion

@@ -18,7 +18,12 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
         public void TestSetup()
         {
             context = new RequestContext(
-                Request.Get("foo/bar"), new RequestParameters(Strategy.Sequential2), Budget.Infinite, new ConsoleLog(), null, int.MaxValue);
+                Request.Get("foo/bar"),
+                new RequestParameters(Strategy.Sequential2),
+                Budget.Infinite,
+                new ConsoleLog(),
+                null,
+                int.MaxValue);
         }
 
         [Test]

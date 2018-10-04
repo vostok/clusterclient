@@ -59,6 +59,5 @@ namespace Vostok.ClusterClient.Core.Model
         {
             return WithContent(response, content, Encoding.UTF8);
         }
-
     }
 }

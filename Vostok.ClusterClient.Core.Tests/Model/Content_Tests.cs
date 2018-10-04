@@ -146,7 +146,8 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [Test]
         public void ToString_should_convert_bytes_to_utf8_string_by_default()
         {
-            var buffer = Guid.NewGuid().ToByteArray()
+            var buffer = Guid.NewGuid()
+                .ToByteArray()
                 .Concat(Encoding.UTF8.GetBytes("Hello!"))
                 .Concat(Guid.NewGuid().ToByteArray())
                 .ToArray();

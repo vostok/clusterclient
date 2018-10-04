@@ -26,12 +26,14 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         public void Should_add_client_app_name_from_context(string name)
         {
             context.ClientApplicationName.Returns(name);
-            
-            module.ExecuteAsync(context, requestContext =>
-            {
-                Console.WriteLine(requestContext.Request.Headers);
-                return null;
-            });
+
+            module.ExecuteAsync(
+                context,
+                requestContext =>
+                {
+                    Console.WriteLine(requestContext.Request.Headers);
+                    return null;
+                });
         }
     }
 }

@@ -18,37 +18,37 @@ namespace Vostok.ClusterClient.Core.Model
         /// GET header name
         /// </summary>
         public const string Get = "GET";
-        
+
         /// <summary>
         /// POST header name
         /// </summary>
         public const string Post = "POST";
-        
+
         /// <summary>
         /// PUT header name
         /// </summary>
         public const string Put = "PUT";
-        
+
         /// <summary>
         /// HEAD header name
         /// </summary>
         public const string Head = "HEAD";
-        
+
         /// <summary>
         /// PATCH header name
         /// </summary>
         public const string Patch = "PATCH";
-        
+
         /// <summary>
         /// DELETE header name
         /// </summary>
         public const string Delete = "DELETE";
-        
+
         /// <summary>
         /// OPTIONS header name
         /// </summary>
         public const string Options = "OPTIONS";
-        
+
         /// <summary>
         /// TRACE header name
         /// </summary>

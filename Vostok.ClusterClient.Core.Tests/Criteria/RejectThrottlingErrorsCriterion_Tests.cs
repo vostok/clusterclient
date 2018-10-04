@@ -27,7 +27,7 @@ namespace Vostok.ClusterClient.Core.Tests.Criteria
         [Test]
         public void Should_know_nothing_about_codes_which_are_not_throttling_errors()
         {
-            var codes = Enum.GetValues(typeof (ResponseCode)).Cast<ResponseCode>().Where(code => code != ResponseCode.TooManyRequests);
+            var codes = Enum.GetValues(typeof(ResponseCode)).Cast<ResponseCode>().Where(code => code != ResponseCode.TooManyRequests);
 
             foreach (var code in codes)
             {

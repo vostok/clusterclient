@@ -100,6 +100,23 @@ namespace Vostok.ClusterClient.Core.Strategies
         /// <inheritdoc />
         public override string ToString() => $"Forking({delaysProvider})";
 
+        private static async Task<bool> WaitForAcceptedResultAsync(List<Task> currentTasks)
+        {
+            var completedTask = await Task.WhenAny(currentTasks).ConfigureAwait(false);
+
+            currentTasks.Remove(completedTask);
+
+            var resultTask = completedTask as Task<ReplicaResult>;
+            if (resultTask == null)
+                return false;
+
+            currentTasks.RemoveAll(task => !(task is Task<ReplicaResult>));
+
+            var result = await resultTask.ConfigureAwait(false);
+
+            return result.Verdict == ResponseVerdict.Accept;
+        }
+
         private void LaunchRequest(List<Task> currentTasks, Request request, IRequestTimeBudget budget, IRequestSender sender, IEnumerator<Uri> replicasEnumerator, CancellationToken cancellationToken)
         {
             if (!replicasEnumerator.MoveNext())
@@ -127,23 +144,6 @@ namespace Vostok.ClusterClient.Core.Strategies
                 return;
 
             currentTasks.Add(delaysPlanner.Plan(forkingDelay.Value, cancellationToken));
-        }
-
-        private static async Task<bool> WaitForAcceptedResultAsync(List<Task> currentTasks)
-        {
-            var completedTask = await Task.WhenAny(currentTasks).ConfigureAwait(false);
-
-            currentTasks.Remove(completedTask);
-
-            var resultTask = completedTask as Task<ReplicaResult>;
-            if (resultTask == null)
-                return false;
-
-            currentTasks.RemoveAll(task => !(task is Task<ReplicaResult>));
-
-            var result = await resultTask.ConfigureAwait(false);
-
-            return result.Verdict == ResponseVerdict.Accept;
         }
     }
 }

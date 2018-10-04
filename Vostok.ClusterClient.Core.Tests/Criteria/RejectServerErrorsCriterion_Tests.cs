@@ -30,7 +30,7 @@ namespace Vostok.ClusterClient.Core.Tests.Criteria
         [Test]
         public void Should_know_nothing_about_codes_which_are_not_server_errors()
         {
-            var codes = Enum.GetValues(typeof (ResponseCode)).Cast<ResponseCode>().Where(code => !code.IsServerError());
+            var codes = Enum.GetValues(typeof(ResponseCode)).Cast<ResponseCode>().Where(code => !code.IsServerError());
 
             foreach (var code in codes)
             {

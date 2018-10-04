@@ -75,11 +75,12 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             context.Request.Should().BeSameAs(request3);
 
-            Received.InOrder(() =>
-            {
-                transform1.Transform(request1);
-                transform2.Transform(request2);
-            });
+            Received.InOrder(
+                () =>
+                {
+                    transform1.Transform(request1);
+                    transform2.Transform(request2);
+                });
         }
 
         [Test]

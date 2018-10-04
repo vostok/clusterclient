@@ -20,7 +20,7 @@ namespace Vostok.ClusterClient.Core.Transforms
             DefaultHeaders = Headers.Empty;
             if (defaultHeaders == null)
                 return;
-            
+
             foreach (var header in defaultHeaders)
             {
                 DefaultHeaders = DefaultHeaders.Set(header.Name, header.Value);

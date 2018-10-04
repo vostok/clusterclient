@@ -47,14 +47,15 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
 
             configuration = Substitute.For<IClusterClientConfiguration>();
             configuration.ResponseCriteria.Returns(new List<IResponseCriterion> {Substitute.For<IResponseCriterion>()});
-            configuration.Logging.Returns(new LoggingOptions
-            {
-                LogReplicaRequests = true,
-                LogReplicaResults = true
-            });
+            configuration.Logging.Returns(
+                new LoggingOptions
+                {
+                    LogReplicaRequests = true,
+                    LogReplicaResults = true
+                });
             configuration.ReplicaOrdering.Returns(Substitute.For<IReplicaOrdering>());
             configuration.Log.Returns(log = Substitute.For<ILog>());
-            
+
             log.IsEnabledFor(default).ReturnsForAnyArgs(true);
 
             storageProvider = Substitute.For<IReplicaStorageProvider>();
@@ -111,7 +112,7 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
         public void Should_return_unknown_failure_response_when_transport_throws_an_exception()
         {
             transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Throws(new Exception("Fail!"));
-            
+
             Send().Response.Should().BeSameAs(Responses.UnknownFailure);
 
             log.Received(1, LogLevel.Error);
@@ -185,11 +186,12 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
         [Test]
         public void Should_not_log_requests_and_results_if_not_asked_to()
         {
-            configuration.Logging.Returns(new LoggingOptions
-            {
-                LogReplicaResults = false,
-                LogReplicaRequests = false
-            });
+            configuration.Logging.Returns(
+                new LoggingOptions
+                {
+                    LogReplicaResults = false,
+                    LogReplicaRequests = false
+                });
 
             Send();
 

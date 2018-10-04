@@ -84,9 +84,9 @@ namespace Vostok.ClusterClient.Core.Model
             foreach (var replicaResult in ReplicaResults)
                 replicaResult.Response.Dispose();
         }
-        
+
         internal static ClusterResult TimeExpired(Request request)
-        {   
+        {
             return new ClusterResult(ClusterResultStatus.TimeExpired, new ReplicaResult[] {}, null, request);
         }
 

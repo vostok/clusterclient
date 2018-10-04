@@ -59,6 +59,10 @@ namespace Vostok.ClusterClient.Core.Strategies
         /// </summary>
         public static readonly ForkingRequestStrategy Forking3 = Forking(3);
 
+        private Strategy()
+        {
+        }
+
         /// <summary>
         /// Creates an instance of <see cref="SequentialRequestStrategy"/> with given <paramref name="timeoutsProvider"/>.
         /// </summary>
@@ -88,10 +92,6 @@ namespace Vostok.ClusterClient.Core.Strategies
         /// </summary>
         public static ForkingRequestStrategy Forking(int maximumParallelism) =>
             new ForkingRequestStrategy(new EqualDelaysProvider(maximumParallelism), maximumParallelism);
-
-        private Strategy()
-        {
-        }
 
         #region IRequestStrategy implementation stub
 

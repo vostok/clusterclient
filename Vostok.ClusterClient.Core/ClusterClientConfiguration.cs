@@ -27,7 +27,7 @@ namespace Vostok.ClusterClient.Core
             ResponseTransforms = new List<IResponseTransform>();
             ResponseCriteria = new List<IResponseCriterion>();
             Modules = new Dictionary<RequestPipelinePoint, List<IRequestModule>>();
-            foreach (var value in (RequestPipelinePoint[])Enum.GetValues(typeof(RequestPipelinePoint)))
+            foreach (var value in (RequestPipelinePoint[]) Enum.GetValues(typeof(RequestPipelinePoint)))
                 Modules[value] = new List<IRequestModule>();
             ReplicaStorageScope = ClusterClientDefaults.ReplicaStorageScope;
             DefaultTimeout = ClusterClientDefaults.Timeout;
@@ -76,9 +76,9 @@ namespace Vostok.ClusterClient.Core
         public RequestPriority? DefaultPriority { get; set; }
 
         public int MaxReplicasUsedPerRequest { get; set; }
-        
+
         public LoggingOptions Logging { get; set; }
-        
+
         public string ClientApplicationName { get; set; }
 
         public AdaptiveThrottlingOptions AdaptiveThrottling { get; set; }
@@ -86,11 +86,11 @@ namespace Vostok.ClusterClient.Core
         public ReplicaBudgetingOptions ReplicaBudgeting { get; set; }
 
         public string ServiceName { get; set; }
-        
+
         public string Environment { get; set; }
 
         public bool DeduplicateRequestUrl { get; set; }
-        
+
         public bool IsValid => !Validate().Any();
 
         public IEnumerable<string> Validate()

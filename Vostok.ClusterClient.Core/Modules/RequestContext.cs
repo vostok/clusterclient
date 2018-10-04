@@ -12,7 +12,8 @@ namespace Vostok.ClusterClient.Core.Modules
         private readonly object resultsLock = new object();
         private List<ReplicaResult> results;
 
-        public RequestContext(Request request,
+        public RequestContext(
+            Request request,
             RequestParameters parameters,
             IRequestTimeBudget budget,
             ILog log,
@@ -45,7 +46,7 @@ namespace Vostok.ClusterClient.Core.Modules
         public int MaximumReplicasToUse { get; set; }
 
         public string ClientApplicationName { get; }
-        
+
         public RequestParameters Parameters { get; }
 
         public void SetReplicaResult(ReplicaResult result)

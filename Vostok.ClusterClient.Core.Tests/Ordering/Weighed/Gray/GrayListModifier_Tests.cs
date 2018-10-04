@@ -39,12 +39,12 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
             replica1 = new Uri("http://replica1");
             parameters = RequestParameters.Empty;
             storage = new ConcurrentDictionary<Uri, DateTime>();
-           
+
             storageProvider = Substitute.For<IReplicaStorageProvider>();
             storageProvider.Obtain<DateTime>(Arg.Any<string>()).Returns(storage);
             replica2 = new Uri("http://replica2");
             replicas = new List<Uri> {replica1, replica2};
-         
+
             periodProvider = Substitute.For<IGrayPeriodProvider>();
             periodProvider.GetGrayPeriod().Returns(5.Minutes());
 
@@ -156,14 +156,14 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
             storage.Should().ContainKey(replica1);
         }
 
-        private void ShiftCurrentTime(TimeSpan delta)
-        {
-            currentTime = currentTime + delta;
-        }
-
         private static ReplicaResult CreateResult(Uri replica, ResponseVerdict verdict, Response response = null)
         {
             return new ReplicaResult(replica, response ?? Responses.Timeout, verdict, TimeSpan.Zero);
+        }
+
+        private void ShiftCurrentTime(TimeSpan delta)
+        {
+            currentTime = currentTime + delta;
         }
     }
 }

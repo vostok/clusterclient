@@ -109,7 +109,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
             if (timeSinceDecayPivot >= DecayDuration)
                 return;
 
-            var effectiveHealth = health.Value + healthDamage * ((double)timeSinceDecayPivot.Ticks / DecayDuration.Ticks);
+            var effectiveHealth = health.Value + healthDamage * ((double) timeSinceDecayPivot.Ticks / DecayDuration.Ticks);
 
             weight *= effectiveHealth;
         }

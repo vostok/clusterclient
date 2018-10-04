@@ -75,7 +75,7 @@ namespace Vostok.ClusterClient.Core
                 minimumRequests,
                 criticalRatio,
                 maximumRejectProbability);
-            
+
             configuration.AddRequestModule(new AdaptiveThrottlingModule(options), RequestPipelinePoint.BeforeSend);
         }
 

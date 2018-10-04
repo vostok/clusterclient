@@ -26,10 +26,10 @@ namespace Vostok.ClusterClient.Core.Model
             if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
 
-            if ((offset < 0) || (offset > buffer.Length))
+            if (offset < 0 || offset > buffer.Length)
                 throw new ArgumentOutOfRangeException(nameof(offset), $"Offset {offset} is incorrect. Buffer size = {buffer.Length}.");
 
-            if ((length < 0) || (length > buffer.Length - offset))
+            if (length < 0 || length > buffer.Length - offset)
                 throw new ArgumentOutOfRangeException(nameof(length), $"Length {length} is incorrect. Buffer size = {buffer.Length}. Offset = {offset}.");
 
             Buffer = buffer;
@@ -75,7 +75,7 @@ namespace Vostok.ClusterClient.Core.Model
         /// </summary>
         public byte[] ToArray()
         {
-            if ((Offset == 0) && (Length == Buffer.Length))
+            if (Offset == 0 && Length == Buffer.Length)
                 return Buffer;
 
             var array = new byte[Length];

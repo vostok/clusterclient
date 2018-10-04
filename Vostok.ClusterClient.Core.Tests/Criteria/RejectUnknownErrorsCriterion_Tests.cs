@@ -29,11 +29,12 @@ namespace Vostok.ClusterClient.Core.Tests.Criteria
         public void Should_know_nothing_about_codes_which_are_not_unknown_errors()
         {
             var codes = Enum
-                .GetValues(typeof (ResponseCode))
+                .GetValues(typeof(ResponseCode))
                 .Cast<ResponseCode>()
-                .Where(code => 
-                    code != ResponseCode.Unknown && 
-                    code != ResponseCode.UnknownFailure);
+                .Where(
+                    code =>
+                        code != ResponseCode.Unknown &&
+                        code != ResponseCode.UnknownFailure);
 
             foreach (var code in codes)
             {

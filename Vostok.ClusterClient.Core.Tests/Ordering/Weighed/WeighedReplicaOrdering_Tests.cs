@@ -92,7 +92,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
         [Test]
         public void Order_should_return_a_list_with_single_replica_as_is()
         {
-            replicas = new [] { replicas.First() };
+            replicas = new[] {replicas.First()};
 
             Order().Should().BeSameAs(replicas);
         }

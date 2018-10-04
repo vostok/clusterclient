@@ -10,8 +10,8 @@ namespace Vostok.ClusterClient.Core.Model
     public struct Header : IEquatable<Header>
     {
         private string name;
-        private string value;        
-        
+        private string value;
+
         /// <param name="name">Header name.</param>
         /// <param name="value">Header value.</param>
         public Header([NotNull] string name, [NotNull] string value)
@@ -60,7 +60,7 @@ namespace Vostok.ClusterClient.Core.Model
 
         /// <inheritdoc />
         public override int GetHashCode()
-            => unchecked (StringComparer.OrdinalIgnoreCase.GetHashCode(Name)*397) ^ Value.GetHashCode();
+            => unchecked(StringComparer.OrdinalIgnoreCase.GetHashCode(Name) * 397) ^ Value.GetHashCode();
 
         #endregion
     }

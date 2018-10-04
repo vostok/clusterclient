@@ -13,18 +13,34 @@ namespace Vostok.ClusterClient.Core.Model
     public class RequestParameters
     {
         /// <summary>
+        /// Represents an empty <see cref="RequestParameters"/> object. Useful to start building request properties from scratch.
+        /// </summary>
+        public static readonly RequestParameters Empty = new RequestParameters();
+
+        private readonly ImmutableArrayDictionary<string, object> properties = new ImmutableArrayDictionary<string, object>();
+
+        /// <summary>
         /// Create a new instance of <see cref="RequestParameters"/> with specified <paramref name="strategy"/> and <paramref name="priority"/>.
         /// </summary>
-        public RequestParameters([CanBeNull] IRequestStrategy strategy=null, [CanBeNull] RequestPriority? priority=null)
+        public RequestParameters([CanBeNull] IRequestStrategy strategy = null, [CanBeNull] RequestPriority? priority = null)
         {
             Strategy = strategy;
             Priority = priority;
         }
 
-        /// <summary>
-        /// Represents an empty <see cref="RequestParameters"/> object. Useful to start building request properties from scratch.
-        /// </summary>
-        public static readonly RequestParameters Empty = new RequestParameters();
+        private RequestParameters()
+        {
+        }
+
+        private RequestParameters(
+            IRequestStrategy strategy,
+            RequestPriority? priority,
+            ImmutableArrayDictionary<string, object> properties)
+        {
+            Strategy = strategy;
+            Priority = priority;
+            this.properties = properties ?? ImmutableArrayDictionary<string, object>.Empty;
+        }
 
         /// <summary>
         /// <para>A <see cref="Strategy"/> which will be used to send the request.</para>
@@ -33,7 +49,7 @@ namespace Vostok.ClusterClient.Core.Model
         /// </summary>
         [CanBeNull]
         public IRequestStrategy Strategy { get; }
-        
+
         /// <summary>
         /// A <see cref="RequestPriority"/> which will be used to send the request.
         /// </summary>
@@ -44,20 +60,6 @@ namespace Vostok.ClusterClient.Core.Model
         /// </summary>
         [NotNull]
         public IReadOnlyDictionary<string, object> Properties => properties;
-        
-        private readonly ImmutableArrayDictionary<string, object> properties = new ImmutableArrayDictionary<string, object>();
-
-        private RequestParameters(){}
-        
-        private RequestParameters(
-            IRequestStrategy strategy,
-            RequestPriority? priority,
-            ImmutableArrayDictionary<string, object> properties)
-        {
-            Strategy = strategy;
-            Priority = priority;
-            this.properties = properties ?? ImmutableArrayDictionary<string, object>.Empty;
-        }
 
         /// <returns>New instance of <see cref="RequestParameters"/> with specified <paramref name="strategy"/>.</returns>
         public RequestParameters WithStrategy([CanBeNull] IRequestStrategy strategy)

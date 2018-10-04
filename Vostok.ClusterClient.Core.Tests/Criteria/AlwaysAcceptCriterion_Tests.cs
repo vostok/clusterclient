@@ -15,7 +15,7 @@ namespace Vostok.ClusterClient.Core.Tests.Criteria
         {
             var criterion = new AlwaysAcceptCriterion();
 
-            var codes = Enum.GetValues(typeof (ResponseCode)).Cast<ResponseCode>();
+            var codes = Enum.GetValues(typeof(ResponseCode)).Cast<ResponseCode>();
 
             foreach (var code in codes)
             {

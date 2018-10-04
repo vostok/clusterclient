@@ -12,7 +12,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [SetUp]
         public void TestSetup()
         {
-            request = Request.Get("foo/bar");   
+            request = Request.Get("foo/bar");
         }
 
         [Test]

@@ -45,7 +45,7 @@ namespace Vostok.ClusterClient.Core.Modules
                 return ClusterResult.ReplicasNotFound(context.Request);
             }
 
-            var contextImpl = (RequestContext)context;
+            var contextImpl = (RequestContext) context;
             var contextualSender = new ContextualRequestSender(requestSender, contextImpl);
 
             var maxReplicasToUse = context.MaximumReplicasToUse;

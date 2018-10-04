@@ -27,7 +27,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             context.Log.Returns(log = Substitute.For<ILog>());
             context.Transport.Returns(Substitute.For<ITransport>());
             context.Parameters.Returns(RequestParameters.Empty.WithStrategy(new SingleReplicaRequestStrategy()));
-            
+
             log.IsEnabledFor(default).ReturnsForAnyArgs(true);
 
             module = new RequestValidationModule();
@@ -103,6 +103,16 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             ShouldPassChecks();
         }
 
+        private static Request CreateCorrectRequest()
+        {
+            return Request.Get("foo/bar");
+        }
+
+        private static Request CreateIncorrectRequest()
+        {
+            return new Request(RequestMethods.Head, new Uri("foo/bar", UriKind.Relative), new Content(new byte[] {1, 2, 3}));
+        }
+
         private void ShouldPassChecks()
         {
             var task = Task.FromResult(ClusterResult.UnexpectedException(context.Request));
@@ -113,16 +123,6 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         private void ShouldFailChecks()
         {
             module.ExecuteAsync(context, _ => null).Result.Status.Should().Be(ClusterResultStatus.IncorrectArguments);
-        }
-
-        private static Request CreateCorrectRequest()
-        {
-            return Request.Get("foo/bar");
-        }
-
-        private static Request CreateIncorrectRequest()
-        {
-            return new Request(RequestMethods.Head, new Uri("foo/bar", UriKind.Relative), new Content(new byte[]{1, 2, 3}));
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Vostok.ClusterClient.Core.Modules
         {
             if (!string.IsNullOrEmpty(context.ClientApplicationName))
                 context.Request = context.Request.WithHeader(HeaderNames.ClientApplication, context.ClientApplicationName);
-            
+
             return next(context);
         }
     }

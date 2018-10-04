@@ -14,6 +14,6 @@ namespace Vostok.ClusterClient.Core.Ordering.Storage
             ObtainContainer<TValue>().Obtain(storageKey);
 
         private ReplicaStorageContainer<TValue> ObtainContainer<TValue>() =>
-            (ReplicaStorageContainer<TValue>)containers.GetOrAdd(typeof(TValue), _ => new ReplicaStorageContainer<TValue>());
+            (ReplicaStorageContainer<TValue>) containers.GetOrAdd(typeof(TValue), _ => new ReplicaStorageContainer<TValue>());
     }
 }

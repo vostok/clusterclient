@@ -47,12 +47,12 @@ namespace Vostok.ClusterClient.Core.Modules
         /// Gets or sets the maximum count of replicas a request may use.
         /// </summary>
         int MaximumReplicasToUse { get; set; }
-        
+
         /// <summary>
         /// Gets the client application name.
         /// </summary>
         string ClientApplicationName { get; }
-        
+
         /// <summary>
         /// Gets or sets used request parameters.
         /// </summary>

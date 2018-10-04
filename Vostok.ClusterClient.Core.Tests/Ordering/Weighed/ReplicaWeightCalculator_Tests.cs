@@ -87,21 +87,22 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
         public void GetWeight_should_call_all_weight_modifiers_in_order()
         {
             modifiers.Add(CreateModifier(w => w + 1));
-            modifiers.Add(CreateModifier(w => w*2));
+            modifiers.Add(CreateModifier(w => w * 2));
             modifiers.Add(CreateModifier(w => w + 3));
 
             calculator.GetWeight(replica, replicas, storageProvider, request, parameters).Should().Be(7.0);
 
-            Received.InOrder(() =>
-            {
-                var w1 = InitialWeight;
-                var w2 = w1 + 1;
-                var w3 = w2*2;
+            Received.InOrder(
+                () =>
+                {
+                    var w1 = InitialWeight;
+                    var w2 = w1 + 1;
+                    var w3 = w2 * 2;
 
-                modifiers[0].Modify(replica, replicas, storageProvider, request, parameters, ref w1);
-                modifiers[1].Modify(replica, replicas, storageProvider, request, parameters, ref w2);
-                modifiers[2].Modify(replica, replicas, storageProvider, request, parameters, ref w3);
-            });
+                    modifiers[0].Modify(replica, replicas, storageProvider, request, parameters, ref w1);
+                    modifiers[1].Modify(replica, replicas, storageProvider, request, parameters, ref w2);
+                    modifiers[2].Modify(replica, replicas, storageProvider, request, parameters, ref w3);
+                });
         }
 
         [Test]
@@ -113,16 +114,17 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed
 
             calculator.GetWeight(replica, replicas, storageProvider, request, parameters).Should().Be(2.0);
 
-            Received.InOrder(() =>
-            {
-                var w1 = InitialWeight;
-                var w2 = MaxWeight;
-                var w3 = MinWeight;
+            Received.InOrder(
+                () =>
+                {
+                    var w1 = InitialWeight;
+                    var w2 = MaxWeight;
+                    var w3 = MinWeight;
 
-                modifiers[0].Modify(replica, replicas, storageProvider, request, parameters, ref w1);
-                modifiers[1].Modify(replica, replicas, storageProvider, request, parameters, ref w2);
-                modifiers[2].Modify(replica, replicas, storageProvider, request, parameters, ref w3);
-            });
+                    modifiers[0].Modify(replica, replicas, storageProvider, request, parameters, ref w1);
+                    modifiers[1].Modify(replica, replicas, storageProvider, request, parameters, ref w2);
+                    modifiers[2].Modify(replica, replicas, storageProvider, request, parameters, ref w3);
+                });
         }
 
         [Test]

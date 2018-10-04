@@ -34,18 +34,24 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             replica2 = new Uri("http://replica");
             request = Request.Get("foo/bar");
 
-            oneReplicaResult = new ClusterResult(ClusterResultStatus.ReplicasExhausted, new []
-            {
-                new ReplicaResult(replica1, Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero)
-            }, 
-            null, request);
+            oneReplicaResult = new ClusterResult(
+                ClusterResultStatus.ReplicasExhausted,
+                new[]
+                {
+                    new ReplicaResult(replica1, Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero)
+                },
+                null,
+                request);
 
-            twoReplicasResult = new ClusterResult(ClusterResultStatus.ReplicasExhausted, new[]
-            {
-                new ReplicaResult(replica1, Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero),
-                new ReplicaResult(replica2, Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero)
-            }, 
-            null, request);
+            twoReplicasResult = new ClusterResult(
+                ClusterResultStatus.ReplicasExhausted,
+                new[]
+                {
+                    new ReplicaResult(replica1, Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero),
+                    new ReplicaResult(replica2, Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero)
+                },
+                null,
+                request);
 
             context = Substitute.For<IRequestContext>();
             context.Log.Returns(new SilentLog());

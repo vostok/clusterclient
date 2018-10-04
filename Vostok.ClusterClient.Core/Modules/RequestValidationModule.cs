@@ -16,7 +16,7 @@ namespace Vostok.ClusterClient.Core.Modules
         {
             if (!RequestValidator.IsValid(context.Request))
                 return OnInvalidRequest(context, RequestValidator.Validate(context.Request));
-            
+
             if (HasStreamUnsupportedByTransport(context))
                 return OnInvalidRequest(context, "Request has a body stream, which is not supported by transport implementation.");
 

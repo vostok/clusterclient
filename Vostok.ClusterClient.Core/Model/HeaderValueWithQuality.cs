@@ -35,7 +35,7 @@ namespace Vostok.ClusterClient.Core.Model
         /// Header value.
         /// </summary>
         public string Value { get; }
-        
+
         /// <summary>
         /// Quality of this value.
         /// </summary>
@@ -65,7 +65,7 @@ namespace Vostok.ClusterClient.Core.Model
 
         /// <inheritdoc />
         public override int GetHashCode() =>
-            unchecked (((Value?.GetHashCode() ?? 0) * 397) ^ Quality.GetHashCode());
+            unchecked(((Value?.GetHashCode() ?? 0) * 397) ^ Quality.GetHashCode());
 
         #endregion
     }

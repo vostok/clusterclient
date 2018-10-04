@@ -22,7 +22,7 @@ namespace Vostok.ClusterClient.Core.Misc
             if (request.HasBody && (request.Method == RequestMethods.Get || request.Method == RequestMethods.Head))
                 yield return $"Sending a body is not allowed with {request.Method} requests.";
         }
-                
+
         /// <summary>
         /// <para>Returns true if current <see cref="Request"/> instance is valid, or false otherwise.</para>
         /// <para><see cref="Validate"/> method can be used to obtain error messages.</para>

@@ -31,9 +31,10 @@ namespace Vostok.ClusterClient.Core.Tests.Criteria
             var codes = Enum
                 .GetValues(typeof(ResponseCode))
                 .Cast<ResponseCode>()
-                .Where(code =>
-                    code != ResponseCode.StreamInputFailure &&
-                    code != ResponseCode.StreamReuseFailure);
+                .Where(
+                    code =>
+                        code != ResponseCode.StreamInputFailure &&
+                        code != ResponseCode.StreamReuseFailure);
 
             foreach (var code in codes)
             {

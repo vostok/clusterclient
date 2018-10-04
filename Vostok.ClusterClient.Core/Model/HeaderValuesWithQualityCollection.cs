@@ -19,6 +19,8 @@ namespace Vostok.ClusterClient.Core.Model
         private static readonly char[] QualityValueSeparator = {'='};
         private static readonly Regex ValueFormat = new Regex(@"^\s*([a-z0-9\-+\*/]+\s*(;\s*q\s*=\s*([01](\.[0-9]{0,3})?)\s*)?,\s*)*([a-z0-9\-+\*/]+\s*(;\s*q\s*=\s*([01](\.[0-9]{0,3})?)\s*)?)?$", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
 
+        private readonly List<HeaderValueWithQuality> sortedValues = new List<HeaderValueWithQuality>();
+
         /// <param name="headerValue">A raw string header value.</param>
         /// <returns>A collection of header values with quality.</returns>
         public static HeaderValuesWithQualityCollection Parse(string headerValue)
@@ -48,15 +50,10 @@ namespace Vostok.ClusterClient.Core.Model
             return result;
         }
 
-        private readonly List<HeaderValueWithQuality> sortedValues = new List<HeaderValueWithQuality>();
-
         /// <summary>
         /// Count of values in collection.
         /// </summary>
         public int Count => sortedValues.Count;
-
-        /// <param name="idx">The index of value in collection.</param>
-        public HeaderValueWithQuality this[int idx] => sortedValues[idx];
 
         /// <summary>
         /// Add header with specified <paramref name="value"/> and <paramref name="quality"/> to collection.
@@ -115,6 +112,9 @@ namespace Vostok.ClusterClient.Core.Model
 
         /// <inheritdoc />
         public IEnumerator<HeaderValueWithQuality> GetEnumerator() => sortedValues.GetEnumerator();
+
+        /// <param name="idx">The index of value in collection.</param>
+        public HeaderValueWithQuality this[int idx] => sortedValues[idx];
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }

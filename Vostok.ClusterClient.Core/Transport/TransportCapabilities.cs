@@ -7,7 +7,8 @@ namespace Vostok.ClusterClient.Core.Transport
     /// <summary>
     /// Represents a set of optional capabilities one can expect to find in transport implementations.
     /// </summary>
-    [PublicAPI, Flags]
+    [PublicAPI]
+    [Flags]
     public enum TransportCapabilities
     {
         /// <summary>

@@ -32,7 +32,7 @@ namespace Vostok.ClusterClient.Core.Tests.Criteria
         [Test]
         public void Should_know_nothing_about_codes_which_are_not_redirections()
         {
-            var codes = Enum.GetValues(typeof (ResponseCode)).Cast<ResponseCode>().Where(code => !code.IsRedirection());
+            var codes = Enum.GetValues(typeof(ResponseCode)).Cast<ResponseCode>().Where(code => !code.IsRedirection());
 
             foreach (var code in codes)
             {

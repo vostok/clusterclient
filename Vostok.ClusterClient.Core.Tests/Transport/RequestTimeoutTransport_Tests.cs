@@ -30,10 +30,11 @@ namespace Vostok.ClusterClient.Core.Tests.Transport
             var request = Request.Get("http://a/");
 
             var passed = false;
-            
-            baseTransport.WhenForAnyArgs(x => x.SendAsync(default, default, default)).Do(
-                c => passed = c.Arg<Request>().Headers[HeaderNames.RequestTimeout] == expected);
-            
+
+            baseTransport.WhenForAnyArgs(x => x.SendAsync(default, default, default))
+                .Do(
+                    c => passed = c.Arg<Request>().Headers[HeaderNames.RequestTimeout] == expected);
+
             timeoutTransport.SendAsync(request, timeout, default).GetAwaiter().GetResult();
 
             passed.Should().BeTrue();

@@ -91,12 +91,13 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies.TimeoutProviders
         {
             var cumulative = 0.Seconds();
 
-            var provider = new AdHocTimeoutsProvider(() =>
-            {
-                cumulative += 1.Seconds();
+            var provider = new AdHocTimeoutsProvider(
+                () =>
+                {
+                    cumulative += 1.Seconds();
 
-                return cumulative;
-            });
+                    return cumulative;
+                });
 
             provider.GetTimeout(request, Budget.Infinite, 0, 3).Should().Be(1.Seconds());
             provider.GetTimeout(request, Budget.Infinite, 0, 3).Should().Be(2.Seconds());

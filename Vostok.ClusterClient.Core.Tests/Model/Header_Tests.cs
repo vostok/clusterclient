@@ -40,7 +40,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
 
             header1.Should().Be(header2);
         }
-        
+
         [Test]
         public void Should_have_case_insensitive_equality_for_key()
         {
@@ -49,7 +49,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
 
             header1.Should().Be(header2);
         }
-        
+
         [Test]
         public void Should_have_case_sensitive_equality_for_value()
         {

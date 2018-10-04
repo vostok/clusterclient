@@ -353,7 +353,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
             var headersWith = Headers.Empty.Set(headerName, "value");
             var headersWithout = Headers.Empty.Set(Guid.NewGuid().ToString(), "value");
 
-            var property = typeof (Headers).GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
+            var property = typeof(Headers).GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
 
             property.Should().NotBeNull();
             property.GetValue(headersWith).Should().Be("value");

@@ -75,25 +75,29 @@ namespace Vostok.ClusterClient.Core
         public IReplicaStorageProvider ReplicaStorageProvider { get; }
 
         /// <inheritdoc />
-        public Task<ClusterResult> SendAsync(Request request, RequestParameters parameters = null, TimeSpan? timeout = null,
+        public Task<ClusterResult> SendAsync(
+            Request request,
+            RequestParameters parameters = null,
+            TimeSpan? timeout = null,
             CancellationToken cancellationToken = new CancellationToken())
         {
-            return pipelineDelegate(new RequestContext(
-                request,
-                CompleteParameters(parameters),
-                RequestTimeBudget.StartNew(timeout ?? configuration.DefaultTimeout, BudgetPrecision),
-                configuration.Log,
-                new RequestTimeoutTransport(configuration.Transport),
-                configuration.MaxReplicasUsedPerRequest,
-                configuration.ClientApplicationName,
-                cancellationToken));
+            return pipelineDelegate(
+                new RequestContext(
+                    request,
+                    CompleteParameters(parameters),
+                    RequestTimeBudget.StartNew(timeout ?? configuration.DefaultTimeout, BudgetPrecision),
+                    configuration.Log,
+                    new RequestTimeoutTransport(configuration.Transport),
+                    configuration.MaxReplicasUsedPerRequest,
+                    configuration.ClientApplicationName,
+                    cancellationToken));
         }
 
         private RequestParameters CompleteParameters(RequestParameters parameters)
         {
             if (parameters == null)
                 return new RequestParameters(configuration.DefaultRequestStrategy, configuration.DefaultPriority);
-            
+
             if (parameters.Strategy == null)
                 parameters = parameters.WithStrategy(configuration.DefaultRequestStrategy);
             if (parameters.Priority == null)
