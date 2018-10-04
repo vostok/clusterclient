@@ -43,8 +43,7 @@ namespace Vostok.ClusterClient.Core.Model
         }
 
         /// <param name="initialUrl">The initial Url.</param>
-        /// <param name="encode">An external delegate which will be used for query parameters encoding. This parameter is optional.</param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="initialUrl"/> is <c>null</c>.</exception>
         public RequestUrlBuilder([NotNull] string initialUrl = "")
         {
             if (initialUrl == null)
