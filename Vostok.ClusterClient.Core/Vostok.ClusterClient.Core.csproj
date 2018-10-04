@@ -68,9 +68,4 @@
     </Compile>
   </ItemGroup>
   
-  <ItemGroup>
-    <Folder Include="Net" />
-    <Folder Include="Utilities" />
-  </ItemGroup>
-  
 </Project>
