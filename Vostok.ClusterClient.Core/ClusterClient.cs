@@ -83,7 +83,7 @@ namespace Vostok.ClusterClient.Core
                 CompleteParameters(parameters),
                 RequestTimeBudget.StartNew(timeout ?? configuration.DefaultTimeout, BudgetPrecision),
                 configuration.Log,
-                configuration.Transport,
+                new RequestTimeoutTransport(configuration.Transport),
                 configuration.MaxReplicasUsedPerRequest,
                 configuration.ClientApplicationName,
                 cancellationToken));

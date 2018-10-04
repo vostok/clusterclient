@@ -22,7 +22,6 @@ namespace Vostok.ClusterClient.Core.Modules
             // ReSharper disable once UseObjectOrCollectionInitializer
             var modules = new List<IRequestModule>(12 + config.Modules?.Where(x => x.Value != null).SelectMany(x => x.Value).Count() ?? 0);
             
-            modules.Add(new RequestTimeoutHeaderModule());
             modules.Add(new LeakPreventionModule());
             modules.Add(new ErrorCatchingModule());
             modules.Add(new RequestTransformationModule(config.RequestTransforms));
