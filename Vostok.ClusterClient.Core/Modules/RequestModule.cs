@@ -23,6 +23,6 @@ namespace Vostok.ClusterClient.Core.Modules
         /// <summary>
         /// A point in request pipeline before <see cref="RequestExecutionModule"/>.
         /// </summary>
-        BeforeExecution = 3,
+        BeforeExecution = 3
     }
 }
