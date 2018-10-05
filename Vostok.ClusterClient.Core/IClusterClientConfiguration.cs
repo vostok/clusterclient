@@ -85,33 +85,38 @@ namespace Vostok.ClusterClient.Core
         List<IResponseCriterion> ResponseCriteria { get; set; }
 
         /// <summary>
-        /// <para>A collection of additional user-defined request modules. These modules are inserted into native execution pipeline.</para>
-        /// <para>User-defined modules inserted into pipeline into specified <see cref="RequestPipelinePoint"/>.</para>
+        /// <para>A collection of user-defined request modules. These modules are inserted into native execution pipeline.</para>
+        /// <para>User-defined modules inserted into pipeline into specified <see cref="RequestModule"/>.</para>
         /// <para>See <see cref="IRequestModule"/> interface for more details about request modules.</para>
         /// <para>Final execution pipeline looks like this:</para>
         /// <list type="number">
-        /// <item><description>Underlying response streams closing.</description></item>
-        /// <item><description>Exception logging and handling.</description></item>
-        /// <item><description>Request transformation (application of <see cref="IRequestTransform"/> chain).</description></item>
-        /// <item><description>Request priority application (adding a priority header to request).</description></item>
-        /// <item><description>Client application identity (adding a client application header to request).</description></item>
-        /// <item><description><see cref="RequestPipelinePoint.AfterPrepareRequest"/>. User-defined <see cref="IRequestModule"/> implementations(by default inserted here).</description></item>
-        /// <item><description>Request/result logging.</description></item>
-        /// <item><description>Response transformation (application of <see cref="IResponseTransform"/> chain).</description></item>
-        /// <item><description>Exception logging and handling.</description></item>
-        /// <item><description>Request validation.</description></item>
-        /// <item><description><see cref="RequestPipelinePoint.AfterRequestValidation"/>.</description></item>
-        /// <item><description>Timeout validation.</description></item>
-        /// <item><description>try loop (application of <see cref="IRetryPolicy"/> and <see cref="IRetryStrategy"/>).</description></item>
-        /// <item><description><see cref="RequestPipelinePoint.BeforeSend"/>.</description></item>
-        /// <item><description>Sending of requests with absolute urls (directly using <see cref="ITransport"/>).</description></item>
-        /// <item><description><see cref="RequestPipelinePoint.BeforeExecution"/>.</description></item>
-        /// <item><description>Request execution (<see cref="IClusterProvider"/> --> <see cref="IReplicaOrdering"/> --> <see cref="IRequestStrategy"/>)</description></item>
+        /// <item><description><see cref="RequestModule.LeakPrevention"/>: Underlying response streams closing.</description></item>
+        /// <item><description><see cref="RequestModule.GlobalErrorCatching"/>: Exception logging and handling.</description></item>
+        /// <item><description><see cref="RequestModule.RequestTransformation"/>: Request transformation (application of <see cref="IRequestTransform"/> chain).</description></item>
+        /// <item><description><see cref="RequestModule.RequestPriority"/>: Request priority application (adding a priority header to request).</description></item>
+        /// <item><description><see cref="RequestModule.ClientApplication"/>: Client application identity (adding a client application header to request).</description></item>
+        /// <item><description><see cref="RequestModule.Logging"/>: Request/result logging.</description></item>
+        /// <item><description><see cref="RequestModule.ResponseTransformation"/>: Response transformation (application of <see cref="IResponseTransform"/> chain).</description></item>
+        /// <item><description><see cref="RequestModule.ErrorCatching"/>: Exception logging and handling.</description></item>
+        /// <item><description><see cref="RequestModule.RequestValidation"/>: Request validation.</description></item>
+        /// <item><description><see cref="RequestModule.TimeoutValidation"/>: Timeout validation.</description></item>
+        /// <item><description><see cref="RequestModule.RequestRetry"/>: try loop (application of <see cref="IRetryPolicy"/> and <see cref="IRetryStrategy"/>).</description></item>
+        /// <item><description><see cref="RequestModule.AbsoluteUrlSender"/>: Sending of requests with absolute urls (directly using <see cref="ITransport"/>).</description></item>
+        /// <item><description><see cref="RequestModule.RequestExecution"/>: Request execution (<see cref="IClusterProvider"/> --> <see cref="IReplicaOrdering"/> --> <see cref="IRequestStrategy"/>)</description></item>
         /// </list>
-        /// <para>Use <see cref="ClusterClientConfigurationExtensions.AddRequestModule"/> to add transforms to this collection.</para>
+        /// <para>Use <see cref="ClusterClientConfigurationExtensions.AddRequestModule"/> to add modules to this collection.</para>
         /// <para>This parameter is optional and has an empty default value.</para>
         /// </summary>
-        Dictionary<RequestPipelinePoint, List<IRequestModule>> Modules { get; set; }
+        List<IRequestModule> Modules { get; set; }
+        
+        /// <summary>
+        /// <para>A collection of additional user-defined request modules. These modules are inserted into native execution pipeline.</para>
+        /// <para>User-defined modules inserted into pipeline near <see cref="IRequestModule"/> of specified type.</para>
+        /// <para>See <see cref="IRequestModule"/> interface for more details about request modules.</para>
+        /// <para>Use <c>AddRequestModuleAfter</c> and <c>AddRequestModuleBefore</c> methods from <see cref="ClusterClientConfigurationExtensions"/> to add modules to this collection.</para>
+        /// <para>This parameter is optional and has an empty default value.</para>
+        /// </summary>
+        Dictionary<Type, RelatedModules> AdditionalModules { get; set; }
 
         /// <summary>
         /// <para>Gets or sets retry policy. See <see cref="IRetryPolicy"/> for more details.</para>

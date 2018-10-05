@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Vostok.ClusterClient.Core.Model;
@@ -20,33 +21,37 @@ namespace Vostok.ClusterClient.Core.Modules
             var resultStatusSelector = new ClusterResultStatusSelector();
 
             // ReSharper disable once UseObjectOrCollectionInitializer
-            var modules = new List<IRequestModule>(12 + config.Modules?.Where(x => x.Value != null).SelectMany(x => x.Value).Count() ?? 0);
+            var modules = new List<IRequestModule>(12 + 
+                                                   config.Modules?.Count ?? 0 +
+                                                   config.AdditionalModules?.Sum(
+                                                       x => (x.Value?.Before?.Count ?? 0) +
+                                                            (x.Value?.After?.Count ?? 0)) ?? 0);
+            
+            var addedModules = new HashSet<Type>();
 
-            modules.Add(new LeakPreventionModule());
-            modules.Add(new ErrorCatchingModule());
-            modules.Add(new RequestTransformationModule(config.RequestTransforms));
-            modules.Add(new RequestPriorityModule());
-            modules.Add(new ClientApplicationIdentityModule());
-            modules.AddRange(GetModulesAfter(RequestPipelinePoint.AfterPrepareRequest));
+            AddModule(new LeakPreventionModule());
+            AddModule(new GlobalErrorCatchingModule());
+            AddModule(new RequestTransformationModule(config.RequestTransforms));
+            AddModule(new RequestPriorityModule());
+            AddModule(new ClientApplicationIdentityModule());
+            foreach (var requestModule in config.Modules ?? Enumerable.Empty<IRequestModule>())
+                AddModule(requestModule);
 
             // -->> user-defined modules by default inserted here <<-- //
 
-            modules.Add(new LoggingModule(config.Logging.LogRequestDetails, config.Logging.LogResultDetails));
-            modules.Add(new ResponseTransformationModule(config.ResponseTransforms));
-            modules.Add(new ErrorCatchingModule());
-            modules.Add(new RequestValidationModule());
-            modules.AddRange(GetModulesAfter(RequestPipelinePoint.AfterRequestValidation));
-
-            modules.Add(new TimeoutValidationModule());
-            modules.Add(new RequestRetryModule(config.RetryPolicy, config.RetryStrategy));
-            modules.AddRange(GetModulesAfter(RequestPipelinePoint.BeforeSend));
+            AddModule(new LoggingModule(config.Logging.LogRequestDetails, config.Logging.LogResultDetails));
+            AddModule(new ResponseTransformationModule(config.ResponseTransforms));
+            AddModule(new ErrorCatchingModule());
+            AddModule(new RequestValidationModule());
+        
+            AddModule(new TimeoutValidationModule());
+            AddModule(new RequestRetryModule(config.RetryPolicy, config.RetryStrategy));
 
             // -->> adaptive throttling and replica budgeting modules <<-- //
 
-            modules.Add(new AbsoluteUrlSenderModule(responseClassifier, config.ResponseCriteria, resultStatusSelector));
-            modules.AddRange(GetModulesAfter(RequestPipelinePoint.BeforeExecution));
+            AddModule(new AbsoluteUrlSenderModule(responseClassifier, config.ResponseCriteria, resultStatusSelector));
 
-            modules.Add(
+            AddModule(
                 new RequestExecutionModule(
                     config.ClusterProvider,
                     config.ReplicaOrdering,
@@ -57,11 +62,32 @@ namespace Vostok.ClusterClient.Core.Modules
 
             return modules;
 
-            IEnumerable<IRequestModule> GetModulesAfter(RequestPipelinePoint m)
+            void AddModules(IEnumerable<IRequestModule> modulesRange)
             {
-                if (config.Modules == null)
-                    return Enumerable.Empty<IRequestModule>();
-                return !config.Modules.TryGetValue(m, out var v) ? Enumerable.Empty<IRequestModule>() : v;
+                if (modulesRange == null)
+                    return;
+                
+                foreach (var module in modulesRange)
+                    AddModule(module);
+            }
+            
+            void AddModule(IRequestModule module)
+            {
+                var moduleType = module.GetType();
+
+                var isNewModule = addedModules.Add(moduleType);
+
+                if (!isNewModule || config.AdditionalModules == null)
+                {
+                    modules.Add(module);
+                    return;
+                }
+                
+                var relatedModules = config.AdditionalModules.TryGetValue(moduleType, out var v) ? v : null;
+                
+                AddModules(relatedModules?.Before);
+                modules.Add(module);
+                AddModules(relatedModules?.After);
             }
         }
 

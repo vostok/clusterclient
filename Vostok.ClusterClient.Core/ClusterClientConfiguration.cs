@@ -26,9 +26,7 @@ namespace Vostok.ClusterClient.Core
             RequestTransforms = new List<IRequestTransform>();
             ResponseTransforms = new List<IResponseTransform>();
             ResponseCriteria = new List<IResponseCriterion>();
-            Modules = new Dictionary<RequestPipelinePoint, List<IRequestModule>>();
-            foreach (var value in (RequestPipelinePoint[]) Enum.GetValues(typeof(RequestPipelinePoint)))
-                Modules[value] = new List<IRequestModule>();
+            Modules = new List<IRequestModule>();
             ReplicaStorageScope = ClusterClientDefaults.ReplicaStorageScope;
             DefaultTimeout = ClusterClientDefaults.Timeout;
             Logging = new LoggingOptions
@@ -61,7 +59,9 @@ namespace Vostok.ClusterClient.Core
 
         public List<IResponseCriterion> ResponseCriteria { get; set; }
 
-        public Dictionary<RequestPipelinePoint, List<IRequestModule>> Modules { get; set; }
+        public List<IRequestModule> Modules { get; set; }
+        
+        public Dictionary<Type, RelatedModules> AdditionalModules { get; set; }
 
         public IRetryPolicy RetryPolicy { get; set; }
 
@@ -117,11 +117,11 @@ namespace Vostok.ClusterClient.Core
             if (ResponseTransforms != null && ResponseTransforms.Any(transform => transform == null))
                 yield return "One of provided response transforms is null";
 
-            if (Modules != null && Modules.Any(module => module.Value == null))
-                yield return "One of provided request modules lists is null";
-
-            if (Modules != null && Modules.SelectMany(x => x.Value).Any(module => module == null))
+            if (Modules != null && Modules.Any(module => module == null))
                 yield return "One of provided request modules is null";
+
+            if (AdditionalModules != null && AdditionalModules.SelectMany(x => x.Value.After.Concat(x.Value.Before)).Any(module => module == null))
+                yield return "One of provided additional request modules is null";
 
             if (DefaultTimeout <= TimeSpan.Zero)
                 yield return $"Default timeout must be positive, but was '{DefaultTimeout}'";

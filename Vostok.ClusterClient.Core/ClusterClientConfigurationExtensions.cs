@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Criteria;
+using Vostok.ClusterClient.Core.Misc;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Modules;
 using Vostok.ClusterClient.Core.Transforms;
@@ -30,15 +31,66 @@ namespace Vostok.ClusterClient.Core
         /// Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.Modules"/> collection.
         /// </summary>
         /// <param name="module">A module to insert into request pipeline.</param>
-        /// <param name="point">An request pipeline extension point in which <paramref name="module"/> will be inserted.</param>
         /// <param name="configuration">A configuration instance.</param>
-        public static void AddRequestModule(this IClusterClientConfiguration configuration, IRequestModule module, RequestPipelinePoint point = RequestPipelinePoint.AfterPrepareRequest)
+        public static void AddRequestModule(this IClusterClientConfiguration configuration, IRequestModule module)
         {
-            if (configuration.Modules == null)
-                configuration.Modules = new Dictionary<RequestPipelinePoint, List<IRequestModule>>();
-            if (!configuration.Modules.ContainsKey(point))
-                configuration.Modules[point] = new List<IRequestModule>();
-            configuration.Modules[point].Add(module);
+            (configuration.Modules = configuration.Modules ?? new List<IRequestModule>()).Add(module);
+        }
+
+        /// <inheritdoc cref="AddRequestModuleBefore(IClusterClientConfiguration, Type, IRequestModule)"/>
+        public static void AddRequestModuleBefore<T>(this IClusterClientConfiguration configuration, IRequestModule module)
+            => configuration.AddRequestModuleBefore(typeof(T), module);
+
+        /// <inheritdoc cref="AddRequestModuleAfter(IClusterClientConfiguration, Type, IRequestModule)"/>
+        public static void AddRequestModuleAfter<T>(this IClusterClientConfiguration configuration, IRequestModule module)
+            => configuration.AddRequestModuleAfter(typeof(T), module);
+
+        /// <summary>
+        /// <para>Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.AdditionalModules"/> collection.</para>
+        /// <para><paramref name="module"/> will be inserted into request module chain once before module of specified type.</para>
+        /// </summary>
+        /// <param name="type">A type of module before which <paramref name="module"/> will be inserted.</param>
+        /// <param name="module">A module to insert into request pipeline.</param>
+        /// <param name="configuration">A configuration instance.</param>
+        public static void AddRequestModuleBefore(this IClusterClientConfiguration configuration, Type type, IRequestModule module)
+        {
+            ObtainModules(configuration, type).Before.Add(module);
+        }
+
+        /// <summary>
+        /// <para>Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.AdditionalModules"/> collection.</para>
+        /// <para><paramref name="module"/> will be inserted into request module chain once after module of specified type.</para>
+        /// </summary>
+        /// <param name="type">A type of module after which <paramref name="module"/> will be inserted.</param>
+        /// <param name="module">A module to insert into request pipeline.</param>
+        /// <param name="configuration">A configuration instance.</param>
+        public static void AddRequestModuleAfter(this IClusterClientConfiguration configuration, Type type, IRequestModule module)
+        {
+            ObtainModules(configuration, type).After.Add(module);
+        }
+
+        /// <summary>
+        /// <para>Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.AdditionalModules"/> collection.</para>
+        /// <para><paramref name="module"/> will be inserted into request module chain once before <paramfer name="nextModule"/>.</para>
+        /// </summary>
+        /// <param name="nextModule">A module before which <paramref name="module"/> will be inserted.</param>
+        /// <param name="module">A module to insert into request pipeline.</param>
+        /// <param name="configuration">A configuration instance.</param>
+        public static void AddRequestModuleBefore(this IClusterClientConfiguration configuration, RequestModule nextModule, IRequestModule module)
+        {
+            configuration.AddRequestModuleBefore(GetModuleType(nextModule), module);
+        }
+        
+        /// <summary>
+        /// <para>Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.AdditionalModules"/> collection.</para>
+        /// <para><paramref name="module"/> will be inserted into request module chain once after <paramfer name="nextModule"/>.</para>
+        /// </summary>
+        /// <param name="nextModule">A module after which <paramref name="module"/> will be inserted.</param>
+        /// <param name="module">A module to insert into request pipeline.</param>
+        /// <param name="configuration">A configuration instance.</param>
+        public static void AddRequestModuleAfter(this IClusterClientConfiguration configuration, RequestModule nextModule, IRequestModule module)
+        {
+            configuration.AddRequestModuleAfter(GetModuleType(nextModule), module);
         }
 
         /// <summary>
@@ -76,7 +128,7 @@ namespace Vostok.ClusterClient.Core
                 criticalRatio,
                 maximumRejectProbability);
 
-            configuration.AddRequestModule(new AdaptiveThrottlingModule(options), RequestPipelinePoint.BeforeSend);
+            configuration.AddRequestModuleBefore<AbsoluteUrlSenderModule>(new AdaptiveThrottlingModule(options));
         }
 
         /// <summary>
@@ -95,7 +147,8 @@ namespace Vostok.ClusterClient.Core
             double maximumRejectProbability = ClusterClientDefaults.AdaptiveThrottlingRejectProbabilityCap)
         {
             var options = new AdaptiveThrottlingOptions(configuration.ServiceName, minutesToTrack, minimumRequests, criticalRatio, maximumRejectProbability);
-            configuration.AddRequestModule(new AdaptiveThrottlingModule(options), RequestPipelinePoint.BeforeSend);
+            configuration.AddRequestModuleBefore<AbsoluteUrlSenderModule>(new AdaptiveThrottlingModule(options));
+
         }
 
         /// <summary>
@@ -140,7 +193,7 @@ namespace Vostok.ClusterClient.Core
         public static void SetupHttpMethodValidation(
             this IClusterClientConfiguration configuration)
         {
-            configuration.AddRequestModule(new HttpMethodValidationModule(), RequestPipelinePoint.AfterRequestValidation);
+            configuration.AddRequestModuleAfter<RequestValidationModule>(new HttpMethodValidationModule());
         }
 
         /// <summary>
@@ -180,5 +233,55 @@ namespace Vostok.ClusterClient.Core
         /// </summary>
         public static void AddResponseTransform(this IClusterClientConfiguration configuration, Func<Response, Response> transform) =>
             configuration.AddResponseTransform(new AdHocResponseTransform(transform));
+
+        private static RelatedModules ObtainModules(IClusterClientConfiguration configuration, Type type)
+        {
+            if (configuration.AdditionalModules == null)
+                configuration.AdditionalModules = new Dictionary<Type, RelatedModules>();
+
+            if (!configuration.AdditionalModules.TryGetValue(type, out var modules))
+                configuration.AdditionalModules[type] = modules = new RelatedModules();
+            
+            return modules;
+        }
+
+        private static Type GetModuleType(RequestModule module)
+        {
+            switch (module)
+            {
+                case RequestModule.LeakPrevention:
+                    return typeof(LeakPreventionModule);
+                case RequestModule.GlobalErrorCatching:
+                    return typeof(GlobalErrorCatchingModule);
+                case RequestModule.RequestTransformation:
+                    return typeof(RequestTransformationModule);
+                case RequestModule.RequestPriority:
+                    return typeof(RequestPriorityModule);
+                case RequestModule.ClientApplication:
+                    return typeof(ClientApplicationIdentityModule);
+                case RequestModule.Logging:
+                    return typeof(LoggingModule);
+                case RequestModule.ResponseTransformation:
+                    return typeof(ResponseTransformationModule);
+                case RequestModule.ErrorCatching:
+                    return typeof(ErrorCatchingModule);
+                case RequestModule.RequestValidation:
+                    return typeof(RequestValidationModule);
+                case RequestModule.TimeoutValidation:
+                    return typeof(TimeoutValidationModule);
+                case RequestModule.RequestRetry:
+                    return typeof(RequestRetryModule);
+                case RequestModule.AbsoluteUrlSender:
+                    return typeof(AbsoluteUrlSenderModule);
+                case RequestModule.RequestExecution:
+                    return typeof(RequestExecutionModule);
+                case RequestModule.AdaptiveThrottling:
+                    return typeof(AdaptiveThrottlingModule);
+                case RequestModule.ReplicaBudgeting:
+                    return typeof(ReplicaBudgetingModule);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(module), module, $"Unexpected {nameof(RequestModule)} value.");
+            }
+        }
     }
 }

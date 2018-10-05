@@ -100,12 +100,9 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             var configuration = Substitute.For<IClusterClientConfiguration>();
 
             configuration.Modules.Returns(
-                new Dictionary<RequestPipelinePoint, List<IRequestModule>>
+                new List<IRequestModule>
                 {
-                    [RequestPipelinePoint.AfterPrepareRequest] = new List<IRequestModule>
-                    {
-                        module1, module2
-                    }
+                    module1, module2
                 });
 
             configuration.Logging.Returns(new LoggingOptions());
@@ -117,7 +114,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             modules.Should().HaveCount(15);
 
             modules[0].Should().BeOfType<LeakPreventionModule>();
-            modules[1].Should().BeOfType<ErrorCatchingModule>();
+            modules[1].Should().BeOfType<GlobalErrorCatchingModule>();
             modules[2].Should().BeOfType<RequestTransformationModule>();
             modules[3].Should().BeOfType<RequestPriorityModule>();
             modules[4].Should().BeOfType<ClientApplicationIdentityModule>();
@@ -140,15 +137,16 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             configuration.Logging.Returns(new LoggingOptions());
 
-            configuration.Modules.Returns(
-                new Dictionary<RequestPipelinePoint, List<IRequestModule>>
+            configuration.AdditionalModules.Returns(
+                new Dictionary<Type, RelatedModules>
                 {
-                    [RequestPipelinePoint.BeforeSend] = new List<IRequestModule>
+                    [typeof(AbsoluteUrlSenderModule)] = new RelatedModules{
+                        Before =
                     {
                         new AdaptiveThrottlingModule(new AdaptiveThrottlingOptions("foo")),
                         new ReplicaBudgetingModule(new ReplicaBudgetingOptions("foo"))
                     }
-                });
+                }});
 
             var storageProvider = Substitute.For<IReplicaStorageProvider>();
 
@@ -157,7 +155,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             modules.Should().HaveCount(15);
 
             modules[0].Should().BeOfType<LeakPreventionModule>();
-            modules[1].Should().BeOfType<ErrorCatchingModule>();
+            modules[1].Should().BeOfType<GlobalErrorCatchingModule>();
             modules[2].Should().BeOfType<RequestTransformationModule>();
             modules[3].Should().BeOfType<RequestPriorityModule>();
             modules[4].Should().BeOfType<ClientApplicationIdentityModule>();

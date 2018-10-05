@@ -24,4 +24,8 @@ namespace Vostok.ClusterClient.Core.Modules
             }
         }
     }
+    
+    internal class GlobalErrorCatchingModule : ErrorCatchingModule
+    {
+    }
 }
