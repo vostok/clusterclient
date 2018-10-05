@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Strategies;
 using Vostok.ClusterClient.Core.Transport;
 using Vostok.Logging.Abstractions;
 

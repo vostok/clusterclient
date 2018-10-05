@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using Vostok.Commons.Time;
 
 namespace Vostok.ClusterClient.Core.Model

@@ -4,10 +4,6 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Strategies;
-using Vostok.ClusterClient.Core.Topology;
-using Vostok.ClusterClient.Core.Transforms;
-using Vostok.ClusterClient.Core.Transport;
-using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core
 {

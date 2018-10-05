@@ -1,9 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using FluentAssertions.Extensions;
-using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive;
 using Vostok.ClusterClient.Core.Tests.Helpers;
 

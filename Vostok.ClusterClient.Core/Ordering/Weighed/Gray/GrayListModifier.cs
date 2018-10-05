@@ -4,7 +4,6 @@ using JetBrains.Annotations;
 using Vostok.Commons.Collections;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Helpers;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.ClusterClient.Core.Ordering.Weighed.Gray

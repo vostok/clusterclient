@@ -1,5 +1,4 @@
 ﻿using System;
-using Vostok.ClusterClient.Core.Helpers;
 using Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive;
 using Vostok.ClusterClient.Core.Ordering.Weighed.Gray;
 using Vostok.ClusterClient.Core.Ordering.Weighed.Leadership;

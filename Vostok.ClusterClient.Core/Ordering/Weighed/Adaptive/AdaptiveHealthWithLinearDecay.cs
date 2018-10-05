@@ -1,6 +1,5 @@
 ﻿using System;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Helpers;
 using Vostok.Commons.Time;
 using Vostok.Logging.Abstractions;
 
