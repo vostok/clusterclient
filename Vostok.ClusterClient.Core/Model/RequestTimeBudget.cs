@@ -3,28 +3,20 @@ using Vostok.Commons.Time;
 
 namespace Vostok.ClusterClient.Core.Model
 {
-    internal class RequestTimeBudget : IRequestTimeBudget
+    internal class RequestTimeBudget : TimeBudget, IRequestTimeBudget
     {
-        public static RequestTimeBudget Infinite = new RequestTimeBudget(TimeBudget.Infinite);
+        public new static RequestTimeBudget Infinite = new RequestTimeBudget(TimeSpan.MaxValue, TimeSpan.Zero);
 
-        private readonly TimeBudget budget;
+        private RequestTimeBudget(TimeSpan budget, TimeSpan precision)
+            : base(budget, precision)
+        {
+        }
 
-        private RequestTimeBudget(TimeBudget budget)
-            => this.budget = budget;
-
-        public static RequestTimeBudget StartNew(TimeSpan budget, TimeSpan precision)
-            => new RequestTimeBudget(TimeBudget.StartNew(budget, precision));
-
-        public TimeSpan Total => budget.Total;
-
-        public TimeSpan Precision => budget.Precision;
-
-        public TimeSpan Remaining => budget.Remaining;
-
-        public TimeSpan Elapsed => budget.Elapsed;
-
-        public bool HasExpired => budget.HasExpired;
-
-        public TimeSpan TryAcquire(TimeSpan neededTime) => budget.TryAcquire(neededTime);
+        public new static RequestTimeBudget StartNew(TimeSpan budget, TimeSpan precision)
+        {
+            var timeBudget = new RequestTimeBudget(budget, precision);
+            timeBudget.Start();
+            return timeBudget;
+        }
     }
 }
