@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive;
 using Vostok.ClusterClient.Core.Ordering.Weighed.Gray;
 using Vostok.ClusterClient.Core.Ordering.Weighed.Leadership;
@@ -8,6 +9,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
     /// <summary>
     /// A set of extensions for <see cref="IWeighedReplicaOrderingBuilder"/>.
     /// </summary>
+    [PublicAPI]
     public static class WeighedReplicaOrderingBuilderExtensions
     {
         /// <summary>
