@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using JetBrains.Annotations;
 using Vostok.ClusterClient.Core.Modules;
 
 namespace Vostok.ClusterClient.Core.Misc
@@ -6,6 +8,7 @@ namespace Vostok.ClusterClient.Core.Misc
     /// <summary>
     /// Contains <see cref="IRequestModule"/>'s that will be inserted into request module chain near some other module.
     /// </summary>
+    [PublicAPI]
     public class RelatedModules
     {
         /// <summary>
@@ -17,5 +20,21 @@ namespace Vostok.ClusterClient.Core.Misc
         /// A <see cref="IRequestModule"/>'s that will be inserted into request module chain after some other module.
         /// </summary>
         public List<IRequestModule> After { get; } = new List<IRequestModule>();
+
+        internal List<IRequestModule> this[ModulePosition position]
+        {
+            get
+            {
+                switch (position)
+                {
+                    case ModulePosition.Before:
+                        return Before;
+                    case ModulePosition.After:
+                        return After;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(position), position, null);
+                }
+            }
+        }
     }
 }

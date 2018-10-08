@@ -28,69 +28,37 @@ namespace Vostok.ClusterClient.Core
         }
 
         /// <summary>
-        /// Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.Modules"/> collection.
-        /// </summary>
-        /// <param name="module">A module to insert into request pipeline.</param>
-        /// <param name="configuration">A configuration instance.</param>
-        public static void AddRequestModule(this IClusterClientConfiguration configuration, IRequestModule module)
-        {
-            (configuration.Modules = configuration.Modules ?? new List<IRequestModule>()).Add(module);
-        }
-
-        /// <inheritdoc cref="AddRequestModuleBefore(IClusterClientConfiguration, Type, IRequestModule)"/>
-        public static void AddRequestModuleBefore<T>(this IClusterClientConfiguration configuration, IRequestModule module)
-            => configuration.AddRequestModuleBefore(typeof(T), module);
-
-        /// <inheritdoc cref="AddRequestModuleAfter(IClusterClientConfiguration, Type, IRequestModule)"/>
-        public static void AddRequestModuleAfter<T>(this IClusterClientConfiguration configuration, IRequestModule module)
-            => configuration.AddRequestModuleAfter(typeof(T), module);
-
-        /// <summary>
-        /// <para>Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.AdditionalModules"/> collection.</para>
+        /// <para>Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.Modules"/> collection.</para>
         /// <para><paramref name="module"/> will be inserted into request module chain once before module of specified type.</para>
         /// </summary>
         /// <param name="type">A type of module before which <paramref name="module"/> will be inserted.</param>
         /// <param name="module">A module to insert into request pipeline.</param>
         /// <param name="configuration">A configuration instance.</param>
-        public static void AddRequestModuleBefore(this IClusterClientConfiguration configuration, Type type, IRequestModule module)
+        /// <param name="position">A relative position of <paramref name="module"/> from module of type <paramref name="type"/>. This parameter is optional and has default value <see cref="ModulePosition.Before"/>.</param>
+        public static void AddRequestModule(
+            this IClusterClientConfiguration configuration,
+            IRequestModule module,
+            Type type,
+            ModulePosition position = ModulePosition.Before)
         {
-            ObtainModules(configuration, type).Before.Add(module);
+            ObtainModules(configuration, type)[position].Add(module);
         }
 
         /// <summary>
-        /// <para>Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.AdditionalModules"/> collection.</para>
-        /// <para><paramref name="module"/> will be inserted into request module chain once after module of specified type.</para>
+        /// <para>Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.Modules"/> collection.</para>
+        /// <para><paramref name="module"/> will be inserted into request module chain once near <paramref name="relatedModule"/>.</para>
         /// </summary>
-        /// <param name="type">A type of module after which <paramref name="module"/> will be inserted.</param>
+        /// <param name="relatedModule">A module near which <paramref name="module"/> will be inserted.</param>
         /// <param name="module">A module to insert into request pipeline.</param>
         /// <param name="configuration">A configuration instance.</param>
-        public static void AddRequestModuleAfter(this IClusterClientConfiguration configuration, Type type, IRequestModule module)
+        /// <param name="position">A relative position of <paramref name="module"/> from <paramref name="relatedModule"/>. This parameter is optional and has default value <see cref="ModulePosition.Before"/>.</param>
+        public static void AddRequestModule(
+            this IClusterClientConfiguration configuration,
+            IRequestModule module,
+            RequestModule relatedModule = RequestModule.Logging,
+            ModulePosition position = ModulePosition.Before)
         {
-            ObtainModules(configuration, type).After.Add(module);
-        }
-
-        /// <summary>
-        /// <para>Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.AdditionalModules"/> collection.</para>
-        /// <para><paramref name="module"/> will be inserted into request module chain once before <paramfer name="nextModule"/>.</para>
-        /// </summary>
-        /// <param name="nextModule">A module before which <paramref name="module"/> will be inserted.</param>
-        /// <param name="module">A module to insert into request pipeline.</param>
-        /// <param name="configuration">A configuration instance.</param>
-        public static void AddRequestModuleBefore(this IClusterClientConfiguration configuration, RequestModule nextModule, IRequestModule module)
-        {
-            configuration.AddRequestModuleBefore(GetModuleType(nextModule), module);
-        }
-        
-        /// <summary>
-        /// <para>Adds given <paramref name="module"/> to configuration's <see cref="IClusterClientConfiguration.AdditionalModules"/> collection.</para>
-        /// <para><paramref name="module"/> will be inserted into request module chain once after <paramfer name="nextModule"/>.</para>
-        /// </summary>
-        /// <param name="nextModule">A module after which <paramref name="module"/> will be inserted.</param>
-        /// <param name="module">A module to insert into request pipeline.</param>
-        /// <param name="configuration">A configuration instance.</param>
-        public static void AddRequestModuleAfter(this IClusterClientConfiguration configuration, RequestModule nextModule, IRequestModule module)
-        {
-            configuration.AddRequestModuleAfter(GetModuleType(nextModule), module);
+            configuration.AddRequestModule(module, RequestModulesMapping.GetModuleType(relatedModule), position);
         }
 
         /// <summary>
@@ -128,7 +96,7 @@ namespace Vostok.ClusterClient.Core
                 criticalRatio,
                 maximumRejectProbability);
 
-            configuration.AddRequestModuleBefore<AbsoluteUrlSenderModule>(new AdaptiveThrottlingModule(options));
+            configuration.AddRequestModule(new AdaptiveThrottlingModule(options), typeof(AbsoluteUrlSenderModule), ModulePosition.Before);
         }
 
         /// <summary>
@@ -147,7 +115,7 @@ namespace Vostok.ClusterClient.Core
             double maximumRejectProbability = ClusterClientDefaults.AdaptiveThrottlingRejectProbabilityCap)
         {
             var options = new AdaptiveThrottlingOptions(configuration.ServiceName, minutesToTrack, minimumRequests, criticalRatio, maximumRejectProbability);
-            configuration.AddRequestModuleBefore<AbsoluteUrlSenderModule>(new AdaptiveThrottlingModule(options));
+            configuration.AddRequestModule(new AdaptiveThrottlingModule(options), typeof(AbsoluteUrlSenderModule), ModulePosition.Before);
 
         }
 
@@ -193,7 +161,7 @@ namespace Vostok.ClusterClient.Core
         public static void SetupHttpMethodValidation(
             this IClusterClientConfiguration configuration)
         {
-            configuration.AddRequestModuleAfter<RequestValidationModule>(new HttpMethodValidationModule());
+            configuration.AddRequestModule(new HttpMethodValidationModule(), typeof(RequestValidationModule), ModulePosition.After);
         }
 
         /// <summary>
@@ -236,52 +204,13 @@ namespace Vostok.ClusterClient.Core
 
         private static RelatedModules ObtainModules(IClusterClientConfiguration configuration, Type type)
         {
-            if (configuration.AdditionalModules == null)
-                configuration.AdditionalModules = new Dictionary<Type, RelatedModules>();
+            if (configuration.Modules == null)
+                configuration.Modules = new Dictionary<Type, RelatedModules>();
 
-            if (!configuration.AdditionalModules.TryGetValue(type, out var modules))
-                configuration.AdditionalModules[type] = modules = new RelatedModules();
+            if (!configuration.Modules.TryGetValue(type, out var modules))
+                configuration.Modules[type] = modules = new RelatedModules();
             
             return modules;
-        }
-
-        private static Type GetModuleType(RequestModule module)
-        {
-            switch (module)
-            {
-                case RequestModule.LeakPrevention:
-                    return typeof(LeakPreventionModule);
-                case RequestModule.GlobalErrorCatching:
-                    return typeof(GlobalErrorCatchingModule);
-                case RequestModule.RequestTransformation:
-                    return typeof(RequestTransformationModule);
-                case RequestModule.RequestPriority:
-                    return typeof(RequestPriorityModule);
-                case RequestModule.ClientApplication:
-                    return typeof(ClientApplicationIdentityModule);
-                case RequestModule.Logging:
-                    return typeof(LoggingModule);
-                case RequestModule.ResponseTransformation:
-                    return typeof(ResponseTransformationModule);
-                case RequestModule.ErrorCatching:
-                    return typeof(ErrorCatchingModule);
-                case RequestModule.RequestValidation:
-                    return typeof(RequestValidationModule);
-                case RequestModule.TimeoutValidation:
-                    return typeof(TimeoutValidationModule);
-                case RequestModule.RequestRetry:
-                    return typeof(RequestRetryModule);
-                case RequestModule.AbsoluteUrlSender:
-                    return typeof(AbsoluteUrlSenderModule);
-                case RequestModule.RequestExecution:
-                    return typeof(RequestExecutionModule);
-                case RequestModule.AdaptiveThrottling:
-                    return typeof(AdaptiveThrottlingModule);
-                case RequestModule.ReplicaBudgeting:
-                    return typeof(ReplicaBudgetingModule);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(module), module, $"Unexpected {nameof(RequestModule)} value.");
-            }
         }
     }
 }

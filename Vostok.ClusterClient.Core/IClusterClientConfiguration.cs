@@ -86,7 +86,7 @@ namespace Vostok.ClusterClient.Core
 
         /// <summary>
         /// <para>A collection of user-defined request modules. These modules are inserted into native execution pipeline.</para>
-        /// <para>User-defined modules inserted into pipeline into specified <see cref="RequestModule"/>.</para>
+        /// <para>User-defined modules inserted into pipeline near module of specified <see cref="Type"/>.</para>
         /// <para>See <see cref="IRequestModule"/> interface for more details about request modules.</para>
         /// <para>Final execution pipeline looks like this:</para>
         /// <list type="number">
@@ -94,7 +94,8 @@ namespace Vostok.ClusterClient.Core
         /// <item><description><see cref="RequestModule.GlobalErrorCatching"/>: Exception logging and handling.</description></item>
         /// <item><description><see cref="RequestModule.RequestTransformation"/>: Request transformation (application of <see cref="IRequestTransform"/> chain).</description></item>
         /// <item><description><see cref="RequestModule.RequestPriority"/>: Request priority application (adding a priority header to request).</description></item>
-        /// <item><description><see cref="RequestModule.ClientApplication"/>: Client application identity (adding a client application header to request).</description></item>
+        /// <item><description><see cref="RequestModule.ApplicationName"/>: Client application name (adding a application identity header to request).</description></item>
+        /// <item><description>User-defined modules.</description></item>
         /// <item><description><see cref="RequestModule.Logging"/>: Request/result logging.</description></item>
         /// <item><description><see cref="RequestModule.ResponseTransformation"/>: Response transformation (application of <see cref="IResponseTransform"/> chain).</description></item>
         /// <item><description><see cref="RequestModule.ErrorCatching"/>: Exception logging and handling.</description></item>
@@ -104,19 +105,10 @@ namespace Vostok.ClusterClient.Core
         /// <item><description><see cref="RequestModule.AbsoluteUrlSender"/>: Sending of requests with absolute urls (directly using <see cref="ITransport"/>).</description></item>
         /// <item><description><see cref="RequestModule.RequestExecution"/>: Request execution (<see cref="IClusterProvider"/> --> <see cref="IReplicaOrdering"/> --> <see cref="IRequestStrategy"/>)</description></item>
         /// </list>
-        /// <para>Use <see cref="ClusterClientConfigurationExtensions.AddRequestModule"/> to add modules to this collection.</para>
+        /// <para>Use <c>AddRequestModule</c> method from <see cref="ClusterClientConfigurationExtensions"/> to add modules to this collection.</para>
         /// <para>This parameter is optional and has an empty default value.</para>
         /// </summary>
-        List<IRequestModule> Modules { get; set; }
-        
-        /// <summary>
-        /// <para>A collection of additional user-defined request modules. These modules are inserted into native execution pipeline.</para>
-        /// <para>User-defined modules inserted into pipeline near <see cref="IRequestModule"/> of specified type.</para>
-        /// <para>See <see cref="IRequestModule"/> interface for more details about request modules.</para>
-        /// <para>Use <c>AddRequestModuleAfter</c> and <c>AddRequestModuleBefore</c> methods from <see cref="ClusterClientConfigurationExtensions"/> to add modules to this collection.</para>
-        /// <para>This parameter is optional and has an empty default value.</para>
-        /// </summary>
-        Dictionary<Type, RelatedModules> AdditionalModules { get; set; }
+        Dictionary<Type, RelatedModules> Modules { get; set; }
 
         /// <summary>
         /// <para>Gets or sets retry policy. See <see cref="IRetryPolicy"/> for more details.</para>

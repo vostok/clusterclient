@@ -100,9 +100,12 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             var configuration = Substitute.For<IClusterClientConfiguration>();
 
             configuration.Modules.Returns(
-                new List<IRequestModule>
+                new Dictionary<Type, RelatedModules>
                 {
-                    module1, module2
+                    [typeof(LoggingModule)] = new RelatedModules
+                    {
+                        Before = { module1, module2 }
+                    } 
                 });
 
             configuration.Logging.Returns(new LoggingOptions());
@@ -137,15 +140,16 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             configuration.Logging.Returns(new LoggingOptions());
 
-            configuration.AdditionalModules.Returns(
+            configuration.Modules.Returns(
                 new Dictionary<Type, RelatedModules>
                 {
-                    [typeof(AbsoluteUrlSenderModule)] = new RelatedModules{
-                        Before =
+                    [typeof(AbsoluteUrlSenderModule)] = new RelatedModules
                     {
-                        new AdaptiveThrottlingModule(new AdaptiveThrottlingOptions("foo")),
-                        new ReplicaBudgetingModule(new ReplicaBudgetingOptions("foo"))
-                    }
+                        Before =
+                        {
+                            new AdaptiveThrottlingModule(new AdaptiveThrottlingOptions("foo")),
+                            new ReplicaBudgetingModule(new ReplicaBudgetingOptions("foo"))
+                        }
                 }});
 
             var storageProvider = Substitute.For<IReplicaStorageProvider>();

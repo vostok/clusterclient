@@ -18,58 +18,63 @@ namespace Vostok.ClusterClient.Core.Modules
         /// <summary>
         /// A module which closes underlying response streams.
         /// </summary>
-        LeakPrevention = 1,
+        LeakPrevention,
         /// <summary>
         /// A module which handle and log errors.
         /// </summary>
-        GlobalErrorCatching = 2,
+        GlobalErrorCatching,
         /// <summary>
         /// A module which performs request transformation (applies <see cref="IRequestTransform"/> chain).
         /// </summary>
-        RequestTransformation = 3,
+        RequestTransformation,
         /// <summary>
         /// A module which applies request priority (add a <see cref="HeaderNames.RequestPriority"/> header to request). 
         /// </summary>
-        RequestPriority = 4,
+        RequestPriority,
         /// <summary>
-        /// A module which applies client application identity (add a <see cref="HeaderNames.ApplicationIdentity"/> header to request).
+        /// A module which applies client application name (add a <see cref="HeaderNames.ApplicationIdentity"/> header to request).
         /// </summary>
-        ClientApplication = 5,
+        ApplicationName,
         /// <summary>
         /// A module which log requests and responses.
         /// </summary>
-        Logging = 6,
+        Logging,
         /// <summary>
         /// A module which performs response transformation (applies <see cref="IResponseTransform"/> chain).
         /// </summary>
-        ResponseTransformation = 7,
+        ResponseTransformation,
         /// <summary>
         /// A module which handle and log errors.
         /// </summary>
-        ErrorCatching = 8,
+        ErrorCatching,
         /// <summary>
         /// A module which validates request.
         /// </summary>
-        RequestValidation = 9,
+        RequestValidation,
         /// <summary>
         /// A module which validates request timeout.
         /// </summary>
-        TimeoutValidation = 10,
+        TimeoutValidation,
         /// <summary>
         /// A module which send request in try loop with <see cref="IRetryPolicy"/> and <see cref="IRetryStrategy"/>.
         /// </summary>
-        RequestRetry = 11,
+        RequestRetry,
         /// <summary>
         /// A module which send requests with absolute urls (directly using <see cref="ITransport"/>).
         /// </summary>
-        AbsoluteUrlSender = 12,
+        AbsoluteUrlSender,
         /// <summary>
         /// A module which execute requests (<see cref="IClusterProvider"/> --> <see cref="IReplicaOrdering"/> --> <see cref="IRequestStrategy"/>)
         /// </summary>
-        RequestExecution = 13,
+        RequestExecution,
         /// <inheritdoc cref="AdaptiveThrottlingModule" />
-        AdaptiveThrottling = 14,
+        AdaptiveThrottling,
         /// <inheritdoc cref="ReplicaBudgetingModule" />
-        ReplicaBudgeting = 15
+        ReplicaBudgeting,
+        /// <summary>
+        /// <para>A module which validates Request HTTP methods.</para>
+        /// <para>A set of valid HTTP methods stored in <see cref="RequestMethods.All"/>.
+        /// </summary>
+        HttpMethodValidation
     }
 }

@@ -20,11 +20,9 @@ namespace Vostok.ClusterClient.Core.Modules
             var resultStatusSelector = new ClusterResultStatusSelector();
 
             // ReSharper disable once UseObjectOrCollectionInitializer
-            var modules = new List<IRequestModule>(12 + 
-                                                   config.Modules?.Count ?? 0 +
-                                                   config.AdditionalModules?.Sum(
-                                                       x => (x.Value?.Before?.Count ?? 0) +
-                                                            (x.Value?.After?.Count ?? 0)) ?? 0);
+            var modules = new List<IRequestModule>(12 + config.Modules?.Sum(
+                                                           x => (x.Value?.Before?.Count ?? 0) +
+                                                                (x.Value?.After?.Count ?? 0)) ?? 0);
             
             var addedModules = new HashSet<Type>();
 
@@ -33,8 +31,6 @@ namespace Vostok.ClusterClient.Core.Modules
             AddModule(new RequestTransformationModule(config.RequestTransforms));
             AddModule(new RequestPriorityModule());
             AddModule(new ClientApplicationIdentityModule());
-            foreach (var requestModule in config.Modules ?? Enumerable.Empty<IRequestModule>())
-                AddModule(requestModule);
 
             // -->> user-defined modules by default inserted here <<-- //
 
@@ -76,13 +72,13 @@ namespace Vostok.ClusterClient.Core.Modules
 
                 var isNewModule = addedModules.Add(moduleType);
 
-                if (!isNewModule || config.AdditionalModules == null)
+                if (!isNewModule || config.Modules == null)
                 {
                     modules.Add(module);
                     return;
                 }
                 
-                var relatedModules = config.AdditionalModules.TryGetValue(moduleType, out var v) ? v : null;
+                var relatedModules = config.Modules.TryGetValue(moduleType, out var v) ? v : null;
                 
                 AddModules(relatedModules?.Before);
                 modules.Add(module);
