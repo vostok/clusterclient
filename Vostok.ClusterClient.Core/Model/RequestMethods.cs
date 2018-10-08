@@ -53,14 +53,5 @@ namespace Vostok.ClusterClient.Core.Model
         /// TRACE header name
         /// </summary>
         public const string Trace = "TRACE";
-
-        /// <summary>
-        /// <para>A set of valid HTTP request methods.</para>
-        /// <para>Includes GET, POST, PUT, HEAD, PATCH, DELETE, OPTIONS and TRACE methods.</para>
-        /// </summary>
-        public static readonly HashSet<string> All = new HashSet<string>
-        {
-            Get, Post, Put, Head, Patch, Delete, Options, Trace
-        };
     }
 }

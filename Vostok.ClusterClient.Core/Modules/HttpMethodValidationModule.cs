@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Vostok.ClusterClient.Core.Model;
 using Vostok.Logging.Abstractions;
@@ -11,11 +12,27 @@ namespace Vostok.ClusterClient.Core.Modules
         {
             var method = context.Request.Method;
 
-            if (RequestMethods.All.Contains(method))
+            if (All.Contains(method))
                 return next(context);
 
             context.Log.Error($"Request HTTP method {method} is not valid.");
             return Task.FromResult(ClusterResult.IncorrectArguments(context.Request));
         }
+
+        /// <summary>
+        /// <para>A set of valid HTTP request methods.</para>
+        /// <para>Includes GET, POST, PUT, HEAD, PATCH, DELETE, OPTIONS and TRACE methods.</para>
+        /// </summary>
+        private static readonly HashSet<string> All = new HashSet<string>
+        {
+            RequestMethods.Get,
+            RequestMethods.Post,
+            RequestMethods.Put,
+            RequestMethods.Head,
+            RequestMethods.Patch,
+            RequestMethods.Delete,
+            RequestMethods.Options,
+            RequestMethods.Trace
+        };
     }
 }
