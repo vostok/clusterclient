@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Misc;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Transforms;
-using Vostok.ClusterClient.Core.Ordering.Weighed;
-using Vostok.ClusterClient.Core.Topology;
+using Vostok.Clusterclient.Core.Criteria;
+using Vostok.Clusterclient.Core.Misc;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Ordering.Weighed;
+using Vostok.Clusterclient.Core.Topology;
+using Vostok.Clusterclient.Core.Transforms;
 
-namespace Vostok.ClusterClient.Core
+namespace Vostok.Clusterclient.Core
 {
     /// <summary>
     /// A set of extensions for IClusterClientConfiguration interface.

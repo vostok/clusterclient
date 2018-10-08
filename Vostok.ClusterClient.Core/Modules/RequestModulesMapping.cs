@@ -1,6 +1,6 @@
 using System;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     internal static class RequestModulesMapping
     {

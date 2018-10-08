@@ -1,4 +1,4 @@
-﻿namespace Vostok.ClusterClient.Core
+﻿namespace Vostok.Clusterclient.Core
 {
     /// <summary>
     /// Delegate which configure <see cref="IClusterClientConfiguration"/>.

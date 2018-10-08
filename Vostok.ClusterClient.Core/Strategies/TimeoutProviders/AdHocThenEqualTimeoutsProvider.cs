@@ -1,8 +1,8 @@
 ﻿using System;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
+namespace Vostok.Clusterclient.Core.Strategies.TimeoutProviders
 {
     /// <summary>
     /// Represents a timeout provider that combines a <see cref="AdHocTimeoutsProvider"/> for first few requests and uses an <see cref="EqualTimeoutsProvider"/> for the rest of them.

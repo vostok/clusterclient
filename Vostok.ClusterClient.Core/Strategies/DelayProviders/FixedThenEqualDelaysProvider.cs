@@ -1,8 +1,8 @@
 ﻿using System;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
+namespace Vostok.Clusterclient.Core.Strategies.DelayProviders
 {
     /// <summary>
     /// Represents a timeout provider that combines a <see cref="FixedDelaysProvider"/> for first few requests and uses an <see cref="EqualDelaysProvider"/> for the rest of them.

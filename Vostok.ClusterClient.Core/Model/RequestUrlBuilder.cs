@@ -6,7 +6,7 @@ using System.Threading;
 using JetBrains.Annotations;
 using Vostok.Commons.Collections;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// <para>Represents an efficient builder of request urls.</para>

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     /// <summary>
     /// <para>Represents a module which can be injected into request execution pipeline.</para>

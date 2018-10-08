@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// Represents an error thrown when <see cref="SingleUseStreamContent"/> used twice.

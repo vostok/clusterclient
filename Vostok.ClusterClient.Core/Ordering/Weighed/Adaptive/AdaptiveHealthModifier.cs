@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
+namespace Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive
 {
     /// <summary>
     /// <para>Represents a weight modifier which uses a concept of replica health that dynamically increases and decreases in response to replica behaviour.</para>

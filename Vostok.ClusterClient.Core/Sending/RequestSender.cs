@@ -3,14 +3,14 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Transport;
-using Vostok.ClusterClient.Core.Criteria;
+using Vostok.Clusterclient.Core.Criteria;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Transport;
 using Vostok.Commons.Time;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Sending
+namespace Vostok.Clusterclient.Core.Sending
 {
     internal class RequestSender : IRequestSenderInternal
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 using NSubstitute;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Tests.Helpers
+namespace Vostok.Clusterclient.Core.Tests.Helpers
 {
     internal static class Budget
     {

@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// A set of extensions for <see cref="ResponseCode"/>.

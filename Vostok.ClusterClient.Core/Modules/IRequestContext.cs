@@ -1,10 +1,10 @@
 ﻿using System.Threading;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Transport;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Transport;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     /// <summary>
     /// Represents a context of currently executed request.

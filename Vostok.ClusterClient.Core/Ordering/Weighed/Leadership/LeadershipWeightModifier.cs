@@ -2,11 +2,11 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed.Leadership
+namespace Vostok.Clusterclient.Core.Ordering.Weighed.Leadership
 {
     /// <summary>
     /// <para>Represents a modifier which divides all replicas into two categories: leader and reservists.</para>

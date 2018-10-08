@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Retry
+namespace Vostok.Clusterclient.Core.Retry
 {
     /// <summary>
     /// Represents a retry strategy with fixed attempts count and a zero delay between attempts.

@@ -1,7 +1,7 @@
 using System;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     /// <summary>
     /// <para>Represents a configuration of <see cref="ReplicaBudgetingModule"/> instance.</para>

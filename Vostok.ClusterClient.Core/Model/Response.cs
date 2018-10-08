@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// Represents an HTTP response from server.

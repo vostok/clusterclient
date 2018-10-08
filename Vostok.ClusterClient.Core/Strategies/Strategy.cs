@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Sending;
-using Vostok.ClusterClient.Core.Strategies.DelayProviders;
-using Vostok.ClusterClient.Core.Strategies.TimeoutProviders;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Sending;
+using Vostok.Clusterclient.Core.Strategies.DelayProviders;
+using Vostok.Clusterclient.Core.Strategies.TimeoutProviders;
 
-namespace Vostok.ClusterClient.Core.Strategies
+namespace Vostok.Clusterclient.Core.Strategies
 {
     /// <summary>
     /// A set of predefined <see cref="IRequestStrategy">request strategies</see>.

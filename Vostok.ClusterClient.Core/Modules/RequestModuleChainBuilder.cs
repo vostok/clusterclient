@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Misc;
-using Vostok.ClusterClient.Core.Sending;
+using Vostok.Clusterclient.Core.Criteria;
+using Vostok.Clusterclient.Core.Misc;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Sending;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     internal static class RequestModuleChainBuilder
     {

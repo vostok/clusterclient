@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core
+namespace Vostok.Clusterclient.Core
 {
     /// <summary>
     /// An exception that represents ClusterClient error. Should be thrown by ClusterClient and extension modules (like transports, ...) only.

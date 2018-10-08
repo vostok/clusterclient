@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Modules;
+using Vostok.Clusterclient.Core.Modules;
 
-namespace Vostok.ClusterClient.Core.Misc
+namespace Vostok.Clusterclient.Core.Misc
 {
     /// <summary>
     /// Contains <see cref="IRequestModule"/>'s that will be inserted into request module chain near some other module.

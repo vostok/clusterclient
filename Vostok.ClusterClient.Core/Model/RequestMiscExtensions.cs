@@ -1,4 +1,4 @@
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     internal static class RequestMiscExtensions
     {

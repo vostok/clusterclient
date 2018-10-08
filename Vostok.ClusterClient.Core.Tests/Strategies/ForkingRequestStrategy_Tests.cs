@@ -8,15 +8,15 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Sending;
-using Vostok.ClusterClient.Core.Strategies;
-using Vostok.ClusterClient.Core.Strategies.DelayProviders;
-using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Sending;
+using Vostok.Clusterclient.Core.Strategies;
+using Vostok.Clusterclient.Core.Strategies.DelayProviders;
+using Vostok.Clusterclient.Core.Tests.Helpers;
 
 #pragma warning disable CS4014
 
-namespace Vostok.ClusterClient.Core.Tests.Strategies
+namespace Vostok.Clusterclient.Core.Tests.Strategies
 {
     [TestFixture]
     internal class ForkingRequestStrategy_Tests

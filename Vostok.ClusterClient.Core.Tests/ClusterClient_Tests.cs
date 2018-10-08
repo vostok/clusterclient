@@ -2,14 +2,14 @@
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Topology;
-using Vostok.ClusterClient.Core.Transforms;
-using Vostok.ClusterClient.Core.Transport;
-using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Topology;
+using Vostok.Clusterclient.Core.Transforms;
+using Vostok.Clusterclient.Core.Transport;
+using Vostok.Clusterclient.Core.Tests.Helpers;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Console;
 
-namespace Vostok.ClusterClient.Core.Tests
+namespace Vostok.Clusterclient.Core.Tests
 {
     [TestFixture]
     internal class ClusterClient_Tests

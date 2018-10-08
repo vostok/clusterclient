@@ -1,8 +1,8 @@
 ﻿using System;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Transforms
+namespace Vostok.Clusterclient.Core.Transforms
 {
     /// <summary>
     /// Represents a response transform which uses external delegate to modify responses.

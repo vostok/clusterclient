@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Transport;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Transport;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     internal class LeakPreventionModule : IRequestModule
     {

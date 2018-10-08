@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 using Vostok.Commons.Threading;
 using Vostok.Commons.Time;
 
-namespace Vostok.ClusterClient.Core.Retry
+namespace Vostok.Clusterclient.Core.Retry
 {
     /// <summary>
     /// Represents a retry strategy with fixed attempts count and an exponentially increasing delay between attempts.

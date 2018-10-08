@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Sending;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Sending;
 
-namespace Vostok.ClusterClient.Core.Strategies
+namespace Vostok.Clusterclient.Core.Strategies
 {
     /// <summary>
     /// Represents a strategy which maintains several parallel requests right from the start and stops at any result with <see cref="ResponseVerdict.Accept"/> verdict.

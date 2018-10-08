@@ -1,10 +1,10 @@
 ﻿using System;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive;
+using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive;
 
-namespace Vostok.ClusterClient.Core
+namespace Vostok.Clusterclient.Core
 {
     /// <summary>
     /// A helper class for dropping ClusterClient caches.

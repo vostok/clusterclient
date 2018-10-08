@@ -3,12 +3,12 @@ using System.IO;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Tests.Helpers;
 
 // ReSharper disable ObjectCreationAsStatement
 
-namespace Vostok.ClusterClient.Core.Tests.Model
+namespace Vostok.Clusterclient.Core.Tests.Model
 {
     [TestFixture]
     internal class StreamContent_Tests

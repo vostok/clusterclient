@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Sending;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Sending;
 
-namespace Vostok.ClusterClient.Core.Strategies
+namespace Vostok.Clusterclient.Core.Strategies
 {
     /// <summary>
     /// Represents a strategy which only sends a request to a single, first replica, using all available time budget.

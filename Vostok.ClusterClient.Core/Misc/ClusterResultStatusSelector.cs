@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Misc
+namespace Vostok.Clusterclient.Core.Misc
 {
     internal class ClusterResultStatusSelector : IClusterResultStatusSelector
     {

@@ -1,7 +1,7 @@
 using System;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     /// <summary>
     /// Represents a configuration of <see cref="AdaptiveThrottlingModule"/> instance. 

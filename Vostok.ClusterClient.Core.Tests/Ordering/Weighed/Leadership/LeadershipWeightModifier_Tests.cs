@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Ordering.Weighed.Leadership;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Ordering.Weighed.Leadership;
 using Vostok.Logging.Console;
 
-namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Leadership
+namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Leadership
 {
     [TestFixture]
     internal class LeadershipWeightModifier_Tests

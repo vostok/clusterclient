@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Transforms
+namespace Vostok.Clusterclient.Core.Transforms
 {
     /// <summary>
     /// A <see cref="IRequestTransform"/> which append default headers to <see cref="Request"/>.

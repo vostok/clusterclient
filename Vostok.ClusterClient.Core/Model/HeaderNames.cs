@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// <para>Contains the names of well-known common HTTP headers.</para>
@@ -80,7 +80,7 @@ namespace Vostok.ClusterClient.Core.Model
         
         /// <summary>
         /// <para>A custom request header which contains request priority for throttling and scheduling purposes.</para>
-        /// <para>A possible values defined in <see cref="Vostok.ClusterClient.Core.Model.RequestPriority"/> enumeration.</para>
+        /// <para>A possible values defined in <see cref="Model.RequestPriority"/> enumeration.</para>
         /// </summary>
         public const string RequestPriority = "Request-Priority";
         

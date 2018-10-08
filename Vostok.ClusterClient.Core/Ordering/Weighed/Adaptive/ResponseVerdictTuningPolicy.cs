@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
+namespace Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive
 {
     /// <summary>
     /// <para>Represents a tuning policy which selects action based on replica's response verdict:</para>

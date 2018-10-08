@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Modules;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
 
-namespace Vostok.ClusterClient.Core.Sending
+namespace Vostok.Clusterclient.Core.Sending
 {
     internal class ContextualRequestSender : IRequestSender
     {

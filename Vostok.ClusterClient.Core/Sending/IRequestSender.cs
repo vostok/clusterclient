@@ -2,10 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Strategies;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Strategies;
 
-namespace Vostok.ClusterClient.Core.Sending
+namespace Vostok.Clusterclient.Core.Sending
 {
     /// <summary>
     /// A request sending abstraction used by implementations of <see cref="IRequestStrategy"/> interface.

@@ -2,10 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Transport;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Transport;
 
-namespace Vostok.ClusterClient.Core.Sending
+namespace Vostok.Clusterclient.Core.Sending
 {
     internal interface IRequestSenderInternal
     {

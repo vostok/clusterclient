@@ -1,10 +1,10 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Weighed.Leadership;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Weighed.Leadership;
 
-namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Leadership
+namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Leadership
 {
     [TestFixture]
     internal class AcceptedVerdictLeaderDetector_Tests

@@ -2,7 +2,7 @@
 using System.IO;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <inheritdoc />
     [PublicAPI]

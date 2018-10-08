@@ -1,8 +1,8 @@
 ﻿using System;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
+namespace Vostok.Clusterclient.Core.Strategies.DelayProviders
 {
     /// <summary>
     /// Represents a provider which provides next request delays for <see cref="ForkingRequestStrategy"/>.

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Sending
+namespace Vostok.Clusterclient.Core.Sending
 {
     internal class RequestConverter : IRequestConverter
     {

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Strategies;
+using Vostok.Clusterclient.Core.Strategies;
 using Vostok.Commons.Collections;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// Represents clusterclient specific parameters of request (strategy, priority and custom properties).

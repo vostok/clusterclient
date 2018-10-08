@@ -1,10 +1,10 @@
 ﻿using System;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Modules;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
 
-namespace Vostok.ClusterClient.Core.Tests.Modules
+namespace Vostok.Clusterclient.Core.Tests.Modules
 {
     [TestFixture]
     internal class ClientApplicationIdentityModule_Tests

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Retry
+namespace Vostok.Clusterclient.Core.Retry
 {
     /// <summary>
     /// Represents a retry policy which uses external predicate to make a decision.

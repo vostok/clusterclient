@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Vostok.ClusterClient.Core.Transforms;
+using Vostok.Clusterclient.Core.Transforms;
 using Vostok.Commons.Collections;
 
-namespace Vostok.ClusterClient.Core.Topology
+namespace Vostok.Clusterclient.Core.Topology
 {
     internal class TransformingClusterProvider : IClusterProvider
     {

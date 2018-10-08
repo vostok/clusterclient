@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Ordering.Storage
+namespace Vostok.Clusterclient.Core.Ordering.Storage
 {
     /// <summary>
     /// <para>Represents a high-level isolation scope of replica information storage.</para>

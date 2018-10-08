@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed.Leadership
+namespace Vostok.Clusterclient.Core.Ordering.Weighed.Leadership
 {
     /// <summary>
     /// Determines leader of cluster by <see cref="ReplicaResult"/>.

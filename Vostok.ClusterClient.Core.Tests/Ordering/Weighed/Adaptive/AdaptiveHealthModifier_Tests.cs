@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Console;
 
-namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
+namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Adaptive
 {
     [TestFixture]
     internal class AdaptiveHealthModifier_Tests

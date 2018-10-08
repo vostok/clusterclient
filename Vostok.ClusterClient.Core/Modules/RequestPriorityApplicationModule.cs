@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     internal class RequestPriorityModule : IRequestModule
     {

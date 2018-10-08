@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Transport
+namespace Vostok.Clusterclient.Core.Transport
 {
     /// <summary>
     /// A transport decorator responsible for disposing all responses that do not make it to final <see cref="ClusterResult"/>.

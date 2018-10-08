@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Transport
+namespace Vostok.Clusterclient.Core.Transport
 {
     /// <summary>
     /// Represents an HTTP client used as a transport for cluster communication.

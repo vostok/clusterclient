@@ -2,10 +2,10 @@
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Transport;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Transport;
 
-namespace Vostok.ClusterClient.Core.Tests.Transport
+namespace Vostok.Clusterclient.Core.Tests.Transport
 {
     [TestFixture]
     internal class RequestTimeoutTransport_Tests

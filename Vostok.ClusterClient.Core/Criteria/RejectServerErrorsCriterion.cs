@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Criteria
+namespace Vostok.Clusterclient.Core.Criteria
 {
     /// <summary>
     /// <para>Represents a criterion which rejects responses with some of the server error codes (see <see cref="ResponseCodeExtensions.IsServerError"/>).</para>

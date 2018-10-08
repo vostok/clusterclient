@@ -2,10 +2,10 @@
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive;
-using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive;
+using Vostok.Clusterclient.Core.Tests.Helpers;
 
-namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
+namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Adaptive
 {
     [TestFixture]
     internal class AdaptiveHealthWithLinearDecay_Tests

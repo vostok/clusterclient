@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Helpers;
+using Vostok.Clusterclient.Core.Helpers;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Commons.Collections;
 using Vostok.Commons.Threading;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed
+namespace Vostok.Clusterclient.Core.Ordering.Weighed
 {
     /// <summary>
     /// <para>Represents a probabilistic ordering which orders replicas based on their weights.</para>

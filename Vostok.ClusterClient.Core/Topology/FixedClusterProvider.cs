@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Topology
+namespace Vostok.Clusterclient.Core.Topology
 {
     /// <summary>
     /// Represents a cluster provider which always returns a fixed list of urls.

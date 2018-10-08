@@ -2,9 +2,9 @@ using System;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Modules;
+using Vostok.Clusterclient.Core.Modules;
 
-namespace Vostok.ClusterClient.Core.Tests.Modules
+namespace Vostok.Clusterclient.Core.Tests.Modules
 {
     internal class RequestModulesMapping_Tests
     {

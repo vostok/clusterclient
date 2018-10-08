@@ -3,10 +3,10 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Misc;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Misc;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Tests.Misc
+namespace Vostok.Clusterclient.Core.Tests.Misc
 {
     internal class RequestValidator_Tests
     {

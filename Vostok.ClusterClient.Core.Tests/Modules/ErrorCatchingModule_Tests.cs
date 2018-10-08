@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Tests.Helpers;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Tests.Modules
+namespace Vostok.Clusterclient.Core.Tests.Modules
 {
     [TestFixture]
     internal class ErrorCatchingModule_Tests

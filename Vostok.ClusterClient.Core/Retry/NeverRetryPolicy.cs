@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Retry
+namespace Vostok.Clusterclient.Core.Retry
 {
     /// <summary>
     /// Represents a policy which never chooses to retry cluster communication.

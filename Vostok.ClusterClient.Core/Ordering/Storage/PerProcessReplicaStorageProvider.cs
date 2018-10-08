@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 
-namespace Vostok.ClusterClient.Core.Ordering.Storage
+namespace Vostok.Clusterclient.Core.Ordering.Storage
 {
     internal class PerProcessReplicaStorageProvider : IReplicaStorageProvider
     {

@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 using Vostok.Commons.Time;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
+namespace Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive
 {
     /// <summary>
     /// <para>An implementation of adaptive health which uses numbers in <c>(0; 1]</c> range as health values. Default health value is equal to 1.</para>

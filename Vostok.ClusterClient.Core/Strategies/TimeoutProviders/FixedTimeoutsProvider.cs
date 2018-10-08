@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 using Vostok.Commons.Time;
 
-namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
+namespace Vostok.Clusterclient.Core.Strategies.TimeoutProviders
 {
     /// <summary>
     /// Represents a timeout provider which issues timeouts from a fixed set of values.

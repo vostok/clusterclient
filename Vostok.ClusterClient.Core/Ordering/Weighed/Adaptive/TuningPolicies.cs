@@ -1,7 +1,7 @@
 ﻿using System;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
+namespace Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive
 {
     /// <summary>
     /// A set of predefined implementations of <see cref="IAdaptiveHealthTuningPolicy"/>

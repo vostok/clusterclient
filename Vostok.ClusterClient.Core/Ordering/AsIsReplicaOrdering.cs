@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
 
-namespace Vostok.ClusterClient.Core.Ordering
+namespace Vostok.Clusterclient.Core.Ordering
 {
     /// <summary>
     /// Represents an ordering which never changes replicas order.

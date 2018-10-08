@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Misc
+namespace Vostok.Clusterclient.Core.Misc
 {
     /// <summary>
     /// A set of ClusterClient logging settings.

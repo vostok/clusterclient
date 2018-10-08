@@ -1,11 +1,11 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Sending;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Sending;
 using Vostok.Logging.Console;
 
-namespace Vostok.ClusterClient.Core.Tests.Sending
+namespace Vostok.Clusterclient.Core.Tests.Sending
 {
     [TestFixture]
     internal class RequestConverter_Tests

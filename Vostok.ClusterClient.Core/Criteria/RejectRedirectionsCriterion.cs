@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Criteria
+namespace Vostok.Clusterclient.Core.Criteria
 {
     /// <summary>
     /// Represents a criterion which rejects redirection (3xx) responses except for <see cref="ResponseCode.NotModified"/> code.

@@ -1,9 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Strategies;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Strategies;
 
-namespace Vostok.ClusterClient.Core.Tests.Modules
+namespace Vostok.Clusterclient.Core.Tests.Modules
 {
     internal class RequestParameters_Tests
     {

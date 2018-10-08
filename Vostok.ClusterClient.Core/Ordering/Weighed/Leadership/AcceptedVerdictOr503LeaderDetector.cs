@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed.Leadership
+namespace Vostok.Clusterclient.Core.Ordering.Weighed.Leadership
 {
     /// <summary>
     /// Represents a leader result detector which accepts any result with <see cref="ResponseVerdict.Accept"/> verdict or <see cref="ResponseCode.ServiceUnavailable"/> response code.

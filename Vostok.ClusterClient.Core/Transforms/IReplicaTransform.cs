@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Transforms
+namespace Vostok.Clusterclient.Core.Transforms
 {
     /// <summary>
     /// Represents a transform used to modify replica urls provided by <see cref="Topology.IClusterProvider"/> implementation.

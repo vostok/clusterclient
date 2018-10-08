@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
 
-namespace Vostok.ClusterClient.Core.Ordering
+namespace Vostok.Clusterclient.Core.Ordering
 {
     /// <summary>
     /// Represent a replica ordering which will be used to determine order of replicas for request sending attempts.

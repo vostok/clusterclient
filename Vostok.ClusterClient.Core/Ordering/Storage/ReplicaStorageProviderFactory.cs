@@ -1,4 +1,4 @@
-namespace Vostok.ClusterClient.Core.Ordering.Storage
+namespace Vostok.Clusterclient.Core.Ordering.Storage
 {
     internal static class ReplicaStorageProviderFactory
     {

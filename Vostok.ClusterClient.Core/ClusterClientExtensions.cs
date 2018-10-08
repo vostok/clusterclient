@@ -2,10 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Strategies;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Strategies;
 
-namespace Vostok.ClusterClient.Core
+namespace Vostok.Clusterclient.Core
 {
     /// <summary>
     /// Extension methods for IClusterClient interface.

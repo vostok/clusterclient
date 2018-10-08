@@ -1,9 +1,9 @@
 ﻿using System;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 using Vostok.Commons.Time;
 
-namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
+namespace Vostok.Clusterclient.Core.Strategies.TimeoutProviders
 {
     /// <summary>
     /// <para>Represents a timeout provider which divides time budget equally between several replicas (their count is called division factor).</para>

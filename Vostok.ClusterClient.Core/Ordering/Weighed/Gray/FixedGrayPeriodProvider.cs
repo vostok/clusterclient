@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed.Gray
+namespace Vostok.Clusterclient.Core.Ordering.Weighed.Gray
 {
     /// <summary>
     /// Represents a simple gray period provider which always return a given fixed value.

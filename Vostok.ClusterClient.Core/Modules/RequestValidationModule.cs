@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Misc;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Transport;
-using Vostok.ClusterClient.Core.Strategies;
+using Vostok.Clusterclient.Core.Misc;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Strategies;
+using Vostok.Clusterclient.Core.Transport;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     internal class RequestValidationModule : IRequestModule
     {

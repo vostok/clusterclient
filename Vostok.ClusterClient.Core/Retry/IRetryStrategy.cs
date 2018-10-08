@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Retry
+namespace Vostok.Clusterclient.Core.Retry
 {
     /// <summary>
     /// <para>Represents a strategy which determines cluster communication attempts count and delays between attempts.</para>

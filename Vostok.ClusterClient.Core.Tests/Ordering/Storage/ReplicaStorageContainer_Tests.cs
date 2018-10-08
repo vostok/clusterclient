@@ -1,8 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Ordering.Storage;
 
-namespace Vostok.ClusterClient.Core.Tests.Ordering.Storage
+namespace Vostok.Clusterclient.Core.Tests.Ordering.Storage
 {
     [TestFixture]
     internal class ReplicaStorageContainer_Tests

@@ -2,11 +2,11 @@
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
 // ReSharper disable PossibleNullReferenceException
 
-namespace Vostok.ClusterClient.Core.Tests.Model
+namespace Vostok.Clusterclient.Core.Tests.Model
 {
     [TestFixture]
     internal class RequestHeadersExtensions_Tests

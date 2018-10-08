@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Vostok.ClusterClient.Core.Transforms
+namespace Vostok.Clusterclient.Core.Transforms
 {
     /// <summary>
     /// A set of <see cref="IReplicaTransform"/> extensions.

@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Transforms
+namespace Vostok.Clusterclient.Core.Transforms
 {
     /// <summary>
     /// Represents a replica transform which uses external delegate to modify urls.

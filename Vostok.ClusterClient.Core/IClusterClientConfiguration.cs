@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Misc;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Ordering;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Retry;
-using Vostok.ClusterClient.Core.Strategies;
-using Vostok.ClusterClient.Core.Topology;
-using Vostok.ClusterClient.Core.Transforms;
-using Vostok.ClusterClient.Core.Transport;
-using Vostok.ClusterClient.Core.Ordering.Weighed;
+using Vostok.Clusterclient.Core.Criteria;
+using Vostok.Clusterclient.Core.Misc;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Ordering;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Ordering.Weighed;
+using Vostok.Clusterclient.Core.Retry;
+using Vostok.Clusterclient.Core.Strategies;
+using Vostok.Clusterclient.Core.Topology;
+using Vostok.Clusterclient.Core.Transforms;
+using Vostok.Clusterclient.Core.Transport;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core
+namespace Vostok.Clusterclient.Core
 {
     /// <summary>
     /// <para>Represents a configuration of <see cref="ClusterClient"/> instance which must be filled during client construction.</para>

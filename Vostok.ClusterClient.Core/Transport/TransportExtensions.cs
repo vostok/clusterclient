@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Transport
+namespace Vostok.Clusterclient.Core.Transport
 {
     /// <summary>
     /// A set of extensions for <see cref="ITransport"/>.

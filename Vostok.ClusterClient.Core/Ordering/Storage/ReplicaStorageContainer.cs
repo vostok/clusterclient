@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Ordering.Storage
+namespace Vostok.Clusterclient.Core.Ordering.Storage
 {
     internal class ReplicaStorageContainer<TValue>
     {

@@ -6,7 +6,7 @@ using System.Text;
 using JetBrains.Annotations;
 using Vostok.Commons.Collections;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// <para>Represents a collection of HTTP headers (string key-value pairs).</para>

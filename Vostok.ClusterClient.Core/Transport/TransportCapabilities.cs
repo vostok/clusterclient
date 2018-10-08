@@ -1,8 +1,8 @@
 ﻿using System;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Transport
+namespace Vostok.Clusterclient.Core.Transport
 {
     /// <summary>
     /// Represents a set of optional capabilities one can expect to find in transport implementations.

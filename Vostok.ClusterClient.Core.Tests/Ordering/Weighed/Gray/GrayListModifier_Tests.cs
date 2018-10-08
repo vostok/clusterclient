@@ -5,12 +5,12 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Ordering.Weighed.Gray;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Ordering.Weighed.Gray;
 using Vostok.Logging.Console;
 
-namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
+namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Gray
 {
     [TestFixture]
     internal class GrayListModifier_Tests

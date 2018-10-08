@@ -6,17 +6,17 @@ using FluentAssertions.Extensions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Transport;
-using Vostok.ClusterClient.Core.Misc;
-using Vostok.ClusterClient.Core.Sending;
-using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Criteria;
+using Vostok.Clusterclient.Core.Misc;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Sending;
+using Vostok.Clusterclient.Core.Transport;
+using Vostok.Clusterclient.Core.Tests.Helpers;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Tests.Sending
+namespace Vostok.Clusterclient.Core.Tests.Sending
 {
     [TestFixture]
     internal class RequestSender_Tests

@@ -2,9 +2,9 @@
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Transport
+namespace Vostok.Clusterclient.Core.Transport
 {
     /// <summary>
     /// A transport decorator responsible for append <see cref="HeaderNames.RequestTimeout"/> header to request.

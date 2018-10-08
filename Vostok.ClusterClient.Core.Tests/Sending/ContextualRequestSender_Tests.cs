@@ -5,15 +5,15 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Transport;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Sending;
-using Vostok.ClusterClient.Core.Strategies;
-using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Sending;
+using Vostok.Clusterclient.Core.Strategies;
+using Vostok.Clusterclient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Transport;
 using Vostok.Logging.Console;
 
-namespace Vostok.ClusterClient.Core.Tests.Sending
+namespace Vostok.Clusterclient.Core.Tests.Sending
 {
     [TestFixture]
     internal class ContextualRequestSender_Tests

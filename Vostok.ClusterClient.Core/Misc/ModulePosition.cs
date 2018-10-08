@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Modules;
+using Vostok.Clusterclient.Core.Modules;
 
-namespace Vostok.ClusterClient.Core.Misc
+namespace Vostok.Clusterclient.Core.Misc
 {
     /// <summary>
     /// Describes relative position of <see cref="IRequestModule"/> in request pipeline.

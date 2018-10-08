@@ -5,19 +5,19 @@ using System.Threading;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Misc;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Sending;
-using Vostok.ClusterClient.Core.Strategies;
-using Vostok.ClusterClient.Core.Topology;
-using Vostok.ClusterClient.Core.Transport;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Misc;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Ordering;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Sending;
+using Vostok.Clusterclient.Core.Strategies;
+using Vostok.Clusterclient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Topology;
+using Vostok.Clusterclient.Core.Transport;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Tests.Modules
+namespace Vostok.Clusterclient.Core.Tests.Modules
 {
     [TestFixture]
     internal class RequestExecutionModule_Tests

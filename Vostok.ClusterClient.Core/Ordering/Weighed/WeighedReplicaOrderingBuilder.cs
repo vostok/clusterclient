@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed
+namespace Vostok.Clusterclient.Core.Ordering.Weighed
 {
     internal class WeighedReplicaOrderingBuilder : IWeighedReplicaOrderingBuilder
     {

@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// Provides cached <see cref="Response"/> instances for common <see cref="ResponseCode">ResponseCodes</see>."

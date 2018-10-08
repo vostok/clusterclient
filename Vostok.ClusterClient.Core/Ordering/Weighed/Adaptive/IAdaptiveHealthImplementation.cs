@@ -2,7 +2,7 @@
 using JetBrains.Annotations;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
+namespace Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive
 {
     /// <summary>
     /// <para>Represents an exact replica health behaviour which uses immutable <typeparamref name="THealth"/> objects as health values.</para>

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Misc;
+using Vostok.Clusterclient.Core.Criteria;
+using Vostok.Clusterclient.Core.Misc;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     internal class AbsoluteUrlSenderModule : IRequestModule
     {

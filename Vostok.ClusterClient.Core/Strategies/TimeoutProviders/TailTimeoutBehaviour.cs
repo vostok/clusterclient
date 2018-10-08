@@ -1,4 +1,4 @@
-﻿namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
+﻿namespace Vostok.Clusterclient.Core.Strategies.TimeoutProviders
 {
     /// <summary>
     /// Represents a behaviour in case when provided timeout values for <see cref="FixedTimeoutsProvider"/> or <see cref="AdHocTimeoutsProvider"/> are exhausted.

@@ -5,7 +5,7 @@ using NSubstitute;
 using NSubstitute.Core;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Tests.Helpers
+namespace Vostok.Clusterclient.Core.Tests.Helpers
 {
     internal static class SubstitutionHelpers
     {

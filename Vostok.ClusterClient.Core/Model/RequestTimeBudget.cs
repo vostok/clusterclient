@@ -1,7 +1,7 @@
 using System;
 using Vostok.Commons.Time;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     internal class RequestTimeBudget : TimeBudget, IRequestTimeBudget
     {

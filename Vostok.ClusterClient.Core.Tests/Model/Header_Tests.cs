@@ -1,9 +1,9 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Tests.Model
+namespace Vostok.Clusterclient.Core.Tests.Model
 {
     [TestFixture]
     internal class Header_Tests
