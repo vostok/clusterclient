@@ -59,6 +59,8 @@ namespace Vostok.ClusterClient.Core
 
             ReplicaStorageProvider = ReplicaStorageProviderFactory.Create(configuration.ReplicaStorageScope);
 
+            configuration.Transport = new RequestTimeoutTransport(configuration.Transport);
+            
             var modules = RequestModuleChainBuilder.BuildChain(configuration, ReplicaStorageProvider);
 
             pipelineDelegate = RequestModuleChainBuilder.BuildChainDelegate(modules);
@@ -87,7 +89,7 @@ namespace Vostok.ClusterClient.Core
                     CompleteParameters(parameters),
                     RequestTimeBudget.StartNew(timeout ?? configuration.DefaultTimeout, BudgetPrecision),
                     configuration.Log,
-                    new RequestTimeoutTransport(configuration.Transport),
+                    configuration.Transport,
                     configuration.MaxReplicasUsedPerRequest,
                     configuration.ClientApplicationName,
                     cancellationToken));
