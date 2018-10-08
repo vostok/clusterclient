@@ -29,9 +29,6 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
             this.tailBehaviour = tailBehaviour;
         }
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="AdHocTimeoutsProvider"/> class.
-        /// </summary>
         /// <param name="providers">An external delegates which will be used to obtain request timeouts.</param>
         public AdHocTimeoutsProvider([NotNull] params Func<TimeSpan>[] providers)
             : this(TailTimeoutBehaviour.UseRemainingBudget, providers)

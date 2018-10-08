@@ -31,9 +31,6 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
             this.tailBehaviour = tailBehaviour;
         }
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="FixedTimeoutsProvider"/> class.
-        /// </summary>
         /// <param name="timeouts">A timeouts which this provider should return.</param>
         public FixedTimeoutsProvider([NotNull] params TimeSpan[] timeouts)
             : this(TailTimeoutBehaviour.UseRemainingBudget, timeouts)
