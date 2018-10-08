@@ -9,7 +9,7 @@ namespace Vostok.ClusterClient.Core.Topology
     {
         private readonly IReplicaTransform transform;
 
-        private CachingTransform<IList<Uri>, IList<Uri>> cache;
+        private readonly CachingTransform<IList<Uri>, IList<Uri>> cache;
 
         public TransformingClusterProvider(IClusterProvider provider, IReplicaTransform transform)
         {

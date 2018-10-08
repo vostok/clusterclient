@@ -6,7 +6,7 @@ namespace Vostok.ClusterClient.Core.Topology
 {
     internal class RepeatingClusterProvider : IClusterProvider
     {
-        private CachingTransform<IList<Uri>, IList<Uri>> cache;
+        private readonly CachingTransform<IList<Uri>, IList<Uri>> cache;
 
         public RepeatingClusterProvider(IClusterProvider provider, int repeatCount)
         {
