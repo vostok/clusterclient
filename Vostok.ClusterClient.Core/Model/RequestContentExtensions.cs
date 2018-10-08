@@ -8,6 +8,7 @@ namespace Vostok.ClusterClient.Core.Model
     /// <summary>
     /// A set of <see cref="Content"/>-related <see cref="Request"/> extensions.
     /// </summary>
+    [PublicAPI]
     public static class RequestContentExtensions
     {
         /// <summary>
