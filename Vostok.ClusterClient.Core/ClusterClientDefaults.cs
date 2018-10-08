@@ -25,8 +25,6 @@ namespace Vostok.ClusterClient.Core
         /// </summary>
         public static readonly TimeSpan AdaptiveHealthDamageDecayDuration = TimeSpan.FromMinutes(10);
 
-        #region WeighedReplicaOrdering
-
         /// <summary>
         /// The default initial replica weight used by <see cref="WeighedReplicaOrdering"/>.
         /// </summary>
@@ -39,10 +37,6 @@ namespace Vostok.ClusterClient.Core
         /// The default maximum replica weight used by <see cref="WeighedReplicaOrdering"/>.
         /// </summary>
         public const double MaximumReplicaWeight = 10.0;
-
-        #endregion
-
-        #region AdaptiveHealthWithLinearDecay
 
         /// <summary>
         /// The default value of <see cref="AdaptiveHealthWithLinearDecay.MinimumHealthValue"/>.
@@ -58,10 +52,6 @@ namespace Vostok.ClusterClient.Core
         /// The default value of <see cref="AdaptiveHealthWithLinearDecay.DownMultiplier"/>.
         /// </summary>
         public const double AdaptiveHealthDownMultiplier = 0.5;
-
-        #endregion
-
-        #region AdaptiveThrottlingOptions
 
         /// <summary>
         /// The default value of <see cref="AdaptiveThrottlingOptions.MinimumRequests"/>.
@@ -83,10 +73,6 @@ namespace Vostok.ClusterClient.Core
         /// </summary>
         public const double AdaptiveThrottlingRejectProbabilityCap = 0.8;
 
-        #endregion
-
-        #region ReplicaBudgetingOptions
-
         /// <summary>
         /// The default value of <see cref="ReplicaBudgetingOptions.MinimumRequests"/>.
         /// </summary>
@@ -101,10 +87,6 @@ namespace Vostok.ClusterClient.Core
         /// The default value of <see cref="ReplicaBudgetingOptions.CriticalRatio"/>.
         /// </summary>
         public const double ReplicaBudgetingCriticalRatio = 1.2;
-
-        #endregion
-
-        #region LoggingOptions
 
         /// <summary>
         /// The default value of <see cref="LoggingOptions.LogRequestDetails"/>.
@@ -125,10 +107,6 @@ namespace Vostok.ClusterClient.Core
         /// The default value of <see cref="LoggingOptions.LogReplicaResults"/>.
         /// </summary>
         public const bool LogReplicaResults = true;
-
-        #endregion
-
-        #region IClusterClientConfiguration
 
         /// <summary>
         /// The default value of <see cref="IClusterClientConfiguration.DeduplicateRequestUrl"/>.
@@ -194,7 +172,5 @@ namespace Vostok.ClusterClient.Core
 
             return builder.Build();
         }
-
-        #endregion
     }
 }
