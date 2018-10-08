@@ -54,6 +54,42 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
                 module.Accepts.Should().Be(i);
             }
         }
+        
+        [Test]
+        public void Should_increment_requests_and_accepts_on_OperationCancelledException_when_request_is_cancelled_by_token()
+        {
+            using (var cts = new CancellationTokenSource())
+            {
+                cts.Cancel();
+
+                context.CancellationToken.Returns(cts.Token);
+
+                for (var i = 1; i <= 10; i++)
+                {
+                    Execute(new OperationCanceledException());
+
+                    module.Requests.Should().Be(i);
+                    module.Accepts.Should().Be(i);
+                }
+            }
+        }
+        
+        [Test]
+        public void Should_increment_only_requests_on_OperationCancelledException_when_token_is_not_signaled()
+        {
+            using (var cts = new CancellationTokenSource())
+            {
+                context.CancellationToken.Returns(cts.Token);
+
+                for (var i = 1; i <= 10; i++)
+                {
+                    Execute(new OperationCanceledException());
+                    
+                    module.Requests.Should().Be(i);
+                    module.Accepts.Should().Be(0);
+                }
+            }
+        }
 
         [Test]
         public void Should_increment_only_requests_on_rejected_results()
@@ -219,6 +255,17 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         private ClusterResult Execute(ClusterResult result)
         {
             return module.ExecuteAsync(context, _ => Task.FromResult(result)).GetAwaiter().GetResult();
+        }
+        
+        private void Execute<T>(T exception) where T : Exception
+        {
+            try
+            {
+                module.ExecuteAsync(context, _ => Task.FromException<ClusterResult>(exception)).GetAwaiter().GetResult();
+            }
+            catch (T)
+            {
+            }
         }
     }
 }
