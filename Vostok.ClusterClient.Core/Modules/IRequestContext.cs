@@ -19,6 +19,12 @@ namespace Vostok.ClusterClient.Core.Modules
         Request Request { get; set; }
 
         /// <summary>
+        /// Gets or sets used request parameters.
+        /// </summary>
+        [NotNull]
+        RequestParameters Parameters { get; }
+
+        /// <summary>
         /// Returns request time budget. Use <see cref="IRequestTimeBudget.Remaining"/> method to check remaining time.
         /// </summary>
         [NotNull]
@@ -50,10 +56,5 @@ namespace Vostok.ClusterClient.Core.Modules
         /// Gets the client application name.
         /// </summary>
         string ClientApplicationName { get; }
-
-        /// <summary>
-        /// Gets or sets used request parameters.
-        /// </summary>
-        RequestParameters Parameters { get; }
     }
 }

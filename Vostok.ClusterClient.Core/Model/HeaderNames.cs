@@ -67,9 +67,23 @@ namespace Vostok.ClusterClient.Core.Model
         public const string Vary = "Vary";
         public const string Via = "Via";
 
-        public const string DontRetry = "Dont-Retry"; // think about name
+        /// <summary>
+        /// A custom response header which indicates that client must accept response from server and don't perform any retry attempts.
+        /// </summary>
+        public const string DontRetry = "Dont-Retry";
+        /// <summary>
+        /// <para>A custom request header which contains client request timeout.</para>
+        /// <para>A value specified in seconds with up to 3 decimal digits.</para>
+        /// </summary>
         public const string RequestTimeout = "Request-Timeout";
+        /// <summary>
+        /// <para>A custom request header which contains request priority for throttling and scheduling purposes.</para>
+        /// <para>A possible values defined in <see cref="Vostok.ClusterClient.Core.Model.RequestPriority"/> enumeration.</para>
+        /// </summary>
         public const string RequestPriority = "Request-Priority";
+        /// <summary>
+        /// A custom header which contains application name.
+        /// </summary>
         public const string ClientApplication = "Client-Application";
     }
 }

@@ -48,6 +48,7 @@ namespace Vostok.ClusterClient.Core.Model
 
         /// <param name="segment">An <see cref="ArraySegment{T}"/> which refers to content data.</param>
         public Content(ArraySegment<byte> segment)
+            // ReSharper disable once AssignNullToNotNullAttribute (it's checked in underlying ctor)
             : this(segment.Array, segment.Offset, segment.Count)
         {
         }
