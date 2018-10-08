@@ -12,7 +12,7 @@ namespace Vostok.ClusterClient.Core.Strategies
     /// Represents a strategy which maintains several parallel requests right from the start and stops at any result with <see cref="ResponseVerdict.Accept"/> verdict.
     /// </summary>
     /// <example>
-    /// Example of execution with parallellism = 3:
+    /// Example of execution with parallelism = 3:
     /// <code>
     /// o-------------- (replica1) -------------------------------->
     /// o-------------- (replica2) ----X o------ (replica4) ------->

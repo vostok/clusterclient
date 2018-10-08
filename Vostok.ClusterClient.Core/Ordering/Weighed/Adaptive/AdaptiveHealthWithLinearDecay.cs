@@ -7,8 +7,8 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
 {
     /// <summary>
     /// <para>An implementation of adaptive health which uses numbers in <c>(0; 1]</c> range as health values. Default health value is equal to 1.</para>
-    /// <para>Upon increase, health value is multiplied by an up multilplier in <c>(1; +infinity)</c> range.</para>
-    /// <para>Upon decrease, health value is multiplied by a down multilplier in <c>(0; 1)</c> range.</para>
+    /// <para>Upon increase, health value is multiplied by an up multiplier in <c>(1; +infinity)</c> range.</para>
+    /// <para>Upon decrease, health value is multiplied by a down multiplier in <c>(0; 1)</c> range.</para>
     /// <para>Health values have a customizable lower bound in <c>(0; 1)</c> range.</para>
     /// <para>Health damage also decays linearly during a configurable time period since last health decrease. Subsequent decreases reset decay duration.</para>
     /// <para>For instance, let's assume that we've reduced a replica's health to 0.5 just a moment ago and decay duration is 10 minutes. Then, assuming there are no other changes, health will have following values in the future:</para>

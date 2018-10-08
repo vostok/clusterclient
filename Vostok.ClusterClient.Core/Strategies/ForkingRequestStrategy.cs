@@ -16,7 +16,7 @@ namespace Vostok.ClusterClient.Core.Strategies
     /// <para>Execution stops at any result with <see cref="ResponseVerdict.Accept"/> verdict.</para>
     /// </summary>
     /// <example>
-    /// Example of execution with maximum parallellism = 3:
+    /// Example of execution with maximum parallelism = 3:
     /// <code>
     /// o---------------------------------- (replica1) ----------------------->
     ///           | (fork)

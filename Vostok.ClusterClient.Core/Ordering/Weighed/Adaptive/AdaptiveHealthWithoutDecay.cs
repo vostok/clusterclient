@@ -6,8 +6,8 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
 {
     /// <summary>
     /// <para>An implementation of adaptive health which uses numbers in <c>(0; 1]</c> range as health values. Default health value is equal to 1.</para>
-    /// <para>Upon increase, health value is multiplied by an up multilplier in <c>(1; +infinity)</c> range.</para>
-    /// <para>Upon decrease, health value is multiplied by a down multilplier in <c>(0; 1)</c> range.</para>
+    /// <para>Upon increase, health value is multiplied by an up multiplier in <c>(1; +infinity)</c> range.</para>
+    /// <para>Upon decrease, health value is multiplied by a down multiplier in <c>(0; 1)</c> range.</para>
     /// <para>Health values have a customizable lower bound in <c>(0; 1)</c> range. This ensures that bad replicas have a chance to improve their health.</para>
     /// <para>Health application is just a multiplication of health value and current weight (health = 0.5 causes weight = 2 to turn into 1).</para>
     /// <para>This health implementation can only decrease replica weights as it's aim is to avoid misbehaving replicas.</para>
