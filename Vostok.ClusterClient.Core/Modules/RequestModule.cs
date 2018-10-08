@@ -32,7 +32,7 @@ namespace Vostok.ClusterClient.Core.Modules
         /// </summary>
         RequestPriority = 4,
         /// <summary>
-        /// A module which applies client application identity (add a <see cref="HeaderNames.ClientApplication"/> header to request).
+        /// A module which applies client application identity (add a <see cref="HeaderNames.ApplicationIdentity"/> header to request).
         /// </summary>
         ClientApplication = 5,
         /// <summary>

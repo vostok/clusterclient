@@ -9,7 +9,7 @@ namespace Vostok.ClusterClient.Core.Modules
         public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
             if (!string.IsNullOrEmpty(context.ClientApplicationName))
-                context.Request = context.Request.WithHeader(HeaderNames.ClientApplication, context.ClientApplicationName);
+                context.Request = context.Request.WithHeader(HeaderNames.ApplicationIdentity, context.ClientApplicationName);
 
             return next(context);
         }
