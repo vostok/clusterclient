@@ -1,8 +1,11 @@
-﻿namespace Vostok.ClusterClient.Core.Model
+﻿using JetBrains.Annotations;
+
+namespace Vostok.ClusterClient.Core.Model
 {
     /// <summary>
     /// Provides cached <see cref="Response"/> instances for common <see cref="ResponseCode">ResponseCodes</see>."
     /// </summary>
+    [PublicAPI]
     public static class Responses
     {
         // (iloktionov): 0xx
