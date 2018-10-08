@@ -2,7 +2,7 @@ using System;
 
 namespace Vostok.ClusterClient.Core.Modules
 {
-    internal class RequestModulesMapping
+    internal static class RequestModulesMapping
     {
         public static Type GetModuleType(RequestModule module)
         {
