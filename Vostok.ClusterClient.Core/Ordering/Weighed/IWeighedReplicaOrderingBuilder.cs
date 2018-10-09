@@ -30,6 +30,12 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed
         double InitialWeight { get; set; }
 
         /// <summary>
+        /// <para>Gets or sets the name of service this <see cref="ClusterClient"/> will talk to.</para>
+        /// <para>This parameter is taken from <see cref="IClusterClientConfiguration"/>.</para>
+        /// </summary>
+        string ServiceName { get; set; }
+
+        /// <summary>
         /// Adds given <paramref name="modifier"/> to the modifiers chain.
         /// </summary>
         void AddModifier([NotNull] IReplicaWeightModifier modifier);

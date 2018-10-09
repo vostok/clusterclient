@@ -9,11 +9,17 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed
         private readonly List<IReplicaWeightModifier> modifiers;
 
         public WeighedReplicaOrderingBuilder(ILog log)
+            : this(null, log)
+        {
+        }
+
+        public WeighedReplicaOrderingBuilder(string serviceName, ILog log)
         {
             Log = log;
             MinimumWeight = ClusterClientDefaults.MinimumReplicaWeight;
             MaximumWeight = ClusterClientDefaults.MaximumReplicaWeight;
             InitialWeight = ClusterClientDefaults.InitialReplicaWeight;
+            ServiceName = serviceName;
 
             modifiers = new List<IReplicaWeightModifier>();
         }
@@ -25,6 +31,8 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed
         public double MaximumWeight { get; set; }
 
         public double InitialWeight { get; set; }
+
+        public string ServiceName { get; set; }
 
         public WeighedReplicaOrdering Build() =>
             new WeighedReplicaOrdering(modifiers, MinimumWeight, MaximumWeight, InitialWeight);
