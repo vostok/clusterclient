@@ -22,7 +22,7 @@ namespace Vostok.Clusterclient.Core
         /// </summary>
         public static void SetupWeighedReplicaOrdering(this IClusterClientConfiguration configuration, Action<IWeighedReplicaOrderingBuilder> build)
         {
-            var builder = new WeighedReplicaOrderingBuilder(configuration.ServiceName, configuration.Log);
+            var builder = new WeighedReplicaOrderingBuilder(configuration.Environment, configuration.ServiceName, configuration.Log);
             build(builder);
             configuration.ReplicaOrdering = builder.Build();
         }
