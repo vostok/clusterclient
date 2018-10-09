@@ -4,13 +4,16 @@ using Vostok.Clusterclient.Core.Model;
 
 namespace Vostok.Clusterclient.Core.Modules
 {
-    internal class RequestPriorityModule : IRequestModule
+    internal class AuxiliaryHeadersModule : IRequestModule
     {
         public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
             var priority = context.Parameters.Priority;
             if (priority.HasValue)
                 context.Request = context.Request.WithHeader(HeaderNames.RequestPriority, priority.Value);
+
+            if (!string.IsNullOrEmpty(context.ClientApplicationName))
+                context.Request = context.Request.WithHeader(HeaderNames.ApplicationIdentity, context.ClientApplicationName);
 
             return next(context);
         }

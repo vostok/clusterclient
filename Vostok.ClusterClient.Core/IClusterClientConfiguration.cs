@@ -93,7 +93,7 @@ namespace Vostok.Clusterclient.Core
         /// <item><description><see cref="RequestModule.LeakPrevention"/>: Underlying response streams closing.</description></item>
         /// <item><description><see cref="RequestModule.GlobalErrorCatching"/>: Exception logging and handling.</description></item>
         /// <item><description><see cref="RequestModule.RequestTransformation"/>: Request transformation (application of <see cref="IRequestTransform"/> chain).</description></item>
-        /// <item><description><see cref="RequestModule.RequestPriority"/>: Request priority application (adding a priority header to request).</description></item>
+        /// <item><description><see cref="RequestModule.AuxiliaryHeaders"/>: Request priority application (adding a priority header to request).</description></item>
         /// <item><description><see cref="RequestModule.ApplicationName"/>: Client application name (adding a application identity header to request).</description></item>
         /// <item><description>User-defined modules.</description></item>
         /// <item><description><see cref="RequestModule.Logging"/>: Request/result logging.</description></item>

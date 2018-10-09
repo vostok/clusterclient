@@ -28,13 +28,9 @@ namespace Vostok.Clusterclient.Core.Modules
         /// </summary>
         RequestTransformation,
         /// <summary>
-        /// A module which applies request priority (add a <see cref="HeaderNames.RequestPriority"/> header to request). 
+        /// A module which adds auxiliary headers such as <see cref="HeaderNames.RequestPriority"/> and <see cref="HeaderNames.ApplicationIdentity"/> to the request). 
         /// </summary>
-        RequestPriority,
-        /// <summary>
-        /// A module which applies client application name (add a <see cref="HeaderNames.ApplicationIdentity"/> header to request).
-        /// </summary>
-        ApplicationName,
+        AuxiliaryHeaders,
         /// <summary>
         /// A module which log requests and responses.
         /// </summary>

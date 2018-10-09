@@ -14,10 +14,8 @@ namespace Vostok.Clusterclient.Core.Modules
                     return typeof(GlobalErrorCatchingModule);
                 case RequestModule.RequestTransformation:
                     return typeof(RequestTransformationModule);
-                case RequestModule.RequestPriority:
-                    return typeof(RequestPriorityModule);
-                case RequestModule.ApplicationName:
-                    return typeof(ClientApplicationIdentityModule);
+                case RequestModule.AuxiliaryHeaders:
+                    return typeof(AuxiliaryHeadersModule);
                 case RequestModule.Logging:
                     return typeof(LoggingModule);
                 case RequestModule.ResponseTransformation:

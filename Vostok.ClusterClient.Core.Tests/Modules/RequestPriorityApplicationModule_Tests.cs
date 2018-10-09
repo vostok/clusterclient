@@ -8,10 +8,10 @@ using Vostok.Clusterclient.Core.Modules;
 namespace Vostok.Clusterclient.Core.Tests.Modules
 {
     [TestFixture]
-    internal class RequestPriorityApplicationModule_Tests
+    internal class AuxiliaryHeadersModule_Tests
     {
         private IRequestContext context;
-        private RequestPriorityModule module;
+        private AuxiliaryHeadersModule module;
 
         [SetUp]
         public void TestSetup()
@@ -20,7 +20,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             context.Request.Returns(Request.Get("foo/bar"));
             context.Parameters.Returns(RequestParameters.Empty);
 
-            module = new RequestPriorityModule();
+            module = new AuxiliaryHeadersModule();
         }
 
         [Test]
@@ -44,6 +44,21 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
 
             context.Received(1).Request = Arg.Any<Request>();
             request.Headers[HeaderNames.RequestPriority].Should().Be(priority.ToString());
+        }
+        
+        [TestCase("qwe")]
+        [TestCase("xyz")]
+        public void Should_add_client_app_name_from_context(string name)
+        {
+            context.ClientApplicationName.Returns(name);
+
+            module.ExecuteAsync(
+                context,
+                requestContext =>
+                {
+                    requestContext.Request.Headers[HeaderNames.ApplicationIdentity].Should().Be(name);
+                    return null;
+                });
         }
 
         private void Execute()
