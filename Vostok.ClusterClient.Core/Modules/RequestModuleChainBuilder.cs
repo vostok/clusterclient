@@ -41,10 +41,12 @@ namespace Vostok.Clusterclient.Core.Modules
             AddModule(new TimeoutValidationModule());
             AddModule(new RequestRetryModule(config.RetryPolicy, config.RetryStrategy));
 
-            // -->> adaptive throttling and replica budgeting modules <<-- //
+            // -->> adaptive throttling module <<-- //
 
             AddModule(new AbsoluteUrlSenderModule(responseClassifier, config.ResponseCriteria, resultStatusSelector));
-
+            
+            // -->> replica budgeting module <<-- //
+            
             AddModule(
                 new RequestExecutionModule(
                     config.ClusterProvider,

@@ -152,7 +152,7 @@ namespace Vostok.Clusterclient.Core
             double criticalRatio = ClusterClientDefaults.ReplicaBudgetingCriticalRatio)
         {
             var options = new ReplicaBudgetingOptions(configuration.ServiceName, minutesToTrack, minimumRequests, criticalRatio);
-            configuration.AddRequestModule(new ReplicaBudgetingModule(options));
+            configuration.AddRequestModule(new ReplicaBudgetingModule(options), RequestModule.RequestExecution);
         }
 
         /// <summary>
