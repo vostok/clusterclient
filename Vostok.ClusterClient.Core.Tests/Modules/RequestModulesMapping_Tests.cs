@@ -20,7 +20,11 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         [Test]
         public void Should_know_all_request_module_types()
         {
-            var expectedTypes = typeof(IRequestModule).Assembly.GetTypes().Where(typeof(IRequestModule).IsAssignableFrom).ToArray();
+            var expectedTypes = typeof(IRequestModule).Assembly
+                .GetTypes()
+                .Where(typeof(IRequestModule).IsAssignableFrom)
+                .Where(x => !x.IsAbstract && !x.IsInterface)
+                .ToArray();
             var enumValues = (RequestModule[]) Enum.GetValues(typeof(RequestModule));
             var actualTypes = enumValues.Select(RequestModulesMapping.GetModuleType).ToArray();
             actualTypes.Should().BeEquivalentTo(expectedTypes);

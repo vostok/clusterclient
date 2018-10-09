@@ -36,6 +36,8 @@ namespace Vostok.Clusterclient.Core.Modules
                     return typeof(AdaptiveThrottlingModule);
                 case RequestModule.ReplicaBudgeting:
                     return typeof(ReplicaBudgetingModule);
+                case RequestModule.HttpMethodValidation:
+                    return typeof(HttpMethodValidationModule);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(module), module, $"Unexpected {nameof(RequestModule)} value.");
             }
