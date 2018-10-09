@@ -104,8 +104,8 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
                 {
                     [typeof(LoggingModule)] = new RelatedModules
                     {
-                        Before = { module1, module2 }
-                    } 
+                        Before = {module1, module2}
+                    }
                 });
 
             configuration.Logging.Returns(new LoggingOptions());
@@ -149,7 +149,8 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
                             new AdaptiveThrottlingModule(new AdaptiveThrottlingOptions("foo")),
                             new ReplicaBudgetingModule(new ReplicaBudgetingOptions("foo"))
                         }
-                }});
+                    }
+                });
 
             var storageProvider = Substitute.For<IReplicaStorageProvider>();
 
@@ -171,6 +172,110 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             modules[11].Should().BeOfType<ReplicaBudgetingModule>();
             modules[12].Should().BeOfType<AbsoluteUrlSenderModule>();
             modules[13].Should().BeOfType<RequestExecutionModule>();
+        }
+        
+        [Test]
+        public void Should_add_optional_modules_recursively()
+        {
+            var configuration = Substitute.For<IClusterClientConfiguration>();
+        
+            configuration.Logging.Returns(new LoggingOptions());
+        
+            configuration.Modules.Returns(
+            new Dictionary<Type, RelatedModules>
+            {
+                [typeof(GlobalErrorCatchingModule)] = new RelatedModules
+                    {
+                        Before =
+                        {
+                            new AdaptiveThrottlingModule(new AdaptiveThrottlingOptions("foo")),
+                        }
+                    },
+                    [typeof(AdaptiveThrottlingModule)] = new RelatedModules
+                {
+                    After =
+                    {
+                        new ReplicaBudgetingModule(new ReplicaBudgetingOptions("foo"))
+                    }
+                }
+            });
+        
+            var storageProvider = Substitute.For<IReplicaStorageProvider>();
+        
+            var modules = RequestModuleChainBuilder.BuildChain(configuration, storageProvider);
+        
+            modules.Should().HaveCount(14);
+        
+            modules[0].Should().BeOfType<LeakPreventionModule>();
+            modules[1].Should().BeOfType<AdaptiveThrottlingModule>();
+            modules[2].Should().BeOfType<ReplicaBudgetingModule>();
+            modules[3].Should().BeOfType<GlobalErrorCatchingModule>();
+            modules[4].Should().BeOfType<RequestTransformationModule>();
+            modules[5].Should().BeOfType<AuxiliaryHeadersModule>();
+            modules[6].Should().BeOfType<LoggingModule>();
+            modules[7].Should().BeOfType<ResponseTransformationModule>();
+            modules[8].Should().BeOfType<ErrorCatchingModule>();
+            modules[9].Should().BeOfType<RequestValidationModule>();
+            modules[10].Should().BeOfType<TimeoutValidationModule>();
+            modules[11].Should().BeOfType<RequestRetryModule>();
+            modules[12].Should().BeOfType<AbsoluteUrlSenderModule>();
+            modules[13].Should().BeOfType<RequestExecutionModule>();
+        }
+        
+        [Test]
+        public void Should_add_optional_modules_for_some_module_once()
+        {
+            var configuration = Substitute.For<IClusterClientConfiguration>();
+        
+            configuration.Logging.Returns(new LoggingOptions());
+        
+            configuration.Modules.Returns(
+            new Dictionary<Type, RelatedModules>
+            {
+                [typeof(GlobalErrorCatchingModule)] = new RelatedModules
+                    {
+                        Before =
+                        {
+                            new AdaptiveThrottlingModule(new AdaptiveThrottlingOptions("foo")),
+                        }
+                    },
+                    [typeof(AdaptiveThrottlingModule)] = new RelatedModules
+                    {
+                        After =
+                        {
+                            new ReplicaBudgetingModule(new ReplicaBudgetingOptions("foo"))
+                        }
+                    },
+                    [typeof(AuxiliaryHeadersModule)] = new RelatedModules
+                    {
+                        After =
+                        {
+                            new GlobalErrorCatchingModule()
+                        }
+                    }
+            });
+        
+            var storageProvider = Substitute.For<IReplicaStorageProvider>();
+        
+            var modules = RequestModuleChainBuilder.BuildChain(configuration, storageProvider);
+        
+            modules.Should().HaveCount(15);
+        
+            modules[0].Should().BeOfType<LeakPreventionModule>();
+            modules[1].Should().BeOfType<AdaptiveThrottlingModule>();
+            modules[2].Should().BeOfType<ReplicaBudgetingModule>();
+            modules[3].Should().BeOfType<GlobalErrorCatchingModule>();
+            modules[4].Should().BeOfType<RequestTransformationModule>();
+            modules[5].Should().BeOfType<AuxiliaryHeadersModule>();
+            modules[6].Should().BeOfType<GlobalErrorCatchingModule>();
+            modules[7].Should().BeOfType<LoggingModule>();
+            modules[8].Should().BeOfType<ResponseTransformationModule>();
+            modules[9].Should().BeOfType<ErrorCatchingModule>();
+            modules[10].Should().BeOfType<RequestValidationModule>();
+            modules[11].Should().BeOfType<TimeoutValidationModule>();
+            modules[12].Should().BeOfType<RequestRetryModule>();
+            modules[13].Should().BeOfType<AbsoluteUrlSenderModule>();
+            modules[14].Should().BeOfType<RequestExecutionModule>();
         }
     }
 }
