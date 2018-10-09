@@ -36,5 +36,7 @@ namespace Vostok.Clusterclient.Core.Misc
                 }
             }
         }
+
+        internal int Count => Before.Count + After.Count;
     }
 }

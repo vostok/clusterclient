@@ -20,9 +20,7 @@ namespace Vostok.Clusterclient.Core.Modules
             var resultStatusSelector = new ClusterResultStatusSelector();
 
             // ReSharper disable once UseObjectOrCollectionInitializer
-            var modules = new List<IRequestModule>(12 + config.Modules?.Sum(
-                                                           x => (x.Value?.Before?.Count ?? 0) +
-                                                                (x.Value?.After?.Count ?? 0)) ?? 0);
+            var modules = new List<IRequestModule>(12 + config.Modules?.Sum(x => x.Value.Count) ?? 0);
             
             var addedModules = new HashSet<Type>();
 
