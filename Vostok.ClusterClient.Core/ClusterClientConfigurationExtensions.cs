@@ -100,7 +100,7 @@ namespace Vostok.Clusterclient.Core
         }
 
         /// <summary>
-        /// Sets up an adaptive client throttling mechanism with given parameters using <see cref="IClusterClientConfiguration.ServiceName"/> as a storage key.
+        /// Sets up an adaptive client throttling mechanism with given parameters using <see cref="IClusterClientConfiguration.ServiceName"/> and <see cref="IClusterClientConfiguration.Environment"/> as a storage key.
         /// </summary>
         /// <param name="configuration">A configuration to be modified.</param>
         /// <param name="minutesToTrack">See <see cref="AdaptiveThrottlingOptions.MinutesToTrack"/>.</param>
@@ -114,7 +114,7 @@ namespace Vostok.Clusterclient.Core
             double criticalRatio = ClusterClientDefaults.AdaptiveThrottlingCriticalRatio,
             double maximumRejectProbability = ClusterClientDefaults.AdaptiveThrottlingRejectProbabilityCap)
         {
-            var options = new AdaptiveThrottlingOptions(configuration.ServiceName, minutesToTrack, minimumRequests, criticalRatio, maximumRejectProbability);
+            var options = new AdaptiveThrottlingOptions(GenerateStorageKey(configuration.Environment, configuration.ServiceName), minutesToTrack, minimumRequests, criticalRatio, maximumRejectProbability);
             configuration.AddRequestModule(new AdaptiveThrottlingModule(options), typeof(AbsoluteUrlSenderModule), ModulePosition.Before);
 
         }
@@ -139,7 +139,7 @@ namespace Vostok.Clusterclient.Core
         }
 
         /// <summary>
-        /// Sets up a replica budgeting mechanism with given parameters using <see cref="IClusterClientConfiguration.ServiceName"/> as a storage key.
+        /// Sets up a replica budgeting mechanism with given parameters using <see cref="IClusterClientConfiguration.ServiceName"/> and <see cref="IClusterClientConfiguration.Environment"/> as a storage key.
         /// </summary>
         /// <param name="configuration">A configuration to be modified.</param>
         /// <param name="minutesToTrack">See <see cref="ReplicaBudgetingOptions.MinutesToTrack"/>.</param>
@@ -151,7 +151,7 @@ namespace Vostok.Clusterclient.Core
             int minimumRequests = ClusterClientDefaults.ReplicaBudgetingMinimumRequests,
             double criticalRatio = ClusterClientDefaults.ReplicaBudgetingCriticalRatio)
         {
-            var options = new ReplicaBudgetingOptions(configuration.ServiceName, minutesToTrack, minimumRequests, criticalRatio);
+            var options = new ReplicaBudgetingOptions(GenerateStorageKey(configuration.Environment, configuration.ServiceName), minutesToTrack, minimumRequests, criticalRatio);
             configuration.AddRequestModule(new ReplicaBudgetingModule(options), RequestModule.RequestExecution);
         }
 
@@ -211,6 +211,13 @@ namespace Vostok.Clusterclient.Core
                 configuration.Modules[type] = modules = new RelatedModules();
             
             return modules;
+        }
+
+        private static string GenerateStorageKey(string environment, string serviceName)
+        {
+            return string.IsNullOrEmpty(environment)
+                ? serviceName
+                : (environment, serviceName).ToString();
         }
     }
 }
