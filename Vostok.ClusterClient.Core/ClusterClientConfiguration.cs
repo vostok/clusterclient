@@ -38,7 +38,7 @@ namespace Vostok.Clusterclient.Core
             };
             MaxReplicasUsedPerRequest = ClusterClientDefaults.MaxReplicasUsedPerRequest;
             DeduplicateRequestUrl = ClusterClientDefaults.DeduplicateRequestUrl;
-            ClientApplicationName = ApplicationIdentity.Get();
+            ClientApplicationName = EnvironmentInfo.Application;
         }
 
         public ILog Log { get; }

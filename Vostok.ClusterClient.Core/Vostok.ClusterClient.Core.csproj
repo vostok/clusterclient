@@ -64,8 +64,8 @@
     <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\RuntimeDetector.cs">
       <Link>Commons\RuntimeDetector.cs</Link>
     </Compile>
-    <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\ApplicationIdentity.cs">
-      <Link>Commons\ApplicationIdentity.cs</Link>
+    <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\EnvironmentInfo.cs">
+      <Link>Commons\EnvironmentInfo.cs</Link>
     </Compile>
   </ItemGroup>
   
