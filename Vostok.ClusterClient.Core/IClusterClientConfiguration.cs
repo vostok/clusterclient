@@ -143,6 +143,12 @@ namespace Vostok.Clusterclient.Core
         TimeSpan DefaultTimeout { get; set; }
 
         /// <summary>
+        /// <para>Gets or sets the timeout to establish new TCP connection to replica in cluster.</para>
+        /// <para>This parameter is optional and has default value <see cref="ClusterClientDefaults.ConnectionTimeout"/></para>
+        /// </summary>
+        TimeSpan? DefaultConnectionTimeout { get; set; }
+        
+        /// <summary>
         /// <para>Gets or sets a default request priority used for <see cref="ClusterClient"/> method overloads without priority parameter.</para>
         /// <para>This parameter is optional and has a <c>null</c> default value.</para>
         /// </summary>
@@ -185,7 +191,7 @@ namespace Vostok.Clusterclient.Core
         /// <para>Example request url: v1/contents/foo/bar</para>
         /// <para>Example duplicate path segment is "v1".</para>
         /// <para>Only works for requests with relative urls.</para>
-        /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.DeduplicateRequestUrl"/>).</para>
+        /// <para>This parameter is optional and has a default value (see <see cref="ClusterClientDefaults.DeduplicateRequestUrl"/>).</para>
         /// </summary>
         bool DeduplicateRequestUrl { get; set; }
     }

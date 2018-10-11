@@ -147,6 +147,11 @@ namespace Vostok.Clusterclient.Core
         /// The default value of <see cref="IClusterClientConfiguration.DefaultTimeout"/>.
         /// </summary>
         public static readonly TimeSpan Timeout = TimeSpan.FromSeconds(30);
+        
+        /// <summary>
+        /// The default value of <see cref="IClusterClientConfiguration.DefaultConnectionTimeout"/>
+        /// </summary>
+        public static readonly TimeSpan ConnectionTimeout = TimeSpan.FromMilliseconds(750);
 
         /// <returns>The default value of <see cref="IClusterClientConfiguration.ResponseCriteria"/>.</returns>
         public static List<IResponseCriterion> ResponseCriteria()
