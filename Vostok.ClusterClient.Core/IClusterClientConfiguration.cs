@@ -146,7 +146,7 @@ namespace Vostok.Clusterclient.Core
         /// <para>Gets or sets the timeout to establish new TCP connection to replica in cluster.</para>
         /// <para>This parameter is optional and has default value <see cref="ClusterClientDefaults.ConnectionTimeout"/></para>
         /// </summary>
-        TimeSpan? DefaultConnectionTimeout { get; set; }
+        TimeSpan DefaultConnectionTimeout { get; set; }
         
         /// <summary>
         /// <para>Gets or sets a default request priority used for <see cref="ClusterClient"/> method overloads without priority parameter.</para>
