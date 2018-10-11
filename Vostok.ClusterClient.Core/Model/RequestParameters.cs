@@ -35,10 +35,12 @@ namespace Vostok.Clusterclient.Core.Model
         private RequestParameters(
             IRequestStrategy strategy,
             RequestPriority? priority,
-            ImmutableArrayDictionary<string, object> properties)
+            ImmutableArrayDictionary<string, object> properties,
+            TimeSpan? connectionTimeout)
         {
             Strategy = strategy;
             Priority = priority;
+            ConnectionTimeout = connectionTimeout;
             this.properties = properties ?? ImmutableArrayDictionary<string, object>.Empty;
         }
 
@@ -60,18 +62,20 @@ namespace Vostok.Clusterclient.Core.Model
         /// </summary>
         [NotNull]
         public IReadOnlyDictionary<string, object> Properties => properties;
+        
+        internal TimeSpan? ConnectionTimeout { get; }
 
         /// <returns>New instance of <see cref="RequestParameters"/> with specified <paramref name="strategy"/>.</returns>
         public RequestParameters WithStrategy([CanBeNull] IRequestStrategy strategy)
             => ReferenceEquals(Strategy, strategy) 
                 ? this
-                : new RequestParameters(strategy, Priority, properties);
+                : new RequestParameters(strategy, Priority, properties, ConnectionTimeout);
 
         /// <returns>New instance of <see cref="RequestParameters"/> with specified <paramref name="priority"/>.</returns>
         public RequestParameters WithPriority(RequestPriority? priority)
             => Nullable.Equals(Priority, priority)
                 ? this
-                : new RequestParameters(Strategy, priority, properties);
+                : new RequestParameters(Strategy, priority, properties, ConnectionTimeout);
 
         /// <returns>New instance of <see cref="RequestParameters"/> with specified property.</returns>
         public RequestParameters WithProperty([NotNull] string key, object value)
@@ -79,7 +83,13 @@ namespace Vostok.Clusterclient.Core.Model
             var newProperties = properties.Set(key ?? throw new ArgumentNullException(nameof(key)), value);
             return properties == newProperties
                 ? this
-                : new RequestParameters(Strategy, Priority, newProperties);
+                : new RequestParameters(Strategy, Priority, newProperties, ConnectionTimeout);
         }
+
+        /// <returns>New instance of <see cref="RequestParameters"/> with specified <paramref name="connectionTimeout"/>.</returns>
+        internal RequestParameters WithConnectionTimeout(TimeSpan? connectionTimeout)
+            => ConnectionTimeout == connectionTimeout
+                ? this
+                : new RequestParameters(Strategy, Priority, properties, connectionTimeout);
     }
 }
