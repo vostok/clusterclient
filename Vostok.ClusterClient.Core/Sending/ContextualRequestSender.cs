@@ -17,13 +17,13 @@ namespace Vostok.Clusterclient.Core.Sending
             this.context = context;
         }
 
-        public async Task<ReplicaResult> SendToReplicaAsync(Uri replica, Request request, TimeSpan timeout, CancellationToken cancellationToken)
+        public async Task<ReplicaResult> SendToReplicaAsync(Uri replica, Request request, TimeSpan? connectionTimeout, TimeSpan timeout, CancellationToken cancellationToken)
         {
             context.SetReplicaResult(CreateUnknownResult(replica));
 
             try
             {
-                var result = await sender.SendToReplicaAsync(context.Transport, replica, request, timeout, cancellationToken).ConfigureAwait(false);
+                var result = await sender.SendToReplicaAsync(context.Transport, replica, request, connectionTimeout, timeout, cancellationToken).ConfigureAwait(false);
                 context.SetReplicaResult(result);
                 return result;
             }

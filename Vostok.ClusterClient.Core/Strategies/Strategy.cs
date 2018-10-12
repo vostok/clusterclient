@@ -96,7 +96,7 @@ namespace Vostok.Clusterclient.Core.Strategies
         #region IRequestStrategy implementation stub
 
         /// <inheritdoc />
-        public Task SendAsync(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken) =>
+        public Task SendAsync(Request request, RequestParameters parameters, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken) =>
             throw new NotImplementedException();
 
         #endregion

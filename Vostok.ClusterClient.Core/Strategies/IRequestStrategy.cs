@@ -28,6 +28,7 @@ namespace Vostok.Clusterclient.Core.Strategies
         /// </list>
         /// </summary>
         /// <param name="request">A request that needs to be sent.</param>
+        /// <param name="parameters">Request parameters.</param>
         /// <param name="sender">A tool to send request to replicas.</param>
         /// <param name="budget">Request time budget.</param>
         /// <param name="replicas">Ordered replicas sequence.</param>
@@ -35,6 +36,7 @@ namespace Vostok.Clusterclient.Core.Strategies
         /// <param name="cancellationToken">A cancellation token used for request execution.</param>
         Task SendAsync(
             [NotNull] Request request,
+            [NotNull] RequestParameters parameters,
             [NotNull] IRequestSender sender,
             [NotNull] IRequestTimeBudget budget,
             [NotNull] IEnumerable<Uri> replicas,

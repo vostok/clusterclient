@@ -54,6 +54,7 @@ namespace Vostok.Clusterclient.Core.Modules
 
             await contextImpl.Parameters.Strategy.SendAsync(
                     contextImpl.Request,
+                    contextImpl.Parameters,
                     contextualSender,
                     contextImpl.Budget,
                     limitedReplicas,

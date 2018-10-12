@@ -22,6 +22,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
         private Request request;
         private ReplicaResult result;
         private TimeSpan timeout;
+        private TimeSpan? connectionTimeout;
 
         private TaskCompletionSource<ReplicaResult> resultSource;
         private IRequestSenderInternal baseSender;
@@ -35,11 +36,12 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
             request = Request.Get("foo/bar");
             result = new ReplicaResult(replica, new Response(ResponseCode.Ok), ResponseVerdict.Accept, 1.Milliseconds());
             timeout = 1.Minutes();
-
+            connectionTimeout = 1.Seconds();
+            
             resultSource = new TaskCompletionSource<ReplicaResult>();
 
             baseSender = Substitute.For<IRequestSenderInternal>();
-            baseSender.SendToReplicaAsync(null, null, null, TimeSpan.Zero, CancellationToken.None).ReturnsForAnyArgs(_ => resultSource.Task);
+            baseSender.SendToReplicaAsync(null, null, null, null, TimeSpan.Zero, CancellationToken.None).ReturnsForAnyArgs(_ => resultSource.Task);
 
             context = new RequestContext(request, new RequestParameters(Strategy.SingleReplica), Budget.WithRemaining(timeout), new ConsoleLog(), Substitute.For<ITransport>(), int.MaxValue, null, CancellationToken.None);
             contextualSender = new ContextualRequestSender(baseSender, context);
@@ -48,7 +50,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
         [Test]
         public void Should_add_default_replica_result_to_context_before_sending_request()
         {
-            var sendTask = contextualSender.SendToReplicaAsync(replica, request, timeout, CancellationToken.None);
+            var sendTask = contextualSender.SendToReplicaAsync(replica, request, connectionTimeout, timeout, CancellationToken.None);
 
             var defaultResult = context.FreezeReplicaResults().Should().ContainSingle().Which;
 
@@ -64,7 +66,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
         [Test]
         public void Should_add_real_replica_result_to_context_after_sending_request()
         {
-            var sendTask = contextualSender.SendToReplicaAsync(replica, request, timeout, CancellationToken.None);
+            var sendTask = contextualSender.SendToReplicaAsync(replica, request, connectionTimeout, timeout, CancellationToken.None);
 
             CompleteSending();
 
@@ -76,7 +78,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
         [Test]
         public void Should_return_result_from_base_request_sender()
         {
-            var sendTask = contextualSender.SendToReplicaAsync(replica, request, timeout, CancellationToken.None);
+            var sendTask = contextualSender.SendToReplicaAsync(replica, request, connectionTimeout, timeout, CancellationToken.None);
 
             CompleteSending();
 
@@ -90,9 +92,9 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
 
             CompleteSending();
 
-            contextualSender.SendToReplicaAsync(replica, request, timeout, tokenSource.Token).GetAwaiter().GetResult();
+            contextualSender.SendToReplicaAsync(replica, request, connectionTimeout, timeout, tokenSource.Token).GetAwaiter().GetResult();
 
-            baseSender.Received().SendToReplicaAsync(context.Transport, replica, request, timeout, tokenSource.Token);
+            baseSender.Received().SendToReplicaAsync(context.Transport, replica, request, connectionTimeout, timeout, tokenSource.Token);
         }
 
         [Test]
@@ -100,7 +102,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
         {
             Task.Run(() => resultSource.TrySetException(new OperationCanceledException()));
 
-            Action action = () => contextualSender.SendToReplicaAsync(replica, request, timeout, CancellationToken.None).GetAwaiter().GetResult();
+            Action action = () => contextualSender.SendToReplicaAsync(replica, request, connectionTimeout, timeout, CancellationToken.None).GetAwaiter().GetResult();
 
             action.Should().Throw<OperationCanceledException>();
         }
@@ -112,7 +114,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
 
             try
             {
-                contextualSender.SendToReplicaAsync(replica, request, timeout, CancellationToken.None).GetAwaiter().GetResult();
+                contextualSender.SendToReplicaAsync(replica, request, connectionTimeout, timeout, CancellationToken.None).GetAwaiter().GetResult();
             }
             catch (OperationCanceledException)
             {

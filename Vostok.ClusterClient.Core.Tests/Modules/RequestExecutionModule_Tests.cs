@@ -56,7 +56,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
                 .WithStrategy(Substitute.For<IRequestStrategy>());
 
             context = new RequestContext(Request.Get("foo/bar"), parameters, Budget.Infinite, new SilentLog(), null, int.MaxValue);
-            context.Parameters.Strategy.SendAsync(null, null, null, null, 0, default)
+            context.Parameters.Strategy.SendAsync(null, null, null, null, null, 0, default)
                 .ReturnsForAnyArgs(
                     async info =>
                     {
@@ -65,7 +65,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
 
                         foreach (var replica in replicas)
                         {
-                            await sender.SendToReplicaAsync(replica, context.Request, TimeSpan.Zero, CancellationToken.None);
+                            await sender.SendToReplicaAsync(replica, context.Request, null, TimeSpan.Zero, CancellationToken.None);
                         }
                     });
 
@@ -73,8 +73,8 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             clusterProvider.GetCluster().Returns(new[] {replica1, replica2});
 
             requestSender = Substitute.For<IRequestSenderInternal>();
-            requestSender.SendToReplicaAsync(Arg.Any<ITransport>(), replica1, Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).ReturnsTask(_ => result1);
-            requestSender.SendToReplicaAsync(Arg.Any<ITransport>(), replica2, Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).ReturnsTask(_ => result2);
+            requestSender.SendToReplicaAsync(Arg.Any<ITransport>(), replica1, Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).ReturnsTask(_ => result1);
+            requestSender.SendToReplicaAsync(Arg.Any<ITransport>(), replica2, Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).ReturnsTask(_ => result2);
 
             replicaOrdering = Substitute.For<IReplicaOrdering>();
             replicaOrdering.Order(null, null, null, null).ReturnsForAnyArgs(info => info.Arg<IList<Uri>>().Reverse());
@@ -124,7 +124,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         {
             Execute();
 
-            context.Parameters.Strategy.Received().SendAsync(context.Request, Arg.Any<ContextualRequestSender>(), context.Budget, Arg.Is<IEnumerable<Uri>>(urls => urls.SequenceEqual(new[] {replica2, replica1})), 2, context.CancellationToken);
+            context.Parameters.Strategy.Received().SendAsync(context.Request, context.Parameters, Arg.Any<ContextualRequestSender>(), context.Budget, Arg.Is<IEnumerable<Uri>>(urls => urls.SequenceEqual(new[] {replica2, replica1})), 2, context.CancellationToken);
         }
 
         [Test]
@@ -134,7 +134,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
 
             Execute();
 
-            context.Parameters.Strategy.Received().SendAsync(context.Request, Arg.Any<ContextualRequestSender>(), context.Budget, Arg.Is<IEnumerable<Uri>>(urls => urls.SequenceEqual(new[] {replica2})), 1, context.CancellationToken);
+            context.Parameters.Strategy.Received().SendAsync(context.Request, context.Parameters, Arg.Any<ContextualRequestSender>(), context.Budget, Arg.Is<IEnumerable<Uri>>(urls => urls.SequenceEqual(new[] {replica2})), 1, context.CancellationToken);
         }
 
         [Test]

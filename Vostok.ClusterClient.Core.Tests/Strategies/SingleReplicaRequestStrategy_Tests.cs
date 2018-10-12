@@ -16,6 +16,7 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
     {
         private Uri[] replicas;
         private Request request;
+        private RequestParameters parameters;
         private IRequestTimeBudget budget;
         private ReplicaResult result;
         private IRequestSender sender;
@@ -32,10 +33,11 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
 
             request = Request.Get("foo/bar");
             budget = Budget.WithRemaining(5.Minutes());
+            parameters = RequestParameters.Empty.WithConnectionTimeout(1.Seconds());
             result = new ReplicaResult(replicas[0], new Response(ResponseCode.NotFound), ResponseVerdict.Accept, TimeSpan.Zero);
 
             sender = Substitute.For<IRequestSender>();
-            sender.SendToReplicaAsync(null, null, TimeSpan.Zero, Arg.Any<CancellationToken>()).ReturnsForAnyArgs(_ => result);
+            sender.SendToReplicaAsync(null, null, parameters.ConnectionTimeout, TimeSpan.Zero, Arg.Any<CancellationToken>()).ReturnsForAnyArgs(_ => result);
 
             strategy = new SingleReplicaRequestStrategy();
         }
@@ -45,15 +47,15 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
         {
             var token = new CancellationTokenSource().Token;
 
-            strategy.SendAsync(request, sender, budget, replicas, replicas.Length, token).Wait();
+            strategy.SendAsync(request, parameters, sender, budget, replicas, replicas.Length, token).Wait();
 
-            sender.Received().SendToReplicaAsync(replicas[0], request, budget.Remaining, token);
+            sender.Received().SendToReplicaAsync(replicas[0], request, parameters.ConnectionTimeout, budget.Remaining, token);
         }
 
         [Test]
         public void Should_stop_on_first_result_if_its_response_is_accepted()
         {
-            strategy.SendAsync(request, sender, budget, replicas, replicas.Length, CancellationToken.None).Wait();
+            strategy.SendAsync(request, parameters, sender, budget, replicas, replicas.Length, CancellationToken.None).Wait();
 
             sender.ReceivedCalls().Should().HaveCount(1);
         }
@@ -63,7 +65,7 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
         {
             result = new ReplicaResult(result.Replica, result.Response, ResponseVerdict.Reject, TimeSpan.Zero);
 
-            strategy.SendAsync(request, sender, budget, replicas, replicas.Length, CancellationToken.None).Wait();
+            strategy.SendAsync(request, parameters, sender, budget, replicas, replicas.Length, CancellationToken.None).Wait();
 
             sender.ReceivedCalls().Should().HaveCount(1);
         }

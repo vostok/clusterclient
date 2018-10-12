@@ -45,9 +45,9 @@ namespace Vostok.Clusterclient.Core.Transport
             }
         }
 
-        public async Task<Response> SendAsync(Request request, TimeSpan timeout, CancellationToken cancellationToken)
+        public async Task<Response> SendAsync(Request request, TimeSpan? connectionTimeout, TimeSpan timeout, CancellationToken cancellationToken)
         {
-            var response = await transport.SendAsync(request, timeout, cancellationToken).ConfigureAwait(false);
+            var response = await transport.SendAsync(request, connectionTimeout, timeout, cancellationToken).ConfigureAwait(false);
 
             lock (syncObject)
             {

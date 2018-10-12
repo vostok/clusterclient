@@ -10,7 +10,7 @@ namespace Vostok.Clusterclient.Core.Sending
     internal interface IRequestSenderInternal
     {
         /// <summary>
-        /// <para>Sends given <paramref name="request"/> to given <paramref name="replica"/> using given <paramref name="transport"/> with provided <paramref name="timeout"/> and <paramref name="cancellationToken"/>.</para>
+        /// <para>Sends given <paramref name="request"/> to given <paramref name="replica"/> using given <paramref name="transport"/> with provided <paramref name="connectionTimeout"/>, <paramref name="timeout"/> and <paramref name="cancellationToken"/>.</para>
         /// <para>Returns a <see cref="ReplicaResult"/> with computed <see cref="ResponseVerdict"/> and response time.</para>
         /// </summary>
         [ItemNotNull]
@@ -18,6 +18,7 @@ namespace Vostok.Clusterclient.Core.Sending
             [NotNull] ITransport transport,
             [NotNull] Uri replica,
             [NotNull] Request request,
+            TimeSpan? connectionTimeout,
             TimeSpan timeout,
             CancellationToken cancellationToken);
     }

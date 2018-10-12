@@ -41,7 +41,7 @@ namespace Vostok.Clusterclient.Core.Strategies
         public int ParallelismLevel { get; }
 
         /// <inheritdoc />
-        public async Task SendAsync(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken)
+        public async Task SendAsync(Request request, RequestParameters parameters, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken)
         {
             var initialRequestCount = Math.Min(ParallelismLevel, replicasCount);
             var currentTasks = new List<Task<ReplicaResult>>(initialRequestCount);
@@ -58,7 +58,7 @@ namespace Vostok.Clusterclient.Core.Strategies
                         if (!replicasEnumerator.MoveNext())
                             throw new InvalidOperationException("Replicas enumerator ended prematurely. This is definitely a bug in code.");
 
-                        currentTasks.Add(sender.SendToReplicaAsync(replicasEnumerator.Current, request, budget.Remaining, linkedCancellationToken));
+                        currentTasks.Add(sender.SendToReplicaAsync(replicasEnumerator.Current, request, parameters.ConnectionTimeout, budget.Remaining, linkedCancellationToken));
                     }
 
                     while (currentTasks.Count > 0)
@@ -76,7 +76,7 @@ namespace Vostok.Clusterclient.Core.Strategies
 
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        TryLaunchNextRequest(request, sender, budget, replicasEnumerator, currentTasks, linkedCancellationToken);
+                        TryLaunchNextRequest(request, sender, budget, replicasEnumerator, currentTasks, parameters.ConnectionTimeout, linkedCancellationToken);
                     }
                 }
             }
@@ -85,7 +85,7 @@ namespace Vostok.Clusterclient.Core.Strategies
         /// <inheritdoc />
         public override string ToString() => "Parallel-" + ParallelismLevel;
 
-        private static void TryLaunchNextRequest(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerator<Uri> replicas, List<Task<ReplicaResult>> currentTasks, CancellationToken cancellationToken)
+        private static void TryLaunchNextRequest(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerator<Uri> replicas, List<Task<ReplicaResult>> currentTasks, TimeSpan? connectionTimeout, CancellationToken cancellationToken)
         {
             if (budget.HasExpired)
                 return;
@@ -94,7 +94,7 @@ namespace Vostok.Clusterclient.Core.Strategies
                 return;
 
             if (replicas.MoveNext())
-                currentTasks.Add(sender.SendToReplicaAsync(replicas.Current, request, budget.Remaining, cancellationToken));
+                currentTasks.Add(sender.SendToReplicaAsync(replicas.Current, request, connectionTimeout, budget.Remaining, cancellationToken));
         }
     }
 }

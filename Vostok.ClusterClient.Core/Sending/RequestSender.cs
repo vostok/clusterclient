@@ -31,7 +31,7 @@ namespace Vostok.Clusterclient.Core.Sending
             this.requestConverter = requestConverter;
         }
 
-        public async Task<ReplicaResult> SendToReplicaAsync(ITransport transport, Uri replica, Request request, TimeSpan timeout, CancellationToken cancellationToken)
+        public async Task<ReplicaResult> SendToReplicaAsync(ITransport transport, Uri replica, Request request, TimeSpan? connectionTimeout, TimeSpan timeout, CancellationToken cancellationToken)
         {
             if (configuration.Logging.LogReplicaRequests)
                 LogRequest(replica, timeout);
@@ -40,7 +40,7 @@ namespace Vostok.Clusterclient.Core.Sending
 
             var absoluteRequest = requestConverter.TryConvertToAbsolute(request, replica);
 
-            var response = await SendRequestAsync(transport, absoluteRequest, timeout, cancellationToken).ConfigureAwait(false);
+            var response = await SendRequestAsync(transport, absoluteRequest, connectionTimeout, timeout, cancellationToken).ConfigureAwait(false);
 
             var responseVerdict = responseClassifier.Decide(response, configuration.ResponseCriteria);
 
@@ -54,14 +54,14 @@ namespace Vostok.Clusterclient.Core.Sending
             return result;
         }
 
-        private async Task<Response> SendRequestAsync(ITransport transport, [CanBeNull] Request request, TimeSpan timeout, CancellationToken cancellationToken)
+        private async Task<Response> SendRequestAsync(ITransport transport, [CanBeNull] Request request, TimeSpan? connectionTimeout, TimeSpan timeout, CancellationToken cancellationToken)
         {
             if (request == null)
                 return Responses.Unknown;
 
             try
             {
-                var response = await transport.SendAsync(request, timeout, cancellationToken).ConfigureAwait(false);
+                var response = await transport.SendAsync(request, connectionTimeout, timeout, cancellationToken).ConfigureAwait(false);
                 if (response.Code == ResponseCode.Canceled)
                     throw new OperationCanceledException();
 

@@ -89,9 +89,9 @@ namespace Vostok.Clusterclient.Core.Tests.Transport
 
         private Response Send(Response response)
         {
-            baseTransport.SendAsync(null, TimeSpan.Zero, CancellationToken.None).ReturnsForAnyArgs(response);
+            baseTransport.SendAsync(null, TimeSpan.Zero, TimeSpan.Zero, CancellationToken.None).ReturnsForAnyArgs(response);
 
-            return leakTransport.SendAsync(Request.Get(""), TimeSpan.MaxValue, CancellationToken.None).GetAwaiter().GetResult();
+            return leakTransport.SendAsync(Request.Get(""), TimeSpan.Zero, TimeSpan.Zero, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         private void Complete(params Response[] responses)

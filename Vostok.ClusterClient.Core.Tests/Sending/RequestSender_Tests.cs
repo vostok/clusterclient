@@ -26,6 +26,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
         private Request absoluteRequest;
         private Response response;
         private TimeSpan timeout;
+        private TimeSpan? connectionTimeout;
 
         private IClusterClientConfiguration configuration;
         private IReplicaStorageProvider storageProvider;
@@ -67,7 +68,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
             requestConverter.TryConvertToAbsolute(relativeRequest, replica).Returns(_ => absoluteRequest);
 
             transport = Substitute.For<ITransport>();
-            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Returns(_ => response);
+            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Returns(_ => response);
 
             sender = new RequestSender(configuration, storageProvider, responseClassifier, requestConverter);
         }
@@ -87,7 +88,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
 
             Send(tokenSource.Token);
 
-            transport.Received(1).SendAsync(absoluteRequest, timeout, tokenSource.Token);
+            transport.Received(1).SendAsync(absoluteRequest, connectionTimeout, timeout, tokenSource.Token);
         }
 
         [Test]
@@ -111,7 +112,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
         [Test]
         public void Should_return_unknown_failure_response_when_transport_throws_an_exception()
         {
-            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Throws(new Exception("Fail!"));
+            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Throws(new Exception("Fail!"));
 
             Send().Response.Should().BeSameAs(Responses.UnknownFailure);
 
@@ -121,7 +122,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
         [Test]
         public void Should_not_catch_cancellation_exceptions()
         {
-            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Throws(new OperationCanceledException());
+            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Throws(new OperationCanceledException());
 
             Action action = () => Send();
 
@@ -131,7 +132,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
         [Test]
         public void Should_throw_a_cancellation_exception_when_transport_returns_canceled_response()
         {
-            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).ReturnsTask(Responses.Canceled);
+            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).ReturnsTask(Responses.Canceled);
 
             Action action = () => Send();
 
@@ -202,7 +203,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
         public void Should_return_stream_reuse_failure_code_upon_catching_according_exception()
         {
             transport
-                .SendAsync(null, TimeSpan.Zero, CancellationToken.None)
+                .SendAsync(null, null, TimeSpan.Zero, CancellationToken.None)
                 .ThrowsForAnyArgs(_ => new StreamAlreadyUsedException("No luck here!"));
 
             Send().Response.Code.Should().Be(ResponseCode.StreamReuseFailure);
@@ -210,7 +211,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
 
         private ReplicaResult Send(CancellationToken token = default)
         {
-            return sender.SendToReplicaAsync(transport, replica, relativeRequest, timeout, token).GetAwaiter().GetResult();
+            return sender.SendToReplicaAsync(transport, replica, relativeRequest, connectionTimeout, timeout, token).GetAwaiter().GetResult();
         }
     }
 }

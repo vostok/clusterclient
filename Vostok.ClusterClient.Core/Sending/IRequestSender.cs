@@ -14,10 +14,10 @@ namespace Vostok.Clusterclient.Core.Sending
     public interface IRequestSender
     {
         /// <summary>
-        /// <para>Sends given <paramref name="request"/> to given <paramref name="replica"/> with provided <paramref name="timeout"/> and <paramref name="cancellationToken"/>.</para>
+        /// <para>Sends given <paramref name="request"/> to given <paramref name="replica"/> with provided <paramref name="connectionTimeout"/>, <paramref name="timeout"/> and <paramref name="cancellationToken"/>.</para>
         /// <para>Returns a <see cref="ResponseVerdict"/> with computed <see cref="ReplicaResult"/> and response time.</para>
         /// </summary>
         [ItemNotNull]
-        Task<ReplicaResult> SendToReplicaAsync([NotNull] Uri replica, [NotNull] Request request, TimeSpan timeout, CancellationToken cancellationToken);
+        Task<ReplicaResult> SendToReplicaAsync([NotNull] Uri replica, [NotNull] Request request, TimeSpan? connectionTimeout, TimeSpan timeout, CancellationToken cancellationToken);
     }
 }

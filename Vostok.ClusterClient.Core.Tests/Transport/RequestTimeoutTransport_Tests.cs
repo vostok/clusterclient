@@ -31,11 +31,11 @@ namespace Vostok.Clusterclient.Core.Tests.Transport
 
             var passed = false;
 
-            baseTransport.WhenForAnyArgs(x => x.SendAsync(default, default, default))
+            baseTransport.WhenForAnyArgs(x => x.SendAsync(default, default, default, default))
                 .Do(
                     c => passed = c.Arg<Request>().Headers[HeaderNames.RequestTimeout] == expected);
 
-            timeoutTransport.SendAsync(request, timeout, default).GetAwaiter().GetResult();
+            timeoutTransport.SendAsync(request, default, timeout, default).GetAwaiter().GetResult();
 
             passed.Should().BeTrue();
         }

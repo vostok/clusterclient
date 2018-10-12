@@ -35,7 +35,7 @@ namespace Vostok.Clusterclient.Core.Strategies
         }
 
         /// <inheritdoc />
-        public async Task SendAsync(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken)
+        public async Task SendAsync(Request request, RequestParameters parameters, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken)
         {
             var currentReplicaIndex = 0;
 
@@ -48,8 +48,8 @@ namespace Vostok.Clusterclient.Core.Strategies
                     break;
 
                 var timeout = TimeSpanArithmetics.Min(timeoutsProvider.GetTimeout(request, budget, currentReplicaIndex++, replicasCount), budget.Remaining);
-
-                var result = await sender.SendToReplicaAsync(replica, request, timeout, cancellationToken).ConfigureAwait(false);
+                
+                var result = await sender.SendToReplicaAsync(replica, request, parameters.ConnectionTimeout, timeout, cancellationToken).ConfigureAwait(false);
                 if (result.Verdict == ResponseVerdict.Accept)
                     break;
 

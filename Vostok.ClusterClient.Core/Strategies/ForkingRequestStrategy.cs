@@ -58,7 +58,7 @@ namespace Vostok.Clusterclient.Core.Strategies
         }
 
         /// <inheritdoc />
-        public async Task SendAsync(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken)
+        public async Task SendAsync(Request request, RequestParameters parameters, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken)
         {
             var currentTasks = new List<Task>(Math.Min(maximumParallelism, replicasCount));
 
@@ -77,7 +77,7 @@ namespace Vostok.Clusterclient.Core.Strategies
                         if (request.ContainsAlreadyUsedStream())
                             break;
 
-                        LaunchRequest(currentTasks, request, budget, sender, replicasEnumerator, linkedCancellationToken);
+                        LaunchRequest(currentTasks, request, budget, sender, replicasEnumerator, parameters.ConnectionTimeout, linkedCancellationToken);
 
                         ScheduleForkIfNeeded(currentTasks, request, budget, i, replicasCount, linkedCancellationToken);
 
@@ -117,12 +117,12 @@ namespace Vostok.Clusterclient.Core.Strategies
             return result.Verdict == ResponseVerdict.Accept;
         }
 
-        private void LaunchRequest(List<Task> currentTasks, Request request, IRequestTimeBudget budget, IRequestSender sender, IEnumerator<Uri> replicasEnumerator, CancellationToken cancellationToken)
+        private void LaunchRequest(List<Task> currentTasks, Request request, IRequestTimeBudget budget, IRequestSender sender, IEnumerator<Uri> replicasEnumerator, TimeSpan? connectionTimeout, CancellationToken cancellationToken)
         {
             if (!replicasEnumerator.MoveNext())
                 throw new InvalidOperationException("Replicas enumerator ended prematurely. This is definitely a bug in code.");
 
-            currentTasks.Add(sender.SendToReplicaAsync(replicasEnumerator.Current, request, budget.Remaining, cancellationToken));
+            currentTasks.Add(sender.SendToReplicaAsync(replicasEnumerator.Current, request, connectionTimeout, budget.Remaining, cancellationToken));
         }
 
         private void ScheduleForkIfNeeded(List<Task> currentTasks, Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas, CancellationToken cancellationToken)

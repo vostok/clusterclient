@@ -26,6 +26,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         private IRequestContext context;
         private Request request;
         private Response response;
+        private RequestParameters parameters;
 
         private AbsoluteUrlSenderModule module;
 
@@ -35,15 +36,18 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             request = Request.Get("http://foo/bar");
             response = new Response(ResponseCode.Ok);
 
+            parameters = RequestParameters.Empty.WithConnectionTimeout(1.Seconds());
+            
             var budget = Budget.WithRemaining(5.Seconds());
 
             transport = Substitute.For<ITransport>();
-            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).ReturnsTask(_ => response);
+            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).ReturnsTask(_ => response);
 
             context = Substitute.For<IRequestContext>();
             context.Request.Returns(_ => request);
             context.Budget.Returns(_ => budget);
             context.Transport.Returns(_ => transport);
+            context.Parameters.Returns(_ => parameters);
 
             responseCriteria = new List<IResponseCriterion>();
             responseClassifier = Substitute.For<IResponseClassifier>();
@@ -72,7 +76,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         {
             Execute();
 
-            transport.Received().SendAsync(request, 5.Seconds(), context.CancellationToken);
+            transport.Received().SendAsync(request, 1.Seconds(), 5.Seconds(), context.CancellationToken);
         }
 
         [Test]
