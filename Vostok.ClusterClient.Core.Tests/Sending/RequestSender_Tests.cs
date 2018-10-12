@@ -71,6 +71,8 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
             transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Returns(_ => response);
 
             sender = new RequestSender(configuration, storageProvider, responseClassifier, requestConverter);
+
+            configuration.ConnectionAttempts.Returns(1);
         }
 
         [Test]
