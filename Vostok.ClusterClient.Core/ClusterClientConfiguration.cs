@@ -39,6 +39,7 @@ namespace Vostok.Clusterclient.Core
             MaxReplicasUsedPerRequest = ClusterClientDefaults.MaxReplicasUsedPerRequest;
             DeduplicateRequestUrl = ClusterClientDefaults.DeduplicateRequestUrl;
             ConnectionAttempts = ClusterClientDefaults.ConnectionAttempts;
+            DefaultConnectionTimeout = ClusterClientDefaults.ConnectionTimeout;
             ClientApplicationName = EnvironmentInfo.Application;
         }
 
