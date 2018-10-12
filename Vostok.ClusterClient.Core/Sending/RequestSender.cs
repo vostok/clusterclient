@@ -40,7 +40,7 @@ namespace Vostok.Clusterclient.Core.Sending
 
             var absoluteRequest = requestConverter.TryConvertToAbsolute(request, replica);
 
-            var response = await SendRequestAsync(transport, absoluteRequest, connectionTimeout, timeout, cancellationToken).ConfigureAwait(false);
+            var response = await SendRequestAsync(transport, absoluteRequest, configuration.ConnectionAttempts, connectionTimeout, timeout, cancellationToken).ConfigureAwait(false);
 
             var responseVerdict = responseClassifier.Decide(response, configuration.ResponseCriteria);
 
@@ -54,18 +54,26 @@ namespace Vostok.Clusterclient.Core.Sending
             return result;
         }
 
-        private async Task<Response> SendRequestAsync(ITransport transport, [CanBeNull] Request request, TimeSpan? connectionTimeout, TimeSpan timeout, CancellationToken cancellationToken)
+        private async Task<Response> SendRequestAsync(ITransport transport, [CanBeNull] Request request, int connectionAttempts, TimeSpan? connectionTimeout, TimeSpan timeout, CancellationToken cancellationToken)
         {
             if (request == null)
                 return Responses.Unknown;
 
             try
             {
-                var response = await transport.SendAsync(request, connectionTimeout, timeout, cancellationToken).ConfigureAwait(false);
-                if (response.Code == ResponseCode.Canceled)
-                    throw new OperationCanceledException();
+                for (var attempt = 1; attempt <= connectionAttempts; ++attempt)
+                {
+                    var response = await transport.SendAsync(request, connectionTimeout, timeout, cancellationToken).ConfigureAwait(false);
+                    
+                    if (response.Code == ResponseCode.Canceled)
+                        throw new OperationCanceledException();
 
-                return response;
+                    if (response.Code == ResponseCode.ConnectFailure)
+                        continue;
+
+                    return response;
+                }
+                return new Response(ResponseCode.ConnectFailure);
             }
             catch (OperationCanceledException)
             {

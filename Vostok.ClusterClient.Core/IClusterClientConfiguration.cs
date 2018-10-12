@@ -194,5 +194,11 @@ namespace Vostok.Clusterclient.Core
         /// <para>This parameter is optional and has a default value (see <see cref="ClusterClientDefaults.DeduplicateRequestUrl"/>).</para>
         /// </summary>
         bool DeduplicateRequestUrl { get; set; }
+        
+        /// <summary>
+        /// <para>Gets or sets a number of TCP connection establish attempts.</para>
+        /// <para>This parameter is optional and by default set to <see cref="ClusterClientDefaults.ConnectionAttempts"/>
+        /// </summary>
+        int ConnectionAttempts { get; set; }
     }
 }

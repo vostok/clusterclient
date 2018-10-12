@@ -38,6 +38,7 @@ namespace Vostok.Clusterclient.Core
             };
             MaxReplicasUsedPerRequest = ClusterClientDefaults.MaxReplicasUsedPerRequest;
             DeduplicateRequestUrl = ClusterClientDefaults.DeduplicateRequestUrl;
+            ConnectionAttempts = ClusterClientDefaults.ConnectionAttempts;
             ClientApplicationName = EnvironmentInfo.Application;
         }
 
@@ -90,6 +91,8 @@ namespace Vostok.Clusterclient.Core
         public string Environment { get; set; }
 
         public bool DeduplicateRequestUrl { get; set; }
+
+        public int ConnectionAttempts { get; set; }
 
         public bool IsValid => !Validate().Any();
 

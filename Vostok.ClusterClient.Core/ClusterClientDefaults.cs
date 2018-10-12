@@ -119,6 +119,11 @@ namespace Vostok.Clusterclient.Core
         public const int MaxReplicasUsedPerRequest = 3;
 
         /// <summary>
+        /// The default value of <see cref="IClusterClientConfiguration.ConnectionAttempts"/>.
+        /// </summary>
+        public const int ConnectionAttempts = 2;
+
+        /// <summary>
         /// The default value of <see cref="IClusterClientConfiguration.ReplicaStorageScope"/>.
         /// </summary>
         public static readonly ReplicaStorageScope ReplicaStorageScope = ReplicaStorageScope.Process;
