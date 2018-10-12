@@ -37,8 +37,6 @@ namespace Vostok.Clusterclient.Core.Modules
         {
             var counter = GetCounter();
 
-            counter.AddRequest();
-
             double ratio;
 
             var metrics = counter.GetMetrics();
@@ -51,6 +49,7 @@ namespace Vostok.Clusterclient.Core.Modules
 
             var result = await next(context).ConfigureAwait(false);
 
+            counter.AddRequest();
             counter.AddReplicas(result.ReplicaResults.Count);
 
             return result;
