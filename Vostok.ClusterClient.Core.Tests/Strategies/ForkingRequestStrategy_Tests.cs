@@ -203,6 +203,24 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
             sender.Received(1).SendToReplicaAsync(replicas[2], request, parameters.ConnectionTimeout, 5.Seconds(), Arg.Any<CancellationToken>());
         }
 
+        [Test]
+        public void Should_launch_requests_except_last_with_connection_timeout()
+        {
+            sender.ClearReceivedCalls();
+            
+            strategy = new ForkingRequestStrategy(delaysProvider, delaysPlanner, replicas.Length);
+            
+            strategy.SendAsync(request, parameters, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
+
+            for (var i = 0; i < replicas.Length; ++i)
+                CompleteForkingDelay();
+
+            for (var i = 0; i < replicas.Length - 1; ++i)
+                sender.Received(1).SendToReplicaAsync(replicas[i], request, parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+            
+            sender.Received(1).SendToReplicaAsync(replicas.Last(), request, null, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+        }
+
         [TestCase(0)]
         [TestCase(1)]
         [TestCase(2)]

@@ -77,7 +77,9 @@ namespace Vostok.Clusterclient.Core.Strategies
                         if (request.ContainsAlreadyUsedStream())
                             break;
 
-                        LaunchRequest(currentTasks, request, budget, sender, replicasEnumerator, parameters.ConnectionTimeout, linkedCancellationToken);
+                        var connectionAttemptTimeout = i == replicasCount - 1 ? null : parameters.ConnectionTimeout;
+
+                        LaunchRequest(currentTasks, request, budget, sender, replicasEnumerator, connectionAttemptTimeout, linkedCancellationToken);
 
                         ScheduleForkIfNeeded(currentTasks, request, budget, i, replicasCount, linkedCancellationToken);
 
@@ -92,8 +94,10 @@ namespace Vostok.Clusterclient.Core.Strategies
                 }
 
                 while (currentTasks.Count > 0)
+                {
                     if (budget.HasExpired || await WaitForAcceptedResultAsync(currentTasks).ConfigureAwait(false))
                         return;
+                }
             }
         }
 
