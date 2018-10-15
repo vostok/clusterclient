@@ -72,9 +72,9 @@ namespace Vostok.Clusterclient.Core.Sending
                     var connectionAttemptTimeout = connectionTimeout == null
                         ? (TimeSpan?) null
                         : timeBudget.TryAcquire(connectionTimeout.Value);
-                    
+
                     var response = await transport.SendAsync(request, connectionAttemptTimeout, timeBudget.Remaining, cancellationToken).ConfigureAwait(false);
-                    
+
                     if (response.Code == ResponseCode.Canceled)
                         throw new OperationCanceledException();
 
@@ -84,7 +84,7 @@ namespace Vostok.Clusterclient.Core.Sending
                     return response;
                 }
 
-                return new Response(ResponseCode.ConnectFailure);
+                return Responses.ConnectFailure;
             }
             catch (OperationCanceledException)
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using FluentAssertions;
 using FluentAssertions.Extensions;
@@ -90,7 +91,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
 
             Send(tokenSource.Token);
 
-            transport.Received(1).SendAsync(absoluteRequest, connectionTimeout, timeout, tokenSource.Token);
+            transport.Received(1).SendAsync(absoluteRequest, connectionTimeout, Arg.Any<TimeSpan>(), tokenSource.Token);
         }
 
         [Test]
@@ -209,6 +210,32 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
                 .ThrowsForAnyArgs(_ => new StreamAlreadyUsedException("No luck here!"));
 
             Send().Response.Code.Should().Be(ResponseCode.StreamReuseFailure);
+        }
+
+        [Test]
+        public void Should_retry_connection_timeout()
+        {
+            configuration.ConnectionAttempts.Returns(2);
+            
+            transport
+                .SendAsync(null, null, TimeSpan.Zero, CancellationToken.None)
+                .ReturnsForAnyArgs(new Response(ResponseCode.ConnectFailure), new Response(ResponseCode.Ok));
+
+            Send().Response.Code.Should().Be(ResponseCode.Ok);
+            transport.ReceivedWithAnyArgs(2).SendAsync(null, null, TimeSpan.Zero, CancellationToken.None);
+        }
+
+        [Test]
+        public void Should_respect_connection_attempts_setting()
+        {
+            configuration.ConnectionAttempts.Returns(1);
+
+            transport
+                .SendAsync(null, null, TimeSpan.Zero, CancellationToken.None)
+                .ReturnsForAnyArgs(Responses.ConnectFailure, Responses.Ok);
+
+            Send().Response.Code.Should().Be(ResponseCode.ConnectFailure);
+            transport.ReceivedWithAnyArgs(1).SendAsync(null, null, TimeSpan.Zero, CancellationToken.None);
         }
 
         private ReplicaResult Send(CancellationToken token = default)
