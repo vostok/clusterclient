@@ -96,7 +96,7 @@ namespace Vostok.Clusterclient.Core
                 criticalRatio,
                 maximumRejectProbability);
 
-            configuration.AddRequestModule(new AdaptiveThrottlingModule(options), typeof(AbsoluteUrlSenderModule), ModulePosition.Before);
+            configuration.AddRequestModule(new AdaptiveThrottlingModule(options), typeof(AbsoluteUrlSenderModule));
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Vostok.Clusterclient.Core
             double maximumRejectProbability = ClusterClientDefaults.AdaptiveThrottlingRejectProbabilityCap)
         {
             var options = new AdaptiveThrottlingOptions(GenerateStorageKey(configuration.Environment, configuration.ServiceName), minutesToTrack, minimumRequests, criticalRatio, maximumRejectProbability);
-            configuration.AddRequestModule(new AdaptiveThrottlingModule(options), typeof(AbsoluteUrlSenderModule), ModulePosition.Before);
+            configuration.AddRequestModule(new AdaptiveThrottlingModule(options), typeof(AbsoluteUrlSenderModule));
         }
 
         /// <summary>

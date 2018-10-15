@@ -79,7 +79,7 @@ namespace Vostok.Clusterclient.Core.Model
         [NotNull]
         public Headers Set([NotNull] string name, [NotNull] string value)
         {
-            var newHeaders = headers.Set(name, value, true);
+            var newHeaders = headers.Set(name, value);
 
             return ReferenceEquals(headers, newHeaders)
                 ? this
