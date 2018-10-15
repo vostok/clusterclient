@@ -49,7 +49,19 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
 
             strategy.SendAsync(request, parameters, sender, budget, replicas, replicas.Length, token).Wait();
 
-            sender.Received().SendToReplicaAsync(replicas[0], request, parameters.ConnectionTimeout, budget.Remaining, token);
+            sender.Received().SendToReplicaAsync(replicas[0], request, null, budget.Remaining, token);
+        }
+
+        [Test]
+        public void Should_ignore_connection_timeout()
+        {
+            parameters = parameters.WithConnectionTimeout(5.Seconds());
+            
+            var token = new CancellationTokenSource().Token;
+
+            strategy.SendAsync(request, parameters, sender, budget, replicas, replicas.Length, token).Wait();
+
+            sender.Received().SendToReplicaAsync(Arg.Any<Uri>(), Arg.Any<Request>(), null, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
         }
 
         [Test]
