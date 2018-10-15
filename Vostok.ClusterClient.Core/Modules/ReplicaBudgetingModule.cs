@@ -49,8 +49,7 @@ namespace Vostok.Clusterclient.Core.Modules
 
             var result = await next(context).ConfigureAwait(false);
 
-            counter.AddRequest();
-            counter.AddReplicas(result.ReplicaResults.Count);
+            counter.AddResult(result.ReplicaResults.Count);
 
             return result;
         }
@@ -109,9 +108,12 @@ namespace Vostok.Clusterclient.Core.Modules
                 return metrics;
             }
 
-            public void AddRequest() => Interlocked.Increment(ref ObtainBucket().Requests);
-
-            public void AddReplicas(int count) => Interlocked.Add(ref ObtainBucket().Replicas, count);
+            public void AddResult(int replicasCount)
+            {
+                var bucket = ObtainBucket();
+                Interlocked.Increment(ref bucket.Requests);
+                Interlocked.Add(ref bucket.Replicas, replicasCount);
+            }
 
             private static int GetCurrentMinute() =>
                 (int) Math.Floor(Watch.Elapsed.TotalMinutes);
