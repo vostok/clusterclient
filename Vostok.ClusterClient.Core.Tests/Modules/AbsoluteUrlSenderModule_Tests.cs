@@ -76,7 +76,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         {
             Execute();
 
-            transport.Received().SendAsync(request, 1.Seconds(), 5.Seconds(), context.CancellationToken);
+            transport.Received().SendAsync(request, Arg.Any<TimeSpan?>(), 5.Seconds(), context.CancellationToken);
         }
 
         [Test]
@@ -119,6 +119,17 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             replicaResult.Replica.Should().BeSameAs(request.Url);
             replicaResult.Response.Should().BeSameAs(response);
             replicaResult.Verdict.Should().Be(ResponseVerdict.Accept);
+        }
+
+        [Test]
+        public void Should_ignore_connection_timeout()
+        {
+            parameters = parameters.WithConnectionTimeout(1.Seconds());
+            
+            Execute();
+
+            transport.Received(1).SendAsync(Arg.Any<Request>(), null, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+
         }
 
         private ClusterResult Execute(ClusterResult result = null)
