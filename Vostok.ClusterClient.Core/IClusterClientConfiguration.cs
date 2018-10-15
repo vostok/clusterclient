@@ -196,7 +196,7 @@ namespace Vostok.Clusterclient.Core
 
         /// <summary>
         /// <para>Gets or sets a number of TCP connection establish attempts.</para>
-        /// <para>This parameter is optional and by default set to <see cref="ClusterClientDefaults.ConnectionAttempts"/>
+        /// <para>This parameter is optional and by default set to <see cref="ClusterClientDefaults.ConnectionAttempts"/></para>
         /// </summary>
         int ConnectionAttempts { get; set; }
     }
