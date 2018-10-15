@@ -94,9 +94,9 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
             Send(Budget.Infinite);
 
             sender.ReceivedCalls().Should().HaveCount(3);
-            sender.Received(1).SendToReplicaAsync(replica1, request, parameters.ConnectionTimeout, 1.Seconds(), token);
-            sender.Received(1).SendToReplicaAsync(replica2, request, parameters.ConnectionTimeout, 2.Seconds(), token);
-            sender.Received(1).SendToReplicaAsync(replica3, request, parameters.ConnectionTimeout, 3.Seconds(), token);
+            sender.Received(1).SendToReplicaAsync(replica1, request, Arg.Any<TimeSpan?>(), 1.Seconds(), token);
+            sender.Received(1).SendToReplicaAsync(replica2, request, Arg.Any<TimeSpan?>(), 2.Seconds(), token);
+            sender.Received(1).SendToReplicaAsync(replica3, request, Arg.Any<TimeSpan?>(), 3.Seconds(), token);
         }
 
         [Test]
@@ -105,9 +105,20 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
             Send(Budget.WithRemaining(1500.Milliseconds()));
 
             sender.ReceivedCalls().Should().HaveCount(3);
-            sender.Received(1).SendToReplicaAsync(replica1, request, parameters.ConnectionTimeout, 1.Seconds(), token);
-            sender.Received(1).SendToReplicaAsync(replica2, request, parameters.ConnectionTimeout, 1500.Milliseconds(), token);
-            sender.Received(1).SendToReplicaAsync(replica3, request, parameters.ConnectionTimeout, 1500.Milliseconds(), token);
+            sender.Received(1).SendToReplicaAsync(replica1, request, Arg.Any<TimeSpan?>(), 1.Seconds(), token);
+            sender.Received(1).SendToReplicaAsync(replica2, request, Arg.Any<TimeSpan?>(), 1500.Milliseconds(), token);
+            sender.Received(1).SendToReplicaAsync(replica3, request, Arg.Any<TimeSpan?>(), 1500.Milliseconds(), token);
+        }
+
+        [Test]
+        public void Should_not_use_connection_timeout_for_last_attempt()
+        {
+            Send(Budget.WithRemaining(1500.Milliseconds()));
+
+            sender.ReceivedCalls().Should().HaveCount(3);
+            sender.Received(1).SendToReplicaAsync(replica1, request, parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), token);
+            sender.Received(1).SendToReplicaAsync(replica2, request, parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), token);
+            sender.Received(1).SendToReplicaAsync(replica3, request, null, Arg.Any<TimeSpan>(), token);
         }
 
         [Test]
@@ -118,9 +129,9 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
             Send(Budget.Infinite);
 
             sender.ReceivedCalls().Should().HaveCount(2);
-            sender.Received(1).SendToReplicaAsync(replica1, request, parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), token);
-            sender.Received(1).SendToReplicaAsync(replica2, request, parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), token);
-            sender.DidNotReceive().SendToReplicaAsync(replica3, request, parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), token);
+            sender.Received(1).SendToReplicaAsync(replica1, request, Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), token);
+            sender.Received(1).SendToReplicaAsync(replica2, request, Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), token);
+            sender.DidNotReceive().SendToReplicaAsync(replica3, request, Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), token);
         }
 
         private void SetupResult(Uri replica, ResponseVerdict verdict)
