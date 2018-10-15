@@ -75,9 +75,9 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
         {
             strategy.SendAsync(request, parameters, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
 
-            sender.Received(1).SendToReplicaAsync(replicas[0], request, parameters.ConnectionTimeout, 5.Seconds(), Arg.Any<CancellationToken>());
-            sender.Received(1).SendToReplicaAsync(replicas[1], request, parameters.ConnectionTimeout, 5.Seconds(), Arg.Any<CancellationToken>());
-            sender.Received(1).SendToReplicaAsync(replicas[2], request, parameters.ConnectionTimeout, 5.Seconds(), Arg.Any<CancellationToken>());
+            sender.Received(1).SendToReplicaAsync(replicas[0], request, Arg.Any<TimeSpan?>(), 5.Seconds(), Arg.Any<CancellationToken>());
+            sender.Received(1).SendToReplicaAsync(replicas[1], request, Arg.Any<TimeSpan?>(), 5.Seconds(), Arg.Any<CancellationToken>());
+            sender.Received(1).SendToReplicaAsync(replicas[2], request, Arg.Any<TimeSpan?>(), 5.Seconds(), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -139,7 +139,24 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
 
             foreach (var replica in replicas)
             {
-                sender.Received(1).SendToReplicaAsync(replica, request, parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+                sender.Received(1).SendToReplicaAsync(replica, request, Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+            }
+        }
+
+        [Test]
+        public void Should_ignore_connection_timeout()
+        {
+            strategy = new ParallelRequestStrategy(int.MaxValue);
+
+            parameters = parameters.WithConnectionTimeout(5.Seconds());
+
+            strategy.SendAsync(request, parameters, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
+
+            sender.ReceivedCalls().Should().HaveCount(replicas.Length);
+
+            foreach (var replica in replicas)
+            {
+                sender.Received(1).SendToReplicaAsync(replica, Arg.Any<Request>(), null, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
             }
         }
 

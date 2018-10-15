@@ -58,7 +58,7 @@ namespace Vostok.Clusterclient.Core.Strategies
                         if (!replicasEnumerator.MoveNext())
                             throw new InvalidOperationException("Replicas enumerator ended prematurely. This is definitely a bug in code.");
 
-                        currentTasks.Add(sender.SendToReplicaAsync(replicasEnumerator.Current, request, parameters.ConnectionTimeout, budget.Remaining, linkedCancellationToken));
+                        currentTasks.Add(sender.SendToReplicaAsync(replicasEnumerator.Current, request, null, budget.Remaining, linkedCancellationToken));
                     }
 
                     while (currentTasks.Count > 0)
