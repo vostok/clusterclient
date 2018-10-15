@@ -13,7 +13,7 @@ namespace Vostok.Clusterclient.Core.Misc
         /// Indicates that <see cref="IRequestModule"/> should be placed before some other request module.
         /// </summary>
         Before,
-        
+
         /// <summary>
         /// Indicates that <see cref="IRequestModule"/> should be placed after some other request module.
         /// </summary>

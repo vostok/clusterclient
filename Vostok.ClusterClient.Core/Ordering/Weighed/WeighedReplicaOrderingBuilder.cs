@@ -34,7 +34,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed
         public double InitialWeight { get; set; }
 
         public string ServiceName { get; set; }
-        
+
         public string Environment { get; set; }
 
         public WeighedReplicaOrdering Build() =>

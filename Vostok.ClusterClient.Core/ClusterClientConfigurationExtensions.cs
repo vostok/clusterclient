@@ -116,7 +116,6 @@ namespace Vostok.Clusterclient.Core
         {
             var options = new AdaptiveThrottlingOptions(GenerateStorageKey(configuration.Environment, configuration.ServiceName), minutesToTrack, minimumRequests, criticalRatio, maximumRejectProbability);
             configuration.AddRequestModule(new AdaptiveThrottlingModule(options), typeof(AbsoluteUrlSenderModule), ModulePosition.Before);
-
         }
 
         /// <summary>
@@ -209,7 +208,7 @@ namespace Vostok.Clusterclient.Core
 
             if (!configuration.Modules.TryGetValue(type, out var modules))
                 configuration.Modules[type] = modules = new RelatedModules();
-            
+
             return modules;
         }
 

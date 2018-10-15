@@ -21,11 +21,6 @@ namespace Vostok.Clusterclient.Core
     public static class ClusterClientDefaults
     {
         /// <summary>
-        /// The default duration of full health damage decay. See <see cref="AdaptiveHealthWithLinearDecay"/> for details.
-        /// </summary>
-        public static readonly TimeSpan AdaptiveHealthDamageDecayDuration = TimeSpan.FromMinutes(10);
-
-        /// <summary>
         /// The default initial replica weight used by <see cref="WeighedReplicaOrdering"/>.
         /// </summary>
         public const double InitialReplicaWeight = 1.0;
@@ -122,6 +117,10 @@ namespace Vostok.Clusterclient.Core
         /// The default value of <see cref="IClusterClientConfiguration.ConnectionAttempts"/>.
         /// </summary>
         public const int ConnectionAttempts = 2;
+        /// <summary>
+        /// The default duration of full health damage decay. See <see cref="AdaptiveHealthWithLinearDecay"/> for details.
+        /// </summary>
+        public static readonly TimeSpan AdaptiveHealthDamageDecayDuration = TimeSpan.FromMinutes(10);
 
         /// <summary>
         /// The default value of <see cref="IClusterClientConfiguration.ReplicaStorageScope"/>.
@@ -152,7 +151,7 @@ namespace Vostok.Clusterclient.Core
         /// The default value of <see cref="IClusterClientConfiguration.DefaultTimeout"/>.
         /// </summary>
         public static readonly TimeSpan Timeout = TimeSpan.FromSeconds(30);
-        
+
         /// <summary>
         /// The default value of <see cref="IClusterClientConfiguration.DefaultConnectionTimeout"/>
         /// </summary>

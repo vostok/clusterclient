@@ -8,17 +8,6 @@ namespace Vostok.Clusterclient.Core.Modules
 {
     internal class HttpMethodValidationModule : IRequestModule
     {
-        public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
-        {
-            var method = context.Request.Method;
-
-            if (All.Contains(method))
-                return next(context);
-
-            context.Log.Error($"Request HTTP method '{method}' is not valid.");
-            return Task.FromResult(ClusterResult.IncorrectArguments(context.Request));
-        }
-
         /// <summary>
         /// <para>A set of valid HTTP request methods.</para>
         /// <para>Includes GET, POST, PUT, HEAD, PATCH, DELETE, OPTIONS and TRACE methods.</para>
@@ -34,5 +23,16 @@ namespace Vostok.Clusterclient.Core.Modules
             RequestMethods.Options,
             RequestMethods.Trace
         };
+
+        public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
+        {
+            var method = context.Request.Method;
+
+            if (All.Contains(method))
+                return next(context);
+
+            context.Log.Error($"Request HTTP method '{method}' is not valid.");
+            return Task.FromResult(ClusterResult.IncorrectArguments(context.Request));
+        }
     }
 }

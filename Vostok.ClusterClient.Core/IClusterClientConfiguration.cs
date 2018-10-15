@@ -147,7 +147,7 @@ namespace Vostok.Clusterclient.Core
         /// <para>This parameter is optional and has default value <see cref="ClusterClientDefaults.ConnectionTimeout"/></para>
         /// </summary>
         TimeSpan DefaultConnectionTimeout { get; set; }
-        
+
         /// <summary>
         /// <para>Gets or sets a default request priority used for <see cref="ClusterClient"/> method overloads without priority parameter.</para>
         /// <para>This parameter is optional and has a <c>null</c> default value.</para>
@@ -194,7 +194,7 @@ namespace Vostok.Clusterclient.Core
         /// <para>This parameter is optional and has a default value (see <see cref="ClusterClientDefaults.DeduplicateRequestUrl"/>).</para>
         /// </summary>
         bool DeduplicateRequestUrl { get; set; }
-        
+
         /// <summary>
         /// <para>Gets or sets a number of TCP connection establish attempts.</para>
         /// <para>This parameter is optional and by default set to <see cref="ClusterClientDefaults.ConnectionAttempts"/>

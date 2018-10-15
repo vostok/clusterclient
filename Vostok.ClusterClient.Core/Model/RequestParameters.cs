@@ -62,12 +62,10 @@ namespace Vostok.Clusterclient.Core.Model
         /// </summary>
         [NotNull]
         public IReadOnlyDictionary<string, object> Properties => properties;
-        
-        internal TimeSpan? ConnectionTimeout { get; }
 
         /// <returns>New instance of <see cref="RequestParameters"/> with specified <paramref name="strategy"/>.</returns>
         public RequestParameters WithStrategy([CanBeNull] IRequestStrategy strategy)
-            => ReferenceEquals(Strategy, strategy) 
+            => ReferenceEquals(Strategy, strategy)
                 ? this
                 : new RequestParameters(strategy, Priority, properties, ConnectionTimeout);
 
@@ -85,6 +83,8 @@ namespace Vostok.Clusterclient.Core.Model
                 ? this
                 : new RequestParameters(Strategy, Priority, newProperties, ConnectionTimeout);
         }
+
+        internal TimeSpan? ConnectionTimeout { get; }
 
         /// <returns>New instance of <see cref="RequestParameters"/> with specified <paramref name="connectionTimeout"/>.</returns>
         internal RequestParameters WithConnectionTimeout(TimeSpan? connectionTimeout)

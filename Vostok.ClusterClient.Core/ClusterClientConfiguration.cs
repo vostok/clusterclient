@@ -60,7 +60,7 @@ namespace Vostok.Clusterclient.Core
         public List<IResponseTransform> ResponseTransforms { get; set; }
 
         public List<IResponseCriterion> ResponseCriteria { get; set; }
-        
+
         public Dictionary<Type, RelatedModules> Modules { get; set; }
 
         public IRetryPolicy RetryPolicy { get; set; }
@@ -72,7 +72,7 @@ namespace Vostok.Clusterclient.Core
         public IRequestStrategy DefaultRequestStrategy { get; set; }
 
         public TimeSpan DefaultTimeout { get; set; }
-        
+
         public TimeSpan DefaultConnectionTimeout { get; set; }
 
         public RequestPriority? DefaultPriority { get; set; }

@@ -15,11 +15,13 @@ namespace Vostok.Clusterclient.Core.Misc
         /// A <see cref="IRequestModule"/>'s that will be inserted into request module chain before some other module.
         /// </summary>
         public List<IRequestModule> Before { get; } = new List<IRequestModule>();
-        
+
         /// <summary>
         /// A <see cref="IRequestModule"/>'s that will be inserted into request module chain after some other module.
         /// </summary>
         public List<IRequestModule> After { get; } = new List<IRequestModule>();
+
+        internal int Count => Before.Count + After.Count;
 
         internal List<IRequestModule> this[ModulePosition position]
         {
@@ -36,7 +38,5 @@ namespace Vostok.Clusterclient.Core.Misc
                 }
             }
         }
-
-        internal int Count => Before.Count + After.Count;
     }
 }

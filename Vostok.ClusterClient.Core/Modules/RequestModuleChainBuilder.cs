@@ -21,7 +21,7 @@ namespace Vostok.Clusterclient.Core.Modules
 
             // ReSharper disable once UseObjectOrCollectionInitializer
             var modules = new List<IRequestModule>(12 + config.Modules?.Sum(x => x.Value.Count) ?? 0);
-            
+
             var addedModules = new HashSet<Type>();
 
             AddModule(new LeakPreventionModule());
@@ -35,16 +35,16 @@ namespace Vostok.Clusterclient.Core.Modules
             AddModule(new ResponseTransformationModule(config.ResponseTransforms));
             AddModule(new ErrorCatchingModule());
             AddModule(new RequestValidationModule());
-        
+
             AddModule(new TimeoutValidationModule());
             AddModule(new RequestRetryModule(config.RetryPolicy, config.RetryStrategy));
 
             // -->> adaptive throttling module <<-- //
 
             AddModule(new AbsoluteUrlSenderModule(responseClassifier, config.ResponseCriteria, resultStatusSelector));
-            
+
             // -->> replica budgeting module <<-- //
-            
+
             AddModule(
                 new RequestExecutionModule(
                     config.ClusterProvider,
@@ -60,11 +60,11 @@ namespace Vostok.Clusterclient.Core.Modules
             {
                 if (modulesRange == null)
                     return;
-                
+
                 foreach (var module in modulesRange)
                     AddModule(module);
             }
-            
+
             void AddModule(IRequestModule module)
             {
                 var moduleType = module.GetType();
@@ -76,9 +76,9 @@ namespace Vostok.Clusterclient.Core.Modules
                     modules.Add(module);
                     return;
                 }
-                
+
                 var relatedModules = config.Modules.TryGetValue(moduleType, out var v) ? v : null;
-                
+
                 AddModules(relatedModules?.Before);
                 modules.Add(module);
                 AddModules(relatedModules?.After);
