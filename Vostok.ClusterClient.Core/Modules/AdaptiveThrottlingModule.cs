@@ -107,7 +107,7 @@ namespace Vostok.Clusterclient.Core.Modules
         #region Logging
 
         private void LogThrottledRequest(IRequestContext context, double ratio, double rejectionProbability) =>
-            context.Log.Warn($"Throttled request without sending it. Request/accept ratio = {ratio:F3}. Rejection probability = {rejectionProbability:F3}");
+            context.Log.Warn("Throttled request without sending it. Request/accept ratio = {RequestAcceptsRatio:F3}. Rejection probability = {RejectionProbability:F3}", ratio, rejectionProbability);
 
         #endregion
 

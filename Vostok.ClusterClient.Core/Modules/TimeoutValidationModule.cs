@@ -28,10 +28,10 @@ namespace Vostok.Clusterclient.Core.Modules
         #region Logging
 
         private void LogNegativeTimeout(IRequestContext context) =>
-            context.Log.Error($"Request timeout has incorrect negative value: '{context.Budget.Total}'.");
+            context.Log.Error("Request timeout has incorrect negative value: '{Timeout}'.", context.Budget.Total);
 
         private void LogExpiredTimeout(IRequestContext context) =>
-            context.Log.Error($"Request timeout expired prematurely or just was too small. Total budget = '{context.Budget.Total.ToPrettyString()}'.");
+            context.Log.Error("Request timeout expired prematurely or just was too small. Total budget = '{Timeout}'.", context.Budget.Total.ToPrettyString());
 
         #endregion
     }

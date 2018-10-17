@@ -175,16 +175,16 @@ namespace Vostok.Clusterclient.Core.Sending
         #region Logging 
 
         private void LogReplicaUrlNotAbsolute(Uri replica) =>
-            log.Error($"Given replica url is not absolute: '{replica}'. Absolute url is expected here.");
+            log.Error("Given replica url is not absolute: '{Replica}'. Absolute url is expected here.", replica);
 
         private void LogReplicaUrlContainsQuery(Uri replica) =>
-            log.Error($"Replica url contains query parameters: '{replica}'. No query parameters are allowed for replicas.");
+            log.Error("Replica url contains query parameters: '{Replica}'. No query parameters are allowed for replicas.", replica);
 
         private void LogRequestHasAbsoluteUrl(Uri requestUrl) =>
-            log.Error($"Request contains absolute url: '{requestUrl}'. Relative url is expected instead.");
+            log.Error("Request contains absolute url: '{RequestUrl}'. Relative url is expected instead.", requestUrl);
 
         private void LogUrlConversionException(Uri replica, Uri requestUrl, Exception error) =>
-            log.Error(error, $"Failed to merge replica url '{replica}' and request url '{requestUrl}'.");
+            log.Error(error, "Failed to merge replica url '{Replica}' and request url '{RequestUrl}'.", replica, requestUrl);
 
         #endregion
     }

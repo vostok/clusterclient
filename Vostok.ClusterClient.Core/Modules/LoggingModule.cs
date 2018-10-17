@@ -40,19 +40,31 @@ namespace Vostok.Clusterclient.Core.Modules
         #region Logging
 
         private static void LogRequestDetails(IRequestContext context) =>
-            context.Log.Info($"Sending request '{context.Request.ToString(false, false)}'. Timeout = {context.Budget.Total.ToPrettyString()}. Strategy = '{context.Parameters.Strategy}'.");
+            context.Log.Info("Sending request '{Request}'. Timeout = {Timeout}. Strategy = '{Strategy}'.",
+                context.Request.ToString(false, false), context.Budget.Total.ToPrettyString(), context.Parameters.Strategy?.ToString());
 
         private static void LogSuccessfulResult(IRequestContext context, ClusterResult result) =>
-            context.Log.Info($"Success. Response code = {(int) result.Response.Code} ('{result.Response.Code}'). Time = {context.Budget.Elapsed.ToPrettyString()}.");
+            context.Log.Info(
+                "Success. Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.",
+                new
+                {
+                    ResponseCode = result.Response.Code,
+                    ElapsedTime = context.Budget.Elapsed.ToPrettyString()
+                });
 
         private static void LogFailedResult(IRequestContext context, ClusterResult result)
         {
-            var message = $"Failed with status '{result.Status}'. Response code = {(int) result.Response.Code} ('{result.Response.Code}'). Time = {context.Budget.Elapsed.ToPrettyString()}.";
+            var message = "Failed with status '{Status}'. Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.";
+            var properties = new
+            {
+                result.Status,
+                ResponseCode = result.Response.Code,
+            };
 
             if (result.Status == ClusterResultStatus.Canceled)
-                context.Log.Warn(message);
+                context.Log.Warn(message, properties);
             else
-                context.Log.Error(message);
+                context.Log.Error(message, properties);
         }
 
         #endregion

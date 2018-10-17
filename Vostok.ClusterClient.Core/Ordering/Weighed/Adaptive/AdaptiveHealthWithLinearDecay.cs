@@ -131,6 +131,6 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive
 
         /// <inheritdoc />
         public void LogHealthChange(Uri replica, HealthWithDecay oldHealth, HealthWithDecay newHealth, ILog log) =>
-            log.Debug($"Local base health for replica '{replica}' has changed from {oldHealth.Value:N4} to {newHealth.Value:N4}.");
+            log.Debug("Local base health for replica '{Replica}' has changed from {OldHealth:N4} to {NewHealth:N4}.", replica, oldHealth.Value, newHealth.Value);
     }
 }

@@ -70,9 +70,9 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Leadership
             (hadStoredStatus = storage.TryGetValue(replica, out var isLeader)) && isLeader;
 
         private void LogLeaderDetected(Uri resultReplica) =>
-            log.Info($"Replica '{resultReplica}' is leader now.");
+            log.Info("Replica '{ResultReplica}' is leader now.", resultReplica);
 
         private void LogLeaderFailed(Uri resultReplica) =>
-            log.Warn($"Replica '{resultReplica}' is no longer considered a leader.");
+            log.Warn("Replica '{ResultReplica}' is no longer considered a leader.", resultReplica);
     }
 }

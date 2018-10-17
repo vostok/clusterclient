@@ -81,9 +81,9 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Gray
         }
 
         private void LogReplicaIsGrayNow(Uri replica) =>
-            log.Warn($"Replica '{replica}' is now gray.");
+            log.Warn("Replica '{Replica}' is now gray.", replica);
 
         private void LogReplicaIsNoLongerGray(Uri replica) =>
-            log.Info($"Replica '{replica}' is no longer gray.");
+            log.Info("Replica '{Replica}' is no longer gray.", replica);
     }
 }

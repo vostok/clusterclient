@@ -104,10 +104,16 @@ namespace Vostok.Clusterclient.Core.Sending
         #region Logging
 
         private void LogRequest(Uri replica, TimeSpan timeout) =>
-            configuration.Log.Info($"Sending request to replica '{replica}' with timeout {timeout.ToPrettyString()}.");
+            configuration.Log.Info("Sending request to replica '{Replica}' with timeout {Timeout}.", replica, timeout.ToPrettyString());
 
         private void LogResult(ReplicaResult result) =>
-            configuration.Log.Info($"Result: replica = '{result.Replica}'; code = {(int) result.Response.Code} ('{result.Response.Code}'); verdict = {result.Verdict}; time = {result.Time.ToPrettyString()}.");
+            configuration.Log.Info("Result: replica = '{Replica}'; code = {ResponseCode:D} ('{ResponseCode}'); verdict = {Verdict}; time = {ElapsedTime}.", new
+            {
+                Replica = result.Replica,
+                ResponseCode = result.Response.Code,
+                Verdict = result.Verdict,
+                ElapsedTime = result.Time.ToPrettyString()
+            });
 
         private void LogStreamReuseFailure() =>
             configuration.Log.Warn("Detected an attempt to use request body stream more than once, which is not allowed.");

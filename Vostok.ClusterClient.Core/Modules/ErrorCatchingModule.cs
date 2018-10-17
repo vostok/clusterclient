@@ -19,7 +19,7 @@ namespace Vostok.Clusterclient.Core.Modules
             }
             catch (Exception error)
             {
-                context.Log.Error(error, "Unexpected failure during request execution.", error);
+                context.Log.Error(error, "Unexpected failure during request execution.");
                 return ClusterResult.UnexpectedException(context.Request);
             }
         }

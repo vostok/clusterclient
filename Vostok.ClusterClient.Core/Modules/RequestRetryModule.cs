@@ -46,7 +46,7 @@ namespace Vostok.Clusterclient.Core.Modules
                 if (retryDelay >= context.Budget.Remaining)
                     return result;
 
-                context.Log.Info($"All replicas exhausted. Will retry after {retryDelay.ToPrettyString()}. Attempts used: {attemptsUsed}/{retryStrategy.AttemptsCount}.");
+                context.Log.Info("All replicas exhausted. Will retry after {RetryDelay}. Attempts used: {AttemptsUsed}/{AttemptsCount}.", retryDelay.ToPrettyString(), attemptsUsed, retryStrategy.AttemptsCount);
 
                 if (retryDelay > TimeSpan.Zero)
                     await Task.Delay(retryDelay, context.CancellationToken).ConfigureAwait(false);

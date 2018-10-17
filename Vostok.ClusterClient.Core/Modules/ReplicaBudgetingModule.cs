@@ -62,7 +62,7 @@ namespace Vostok.Clusterclient.Core.Modules
         #region Logging
 
         private void LogLimitingReplicasToUse(IRequestContext context, double ratio) =>
-            context.Log.Warn($"Limiting max used replicas for request to 1 due to current replicas/requests ratio = {ratio:F3}");
+            context.Log.Warn("Limiting max used replicas for request to 1 due to current replicas/requests ratio = {ReplicasRequestsRatio:F3}", ratio);
 
         #endregion
 
