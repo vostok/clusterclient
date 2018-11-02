@@ -68,9 +68,9 @@ namespace Vostok.Clusterclient.Core.Sending
             {
                 for (var attempt = 1; attempt <= connectionAttempts; ++attempt)
                 {
-                    var connectionAttemptTimeout = connectionTimeout == null
+                    var connectionAttemptTimeout = connectionTimeout == null || timeBudget.Remaining < connectionTimeout
                         ? (TimeSpan?) null
-                        : timeBudget.TryAcquire(connectionTimeout.Value);
+                        : connectionTimeout.Value;
 
                     var response = await transport.SendAsync(request, connectionAttemptTimeout, timeBudget.Remaining, cancellationToken).ConfigureAwait(false);
 

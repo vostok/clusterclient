@@ -46,6 +46,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
             absoluteRequest = Request.Get("http://replica/foo/bar");
             response = new Response(ResponseCode.Ok);
             timeout = 5.Seconds();
+            connectionTimeout = null;
 
             configuration = Substitute.For<IClusterClientConfiguration>();
             configuration.ResponseCriteria.Returns(new List<IResponseCriterion> {Substitute.For<IResponseCriterion>()});
@@ -92,6 +93,26 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
             Send(tokenSource.Token);
 
             transport.Received(1).SendAsync(absoluteRequest, connectionTimeout, Arg.Any<TimeSpan>(), tokenSource.Token);
+        }
+        
+        [Test]
+        public void Should_pass_connection_timeout()
+        {
+            connectionTimeout = 1.Seconds();
+            
+            Send();
+
+            transport.Received(1).SendAsync(absoluteRequest, connectionTimeout, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void Should_pass_null_connection_timeout_when_it_is_greater_than_full_timeout()
+        {
+            connectionTimeout = 10.Seconds();
+            
+            Send();
+
+            transport.Received(1).SendAsync(absoluteRequest, null, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
         }
 
         [Test]
