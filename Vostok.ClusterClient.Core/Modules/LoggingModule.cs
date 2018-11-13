@@ -1,38 +1,25 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Helpers;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Commons.Time;
 using Vostok.Logging.Abstractions;
-using Vostok.Logging.Context;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     internal class LoggingModule : IRequestModule
     {
         private static long currentOperationId;
 
-        private readonly bool addPrefix;
         private readonly bool logRequests;
         private readonly bool logResults;
 
-        public LoggingModule(bool addPrefix, bool logRequests, bool logResults)
+        public LoggingModule(bool logRequests, bool logResults)
         {
-            this.addPrefix = addPrefix;
             this.logRequests = logRequests;
             this.logResults = logResults;
         }
 
         public async Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
-        {
-            if (addPrefix)
-                using (new ContextualLogPrefix("CC-" + Interlocked.Increment(ref currentOperationId)))
-                    return await ExecuteInternalAsync(context, next).ConfigureAwait(false);
-
-            return await ExecuteInternalAsync(context, next).ConfigureAwait(false);
-        }
-
-        private async Task<ClusterResult> ExecuteInternalAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
             if (logRequests)
                 LogRequestDetails(context);
@@ -53,19 +40,31 @@ namespace Vostok.ClusterClient.Core.Modules
         #region Logging
 
         private static void LogRequestDetails(IRequestContext context) =>
-            context.Log.Info($"Sending request '{context.Request.ToString(false, false)}'. Timeout = {context.Budget.Total.ToPrettyString()}. Strategy = '{context.Strategy}'.");
+            context.Log.Info("Sending request '{Request}'. Timeout = {Timeout}. Strategy = '{Strategy}'.",
+                context.Request.ToString(false, false), context.Budget.Total.ToPrettyString(), context.Parameters.Strategy?.ToString());
 
         private static void LogSuccessfulResult(IRequestContext context, ClusterResult result) =>
-            context.Log.Info($"Success. Response code = {(int)result.Response.Code} ('{result.Response.Code}'). Time = {context.Budget.Elapsed.ToPrettyString()}.");
+            context.Log.Info(
+                "Success. Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.",
+                new
+                {
+                    ResponseCode = result.Response.Code,
+                    ElapsedTime = context.Budget.Elapsed.ToPrettyString()
+                });
 
         private static void LogFailedResult(IRequestContext context, ClusterResult result)
         {
-            var message = $"Failed with status '{result.Status}'. Response code = {(int)result.Response.Code} ('{result.Response.Code}'). Time = {context.Budget.Elapsed.ToPrettyString()}.";
+            var message = "Failed with status '{Status}'. Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.";
+            var properties = new
+            {
+                result.Status,
+                ResponseCode = result.Response.Code,
+            };
 
             if (result.Status == ClusterResultStatus.Canceled)
-                context.Log.Warn(message);
+                context.Log.Warn(message, properties);
             else
-                context.Log.Error(message);
+                context.Log.Error(message, properties);
         }
 
         #endregion

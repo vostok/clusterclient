@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Threading;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Strategies;
-using Vostok.ClusterClient.Core.Transport;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Transport;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     internal class RequestContext : IRequestContext
     {
@@ -14,20 +13,19 @@ namespace Vostok.ClusterClient.Core.Modules
 
         public RequestContext(
             Request request,
-            IRequestStrategy strategy,
+            RequestParameters parameters,
             IRequestTimeBudget budget,
             ILog log,
             ITransport transport,
-            CancellationToken cancellationToken,
-            RequestPriority? priority,
-            int maximumReplicasToUse)
+            int maximumReplicasToUse,
+            string clientApplicationName = null,
+            CancellationToken cancellationToken = default)
         {
             Request = request;
-            Strategy = strategy;
             Budget = budget;
             Log = log;
             Transport = transport;
-            Priority = priority;
+            Parameters = parameters;
             CancellationToken = cancellationToken;
             MaximumReplicasToUse = maximumReplicasToUse;
 
@@ -35,8 +33,6 @@ namespace Vostok.ClusterClient.Core.Modules
         }
 
         public Request Request { get; set; }
-
-        public IRequestStrategy Strategy { get; set; }
 
         public IRequestTimeBudget Budget { get; }
 
@@ -46,9 +42,11 @@ namespace Vostok.ClusterClient.Core.Modules
 
         public CancellationToken CancellationToken { get; }
 
-        public RequestPriority? Priority { get; }
-
         public int MaximumReplicasToUse { get; set; }
+
+        public string ClientApplicationName { get; }
+
+        public RequestParameters Parameters { get; }
 
         public void SetReplicaResult(ReplicaResult result)
         {

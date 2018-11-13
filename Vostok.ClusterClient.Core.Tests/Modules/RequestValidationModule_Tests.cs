@@ -4,28 +4,31 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Strategies;
-using Vostok.ClusterClient.Core.Transport;
-using Vostok.Logging.Console;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Strategies;
+using Vostok.Clusterclient.Core.Transport;
+using Vostok.Clusterclient.Core.Tests.Helpers;
+using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Tests.Modules
+namespace Vostok.Clusterclient.Core.Tests.Modules
 {
     [TestFixture]
     internal class RequestValidationModule_Tests
     {
         private IRequestContext context;
-        private ConsoleLog log;
+        private ILog log;
         private RequestValidationModule module;
 
         [SetUp]
         public void TestSetup()
         {
             context = Substitute.For<IRequestContext>();
-            context.Log.Returns(log = new ConsoleLog());
+            context.Log.Returns(log = Substitute.For<ILog>());
             context.Transport.Returns(Substitute.For<ITransport>());
-            context.Strategy.Returns(new SingleReplicaRequestStrategy());
+            context.Parameters.Returns(RequestParameters.Empty.WithStrategy(new SingleReplicaRequestStrategy()));
+
+            log.IsEnabledFor(default).ReturnsForAnyArgs(true);
 
             module = new RequestValidationModule();
         }
@@ -45,7 +48,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             module.ExecuteAsync(context, _ => null).GetAwaiter().GetResult();
 
-            // log.CallsErrorCount.Should().Be(1);  // todo(Mansiper): fix it
+            log.Received(1, LogLevel.Error);
         }
 
         [Test]
@@ -73,7 +76,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             context.Transport.Capabilities.Returns(TransportCapabilities.RequestStreaming);
 
-            context.Strategy = new ParallelRequestStrategy(2);
+            context.Parameters.Returns(RequestParameters.Empty.WithStrategy(new ParallelRequestStrategy(2)));
 
             ShouldFailChecks();
         }
@@ -95,9 +98,19 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             context.Transport.Capabilities.Returns(TransportCapabilities.RequestStreaming);
 
-            context.Strategy = new ParallelRequestStrategy(1);
+            context.Parameters.Returns(RequestParameters.Empty.WithStrategy(new ParallelRequestStrategy(1)));
 
             ShouldPassChecks();
+        }
+
+        private static Request CreateCorrectRequest()
+        {
+            return Request.Get("foo/bar");
+        }
+
+        private static Request CreateIncorrectRequest()
+        {
+            return new Request(RequestMethods.Head, new Uri("foo/bar", UriKind.Relative), new Content(new byte[] {1, 2, 3}));
         }
 
         private void ShouldPassChecks()
@@ -110,16 +123,6 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         private void ShouldFailChecks()
         {
             module.ExecuteAsync(context, _ => null).Result.Status.Should().Be(ClusterResultStatus.IncorrectArguments);
-        }
-
-        private static Request CreateCorrectRequest()
-        {
-            return Request.Get("foo/bar");
-        }
-
-        private static Request CreateIncorrectRequest()
-        {
-            return new Request("FUCK", new Uri("foo/bar", UriKind.Relative));
         }
     }
 }

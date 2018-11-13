@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Retry;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Retry;
 
-namespace Vostok.ClusterClient.Core.Tests.Retry
+namespace Vostok.Clusterclient.Core.Tests.Retry
 {
     [TestFixture]
     internal class NeverRetryPolicy_Tests
@@ -20,7 +20,7 @@ namespace Vostok.ClusterClient.Core.Tests.Retry
         [Test]
         public void NeedToRetry_should_always_return_false()
         {
-            policy.NeedToRetry(new List<ReplicaResult>()).Should().BeFalse();
+            policy.NeedToRetry(null, null, new List<ReplicaResult>()).Should().BeFalse();
         }
     }
 }

@@ -2,23 +2,24 @@
 using System.Collections.Generic;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed
+namespace Vostok.Clusterclient.Core.Ordering.Weighed
 {
     internal class WeighedReplicaOrderingBuilder : IWeighedReplicaOrderingBuilder
     {
         private readonly List<IReplicaWeightModifier> modifiers;
 
         public WeighedReplicaOrderingBuilder(ILog log)
-            : this(null, log)
+            : this(null, null, log)
         {
         }
 
-        public WeighedReplicaOrderingBuilder(string serviceName, ILog log)
+        public WeighedReplicaOrderingBuilder(string environment, string serviceName, ILog log)
         {
             Log = log;
             MinimumWeight = ClusterClientDefaults.MinimumReplicaWeight;
             MaximumWeight = ClusterClientDefaults.MaximumReplicaWeight;
             InitialWeight = ClusterClientDefaults.InitialReplicaWeight;
+            Environment = environment;
             ServiceName = serviceName;
 
             modifiers = new List<IReplicaWeightModifier>();
@@ -33,6 +34,8 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
         public double InitialWeight { get; set; }
 
         public string ServiceName { get; set; }
+
+        public string Environment { get; set; }
 
         public WeighedReplicaOrdering Build() =>
             new WeighedReplicaOrdering(modifiers, MinimumWeight, MaximumWeight, InitialWeight);

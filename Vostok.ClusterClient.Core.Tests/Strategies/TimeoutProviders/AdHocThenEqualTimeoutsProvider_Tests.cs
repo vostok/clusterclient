@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Strategies.TimeoutProviders;
-using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Strategies.TimeoutProviders;
+using Vostok.Clusterclient.Core.Tests.Helpers;
 
-namespace Vostok.ClusterClient.Core.Tests.Strategies.TimeoutProviders
+namespace Vostok.Clusterclient.Core.Tests.Strategies.TimeoutProviders
 {
     [TestFixture]
     internal class AdHocThenEqualTimeoutsProvider_Tests

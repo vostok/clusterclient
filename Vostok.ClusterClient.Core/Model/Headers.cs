@@ -3,44 +3,40 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using JetBrains.Annotations;
+using Vostok.Commons.Collections;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// <para>Represents a collection of HTTP headers (string key-value pairs).</para>
     /// <para>Every <see cref="Headers"/> object is effectively immutable. Any modifications made via <see cref="Set"/> method produce a new object.</para>
     /// </summary>
+    [PublicAPI]
     public class Headers : IEnumerable<Header>
     {
         /// <summary>
         /// Represents an empty <see cref="Headers"/> object. Useful to start building headers from scratch.
         /// </summary>
-        public static readonly Headers Empty = new Headers(new Header[] {}, 0);
+        public static readonly Headers Empty = new Headers(new ImmutableArrayDictionary<string, string>(0, StringComparer.OrdinalIgnoreCase));
 
-        private readonly Header[] headers;
+        private readonly ImmutableArrayDictionary<string, string> headers;
 
-        public Headers()
-            : this(4)
-        {
-        }
-
+        /// <param name="capacity">Initial capacity of headers collection.</param>
         public Headers(int capacity)
-            : this(new Header[capacity], 0)
+            : this(new ImmutableArrayDictionary<string, string>(capacity, StringComparer.OrdinalIgnoreCase))
         {
         }
 
-        internal Headers(Header[] headers, int count)
+        private Headers(ImmutableArrayDictionary<string, string> headers)
         {
             this.headers = headers;
-            Count = count;
         }
 
         /// <summary>
         /// Returns the count of headers in this <see cref="Headers"/> object.
         /// </summary>
-        public int Count { get; }
+        public int Count => headers.Count;
 
         /// <summary>
         /// Returns the names of all headers contained in this <see cref="Headers"/> object.
@@ -55,14 +51,6 @@ namespace Vostok.ClusterClient.Core.Model
         public IEnumerable<string> Values => this.Select(header => header.Value);
 
         /// <summary>
-        /// Attempts to fetch the value of header with given name.
-        /// </summary>
-        /// <param name="name">Header name.</param>
-        /// <returns>Header value if found, <c>null</c> otherwise.</returns>
-        [CanBeNull]
-        public string this[string name] => Find(name, out _)?.Value;
-
-        /// <summary>
         /// <para>Produces a new <see cref="Headers"/> instance where the header with given name will have given value.</para>
         /// <para>If the header does not exist in current instance, it will be added to new one.</para>
         /// <para>If the header exists in current instance, it will be overwritten in new one.</para>
@@ -75,7 +63,7 @@ namespace Vostok.ClusterClient.Core.Model
         [NotNull]
         public Headers Set<T>([NotNull] string name, [NotNull] T value)
         {
-            return Set(name, value.ToString());
+            return new Headers(headers.Set(name, value.ToString()));
         }
 
         /// <summary>
@@ -91,36 +79,11 @@ namespace Vostok.ClusterClient.Core.Model
         [NotNull]
         public Headers Set([NotNull] string name, [NotNull] string value)
         {
-            var oldHeader = Find(name, out var oldHeaderIndex);
-            var newHeader = new Header(name, value);
+            var newHeaders = headers.Set(name, value);
 
-            Header[] newHeaders;
-
-            if (oldHeader != null)
-            {
-                if (oldHeader.Equals(newHeader))
-                    return this;
-
-                newHeaders = ReallocateArray(headers.Length);
-                newHeaders[oldHeaderIndex] = newHeader;
-                return new Headers(newHeaders, Count);
-            }
-
-            if (headers.Length == Count)
-            {
-                newHeaders = ReallocateArray(Math.Max(4, headers.Length * 2));
-                newHeaders[Count] = newHeader;
-                return new Headers(newHeaders, Count + 1);
-            }
-
-            if (Interlocked.CompareExchange(ref headers[Count], newHeader, null) != null)
-            {
-                newHeaders = ReallocateArray(headers.Length);
-                newHeaders[Count] = newHeader;
-                return new Headers(newHeaders, Count + 1);
-            }
-
-            return new Headers(headers, Count + 1);
+            return ReferenceEquals(headers, newHeaders)
+                ? this
+                : new Headers(newHeaders);
         }
 
         /// <summary>
@@ -134,76 +97,63 @@ namespace Vostok.ClusterClient.Core.Model
         [NotNull]
         public Headers Remove([NotNull] string name)
         {
-            var oldHeader = Find(name, out var oldHeaderIndex);
-            if (oldHeader == null)
-                return this;
+            var newHeaders = headers.Remove(name);
 
-            var newHeaders = new Header[headers.Length - 1];
-
-            if (oldHeaderIndex > 0)
-                Array.Copy(headers, 0, newHeaders, 0, oldHeaderIndex);
-
-            if (oldHeaderIndex < Count - 1)
-                Array.Copy(headers, oldHeaderIndex + 1, newHeaders, oldHeaderIndex, Count - oldHeaderIndex - 1);
-
-            return new Headers(newHeaders, Count - 1);
+            return ReferenceEquals(headers, newHeaders)
+                ? this
+                : new Headers(newHeaders);
         }
 
+        /// <returns>
+        /// <para>Headers string representation in the following format:</para>
+        /// <para>Name1: Value1</para>
+        /// <para>Name2: Value2</para>
+        /// <para>...</para>
+        /// </returns>
         public override string ToString()
         {
-            if (Count == 0)
+            if (headers.Count == 0)
                 return string.Empty;
 
             var builder = new StringBuilder();
 
-            for (var i = 0; i < Count; i++)
+            var firstIteration = true;
+
+            foreach (var header in this)
             {
-                var header = headers[i];
+                if (firstIteration)
+                    firstIteration = false;
+                else
+                    builder.AppendLine();
 
                 builder.Append(header.Name);
                 builder.Append(": ");
                 builder.Append(header.Value);
-
-                if (i < Count - 1)
-                    builder.AppendLine();
             }
 
             return builder.ToString();
         }
 
+        /// <inheritdoc />
         public IEnumerator<Header> GetEnumerator()
         {
-            for (var i = 0; i < Count; i++)
-                yield return headers[i];
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        [CanBeNull]
-        private Header Find(string name, out int index)
-        {
-            for (var i = 0; i < Count; i++)
+            foreach (var pair in headers)
             {
-                var header = headers[i];
-                if (header.Name.Equals(name, StringComparison.Ordinal))
-                {
-                    index = i;
-                    return header;
-                }
+                yield return new Header(pair.Key, pair.Value);
             }
-
-            index = -1;
-            return null;
         }
 
-        [NotNull]
-        private Header[] ReallocateArray(int capacity)
+        /// <summary>
+        /// Attempts to fetch the value of header with given name.
+        /// </summary>
+        /// <param name="name">Header name.</param>
+        /// <returns>Header value if found, <c>null</c> otherwise.</returns>
+        [CanBeNull]
+        public string this[string name] => headers.TryGetValue(name, out var v) ? v : null;
+
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            var reallocated = new Header[capacity];
-
-            Array.Copy(headers, 0, reallocated, 0, Count);
-
-            return reallocated;
+            return GetEnumerator();
         }
 
         #region Specific header getters
@@ -320,6 +270,7 @@ namespace Vostok.ClusterClient.Core.Model
         /// Returns the value of <see cref="HeaderNames.WWWAuthenticate"/> header or <c>null</c> if it's not specified.
         /// </summary>
         [CanBeNull]
+        // ReSharper disable once InconsistentNaming
         public string WWWAuthenticate => this[HeaderNames.WWWAuthenticate];
 
         #endregion

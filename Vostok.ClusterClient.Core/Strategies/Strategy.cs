@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Sending;
-using Vostok.ClusterClient.Core.Strategies.DelayProviders;
-using Vostok.ClusterClient.Core.Strategies.TimeoutProviders;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Sending;
+using Vostok.Clusterclient.Core.Strategies.DelayProviders;
+using Vostok.Clusterclient.Core.Strategies.TimeoutProviders;
 
-namespace Vostok.ClusterClient.Core.Strategies
+namespace Vostok.Clusterclient.Core.Strategies
 {
+    /// <summary>
+    /// A set of predefined <see cref="IRequestStrategy">request strategies</see>.
+    /// </summary>
     public sealed class Strategy : IRequestStrategy
     {
         /// <summary>
@@ -56,6 +59,10 @@ namespace Vostok.ClusterClient.Core.Strategies
         /// </summary>
         public static readonly ForkingRequestStrategy Forking3 = Forking(3);
 
+        private Strategy()
+        {
+        }
+
         /// <summary>
         /// Creates an instance of <see cref="SequentialRequestStrategy"/> with given <paramref name="timeoutsProvider"/>.
         /// </summary>
@@ -86,13 +93,10 @@ namespace Vostok.ClusterClient.Core.Strategies
         public static ForkingRequestStrategy Forking(int maximumParallelism) =>
             new ForkingRequestStrategy(new EqualDelaysProvider(maximumParallelism), maximumParallelism);
 
-        private Strategy()
-        {
-        }
-
         #region IRequestStrategy implementation stub
 
-        public Task SendAsync(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken) =>
+        /// <inheritdoc />
+        public Task SendAsync(Request request, RequestParameters parameters, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken) =>
             throw new NotImplementedException();
 
         #endregion

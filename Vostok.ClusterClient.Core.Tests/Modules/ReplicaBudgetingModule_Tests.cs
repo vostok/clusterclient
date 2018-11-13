@@ -5,11 +5,11 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Modules;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Tests.Modules
+namespace Vostok.Clusterclient.Core.Tests.Modules
 {
     [TestFixture]
     internal class ReplicaBudgetingModule_Tests
@@ -34,18 +34,24 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             replica2 = new Uri("http://replica");
             request = Request.Get("foo/bar");
 
-            oneReplicaResult = new ClusterResult(ClusterResultStatus.ReplicasExhausted, new []
-            {
-                new ReplicaResult(replica1, Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero)
-            }, 
-            null, request);
+            oneReplicaResult = new ClusterResult(
+                ClusterResultStatus.ReplicasExhausted,
+                new[]
+                {
+                    new ReplicaResult(replica1, Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero)
+                },
+                null,
+                request);
 
-            twoReplicasResult = new ClusterResult(ClusterResultStatus.ReplicasExhausted, new[]
-            {
-                new ReplicaResult(replica1, Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero),
-                new ReplicaResult(replica2, Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero)
-            }, 
-            null, request);
+            twoReplicasResult = new ClusterResult(
+                ClusterResultStatus.ReplicasExhausted,
+                new[]
+                {
+                    new ReplicaResult(replica1, Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero),
+                    new ReplicaResult(replica2, Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero)
+                },
+                null,
+                request);
 
             context = Substitute.For<IRequestContext>();
             context.Log.Returns(new SilentLog());

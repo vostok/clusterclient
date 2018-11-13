@@ -1,12 +1,13 @@
 ﻿using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Criteria
+namespace Vostok.Clusterclient.Core.Criteria
 {
     /// <summary>
     /// <para>Represents a criterion used to determine the quality of replica responses.</para>
     /// <para>Criteria form a chain which is traversed in order until some criterion returns an <see cref="ResponseVerdict.Accept"/> or <see cref="ResponseVerdict.Reject"/> verdict.</para>
     /// </summary>
+    [PublicAPI]
     public interface IResponseCriterion
     {
         /// <summary>

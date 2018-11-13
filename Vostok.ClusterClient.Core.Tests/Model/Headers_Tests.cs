@@ -2,9 +2,9 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Tests.Model
+namespace Vostok.Clusterclient.Core.Tests.Model
 {
     [TestFixture]
     internal class Headers_Tests
@@ -41,15 +41,28 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         }
 
         [Test]
-        public void Should_be_case_sensitive_when_comparing_header_names()
+        public void Should_be_case_insensitive_when_comparing_header_names()
+        {
+            var headers = Headers
+                .Empty
+                .Set("key", "value")
+                .Set("KEY", "value");
+
+            headers.Should().HaveCount(1);
+
+            headers.Names.Should().Equal("key");
+        }
+
+        [Test]
+        public void Should_be_case_insensitive_when_comparing_header_names_when_created_with_capacity()
         {
             var headers = new Headers(1)
                 .Set("key", "value")
                 .Set("KEY", "value");
 
-            headers.Should().HaveCount(2);
+            headers.Should().HaveCount(1);
 
-            headers.Names.Should().Equal("key", "KEY");
+            headers.Names.Should().Equal("key");
         }
 
         [Test]
@@ -240,7 +253,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         }
 
         [Test]
-        public void Remove_should_not_spoil_base_insance()
+        public void Remove_should_not_spoil_base_instance()
         {
             var headersBefore = Headers.Empty
                 .Set("k1", "v1")
@@ -291,14 +304,13 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         }
 
         [Test]
-        public void Indexer_should_be_case_sensitive_when_comparing_header_names()
+        public void Indexer_should_be_case_insensitive_when_comparing_header_names()
         {
             var headers = Headers.Empty
                 .Set("name", "value1")
-                .Set("NAME", "value2");
+                .Set("name", "value2");
 
-            headers["name"].Should().Be("value1");
-            headers["NAME"].Should().Be("value2");
+            headers["name"].Should().Be("value2");
         }
 
         [Test]
@@ -341,7 +353,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
             var headersWith = Headers.Empty.Set(headerName, "value");
             var headersWithout = Headers.Empty.Set(Guid.NewGuid().ToString(), "value");
 
-            var property = typeof (Headers).GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
+            var property = typeof(Headers).GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
 
             property.Should().NotBeNull();
             property.GetValue(headersWith).Should().Be("value");

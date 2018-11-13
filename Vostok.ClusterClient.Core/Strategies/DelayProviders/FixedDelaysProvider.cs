@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Linq;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
+namespace Vostok.Clusterclient.Core.Strategies.DelayProviders
 {
     /// <summary>
     /// Represents a delay provider which issues delays from a fixed set of values.
     /// </summary>
+    [PublicAPI]
     public class FixedDelaysProvider : IForkingDelaysProvider
     {
         private readonly TimeSpan[] delays;
@@ -25,6 +26,7 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
             this.tailBehaviour = tailBehaviour;
         }
 
+        /// <inheritdoc />
         public TimeSpan? GetForkingDelay(Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas)
         {
             if (currentReplicaIndex < delays.Length)
@@ -41,6 +43,7 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
             }
         }
 
+        /// <inheritdoc />
         public override string ToString() => "fixed";
     }
 }

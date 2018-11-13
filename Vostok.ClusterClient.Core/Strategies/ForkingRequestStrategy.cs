@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Sending;
-using Vostok.ClusterClient.Core.Strategies.DelayProviders;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Sending;
+using Vostok.Clusterclient.Core.Strategies.DelayProviders;
 
-namespace Vostok.ClusterClient.Core.Strategies
+namespace Vostok.Clusterclient.Core.Strategies
 {
     /// <summary>
     /// <para>Represents a strategy which starts with one request, but can increase parallelism ("fork") when there's no response for long enough.</para>
@@ -16,7 +16,7 @@ namespace Vostok.ClusterClient.Core.Strategies
     /// <para>Execution stops at any result with <see cref="ResponseVerdict.Accept"/> verdict.</para>
     /// </summary>
     /// <example>
-    /// Example of execution with maximum parallellism = 3:
+    /// Example of execution with maximum parallelism = 3:
     /// <code>
     /// o---------------------------------- (replica1) ----------------------->
     ///           | (fork)
@@ -29,6 +29,7 @@ namespace Vostok.ClusterClient.Core.Strategies
     /// | delay1  |  delay2 |             ↑ failure(replica2)  ↑ success(replica3)
     /// </code>
     /// </example>
+    [PublicAPI]
     public class ForkingRequestStrategy : IRequestStrategy
     {
         private readonly IForkingDelaysProvider delaysProvider;
@@ -56,7 +57,8 @@ namespace Vostok.ClusterClient.Core.Strategies
             this.maximumParallelism = maximumParallelism;
         }
 
-        public async Task SendAsync(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken)
+        /// <inheritdoc />
+        public async Task SendAsync(Request request, RequestParameters parameters, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken)
         {
             var currentTasks = new List<Task>(Math.Min(maximumParallelism, replicasCount));
 
@@ -75,7 +77,9 @@ namespace Vostok.ClusterClient.Core.Strategies
                         if (request.ContainsAlreadyUsedStream())
                             break;
 
-                        LaunchRequest(currentTasks, request, budget, sender, replicasEnumerator, linkedCancellationToken);
+                        var connectionAttemptTimeout = i == replicasCount - 1 ? null : parameters.ConnectionTimeout;
+
+                        LaunchRequest(currentTasks, request, budget, sender, replicasEnumerator, connectionAttemptTimeout, linkedCancellationToken);
 
                         ScheduleForkIfNeeded(currentTasks, request, budget, i, replicasCount, linkedCancellationToken);
 
@@ -90,19 +94,39 @@ namespace Vostok.ClusterClient.Core.Strategies
                 }
 
                 while (currentTasks.Count > 0)
+                {
                     if (budget.HasExpired || await WaitForAcceptedResultAsync(currentTasks).ConfigureAwait(false))
                         return;
+                }
             }
         }
 
+        /// <inheritdoc />
         public override string ToString() => $"Forking({delaysProvider})";
 
-        private void LaunchRequest(List<Task> currentTasks, Request request, IRequestTimeBudget budget, IRequestSender sender, IEnumerator<Uri> replicasEnumerator, CancellationToken cancellationToken)
+        private static async Task<bool> WaitForAcceptedResultAsync(List<Task> currentTasks)
+        {
+            var completedTask = await Task.WhenAny(currentTasks).ConfigureAwait(false);
+
+            currentTasks.Remove(completedTask);
+
+            var resultTask = completedTask as Task<ReplicaResult>;
+            if (resultTask == null)
+                return false;
+
+            currentTasks.RemoveAll(task => !(task is Task<ReplicaResult>));
+
+            var result = await resultTask.ConfigureAwait(false);
+
+            return result.Verdict == ResponseVerdict.Accept;
+        }
+
+        private void LaunchRequest(List<Task> currentTasks, Request request, IRequestTimeBudget budget, IRequestSender sender, IEnumerator<Uri> replicasEnumerator, TimeSpan? connectionTimeout, CancellationToken cancellationToken)
         {
             if (!replicasEnumerator.MoveNext())
                 throw new InvalidOperationException("Replicas enumerator ended prematurely. This is definitely a bug in code.");
 
-            currentTasks.Add(sender.SendToReplicaAsync(replicasEnumerator.Current, request, budget.Remaining, cancellationToken));
+            currentTasks.Add(sender.SendToReplicaAsync(replicasEnumerator.Current, request, connectionTimeout, budget.Remaining, cancellationToken));
         }
 
         private void ScheduleForkIfNeeded(List<Task> currentTasks, Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas, CancellationToken cancellationToken)
@@ -124,23 +148,6 @@ namespace Vostok.ClusterClient.Core.Strategies
                 return;
 
             currentTasks.Add(delaysPlanner.Plan(forkingDelay.Value, cancellationToken));
-        }
-
-        private static async Task<bool> WaitForAcceptedResultAsync(List<Task> currentTasks)
-        {
-            var completedTask = await Task.WhenAny(currentTasks).ConfigureAwait(false);
-
-            currentTasks.Remove(completedTask);
-
-            var resultTask = completedTask as Task<ReplicaResult>;
-            if (resultTask == null)
-                return false;
-
-            currentTasks.RemoveAll(task => !(task is Task<ReplicaResult>));
-
-            var result = await resultTask.ConfigureAwait(false);
-
-            return result.Verdict == ResponseVerdict.Accept;
         }
     }
 }

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Helpers;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Helpers;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Commons.Collections;
+using Vostok.Commons.Threading;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed
+namespace Vostok.Clusterclient.Core.Ordering.Weighed
 {
     /// <summary>
     /// <para>Represents a probabilistic ordering which orders replicas based on their weights.</para>
@@ -19,15 +21,20 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
     /// <para>Developer's goal is to manipulate replica weights via <see cref="IReplicaWeightModifier"/>s to produce best possible results.</para>
     /// <para>Feedback from <see cref="Learn"/> method is forwarded to all modifiers.</para>
     /// </summary>
+    [PublicAPI]
     public class WeighedReplicaOrdering : IReplicaOrdering
     {
         private const int PooledArraySize = 50;
 
-        private static readonly Pool<TreeNode[]> TreeArrays = new Pool<TreeNode[]>(() => new TreeNode[PooledArraySize]);
+        private static readonly UnboundedObjectPool<TreeNode[]> TreeArrays = new UnboundedObjectPool<TreeNode[]>(() => new TreeNode[PooledArraySize]);
 
         private readonly IList<IReplicaWeightModifier> modifiers;
         private readonly IReplicaWeightCalculator weightCalculator;
 
+        /// <param name="modifiers">A chain of <see cref="IReplicaWeightModifier"/> which will be used to modify replica weight.</param>
+        /// <param name="minimumWeight">A minimal possible weight of replica. This parameter is optional and has default value <see cref="ClusterClientDefaults.MinimumReplicaWeight"/>.</param>
+        /// <param name="maximumWeight">A maximal possible weight of replica. This parameter is optional and has default value <see cref="ClusterClientDefaults.MaximumReplicaWeight"/>.</param>
+        /// <param name="initialWeight">A initial weight of replica. This parameter is optional and has default value <see cref="ClusterClientDefaults.InitialReplicaWeight"/>.</param>
         public WeighedReplicaOrdering(
             [NotNull] IList<IReplicaWeightModifier> modifiers,
             double minimumWeight = ClusterClientDefaults.MinimumReplicaWeight,
@@ -45,66 +52,24 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
             this.weightCalculator = weightCalculator;
         }
 
+        /// <inheritdoc />
         public void Learn(ReplicaResult result, IReplicaStorageProvider storageProvider)
         {
             foreach (var modifier in modifiers)
                 modifier.Learn(result, storageProvider);
         }
 
-        public IEnumerable<Uri> Order(IList<Uri> replicas, IReplicaStorageProvider storageProvider, Request request)
+        /// <inheritdoc />
+        public IEnumerable<Uri> Order(IList<Uri> replicas, IReplicaStorageProvider storageProvider, Request request, RequestParameters parameters)
         {
             if (replicas.Count < 2)
                 return replicas;
 
             var requiredCapacity = replicas.Count * 2;
             if (requiredCapacity > PooledArraySize)
-                return OrderInternal(replicas, storageProvider, request, new TreeNode[requiredCapacity]);
+                return OrderInternal(replicas, storageProvider, request, parameters, new TreeNode[requiredCapacity]);
 
-            return OrderUsingPooledArray(replicas, storageProvider, request);
-        }
-
-        private IEnumerable<Uri> OrderUsingPooledArray(IList<Uri> replicas, IReplicaStorageProvider storageProvider, Request request)
-        {
-            using (var treeArray = TreeArrays.AcquireHandle())
-                foreach (var replica in OrderInternal(replicas, storageProvider, request, treeArray))
-                    yield return replica;
-        }
-
-        private IEnumerable<Uri> OrderInternal(IList<Uri> replicas, IReplicaStorageProvider storageProvider, Request request, TreeNode[] tree)
-        {
-            var replicasWithInfiniteWeight = null as List<Uri>;
-            var replicasWithZeroWeight = null as List<Uri>;
-
-            CleanupTree(tree);
-
-            // (iloktionov): Построим суммирующее дерево отрезков, листьями в котором будут являться реплики со своими весами. В корне этого дерева будет сумма весов всех реплик. 
-            BuildTree(tree, replicas, storageProvider, request, ref replicasWithInfiniteWeight, ref replicasWithZeroWeight);
-
-            // (iloktionov): Реплики с бесконечным весом должны иметь безусловный приоритет, при этом случайно переупорядочиваясь между собой:
-            if (replicasWithInfiniteWeight != null)
-            {
-                Shuffle(replicasWithInfiniteWeight);
-
-                foreach (var replica in replicasWithInfiniteWeight)
-                    yield return replica;
-            }
-
-            var replicasToSelectFromTree = replicas.Count;
-
-            replicasToSelectFromTree -= replicasWithInfiniteWeight?.Count ?? 0;
-            replicasToSelectFromTree -= replicasWithZeroWeight?.Count ?? 0;
-
-            for (var i = 0; i < replicasToSelectFromTree; i++)
-                yield return SelectReplicaFromTree(tree);
-
-            // (iloktionov): Реплики с нулевым весом должны идти последними, при этом случайно переупорядочиваясь между собой:
-            if (replicasWithZeroWeight != null)
-            {
-                Shuffle(replicasWithZeroWeight);
-
-                foreach (var replica in replicasWithZeroWeight)
-                    yield return replica;
-            }
+            return OrderUsingPooledArray(replicas, storageProvider, request, parameters);
         }
 
         private static void CleanupTree(TreeNode[] tree)
@@ -114,57 +79,6 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
                 tree[i].Exists = false;
                 tree[i].Replica = null;
                 tree[i].Weight = 0;
-            }
-        }
-
-        private void BuildTree(
-            TreeNode[] tree,
-            IList<Uri> replicas,
-            IReplicaStorageProvider storageProvider,
-            Request request,
-            ref List<Uri> replicasWithInfiniteWeight,
-            ref List<Uri> replicasWithZeroWeight)
-        {
-            for (var i = 0; i < replicas.Count; i++)
-            {
-                var replica = replicas[i];
-                var weight = weightCalculator.GetWeight(replica, replicas, storageProvider, request);
-
-                if (weight < 0.0)
-                    throw new BugcheckException($"A negative weight has been calculated for replica '{replica}': {weight}.");
-
-                // (iloktionov): Бесконечности портят расчёты на дереве, поэтому они обрабатываются отдельно и не вставляются в него:
-                if (double.IsPositiveInfinity(weight))
-                {
-                    (replicasWithInfiniteWeight ?? (replicasWithInfiniteWeight = new List<Uri>())).Add(replica);
-                    continue;
-                }
-
-                // (iloktionov): Чтобы избежать детерминированного упорядочивания реплик с нулевым весом, их тоже придётся рассмотреть отдельно:
-                if (weight < double.Epsilon)
-                {
-                    (replicasWithZeroWeight ?? (replicasWithZeroWeight = new List<Uri>())).Add(replica);
-                    continue;
-                }
-
-                var index = replicas.Count + i;
-
-                // (iloktionov): Заполняем листовую ноду дерева:
-                tree[index] = new TreeNode
-                {
-                    Exists = true,
-                    Weight = weight,
-                    Replica = replica
-                };
-
-                // (iloktionov): И обновляем частичные суммы в промежуточных нодах вплоть до корня:
-                while (index > 0)
-                {
-                    index = GetParentIndex(index);
-
-                    tree[index].Exists = true;
-                    tree[index].Weight += weight;
-                }
             }
         }
 
@@ -283,6 +197,102 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
             var temp = replicas[i];
             replicas[i] = replicas[j];
             replicas[j] = temp;
+        }
+
+        private IEnumerable<Uri> OrderUsingPooledArray(IList<Uri> replicas, IReplicaStorageProvider storageProvider, Request request, RequestParameters parameters)
+        {
+            using (TreeArrays.Acquire(out var treeArray))
+                foreach (var replica in OrderInternal(replicas, storageProvider, request, parameters, treeArray))
+                    yield return replica;
+        }
+
+        private IEnumerable<Uri> OrderInternal(IList<Uri> replicas, IReplicaStorageProvider storageProvider, Request request, RequestParameters parameters, TreeNode[] tree)
+        {
+            var replicasWithInfiniteWeight = null as List<Uri>;
+            var replicasWithZeroWeight = null as List<Uri>;
+
+            CleanupTree(tree);
+
+            // (iloktionov): Построим суммирующее дерево отрезков, листьями в котором будут являться реплики со своими весами. В корне этого дерева будет сумма весов всех реплик. 
+            BuildTree(tree, replicas, storageProvider, request, parameters, ref replicasWithInfiniteWeight, ref replicasWithZeroWeight);
+
+            // (iloktionov): Реплики с бесконечным весом должны иметь безусловный приоритет, при этом случайно переупорядочиваясь между собой:
+            if (replicasWithInfiniteWeight != null)
+            {
+                Shuffle(replicasWithInfiniteWeight);
+
+                foreach (var replica in replicasWithInfiniteWeight)
+                    yield return replica;
+            }
+
+            var replicasToSelectFromTree = replicas.Count;
+
+            replicasToSelectFromTree -= replicasWithInfiniteWeight?.Count ?? 0;
+            replicasToSelectFromTree -= replicasWithZeroWeight?.Count ?? 0;
+
+            for (var i = 0; i < replicasToSelectFromTree; i++)
+                yield return SelectReplicaFromTree(tree);
+
+            // (iloktionov): Реплики с нулевым весом должны идти последними, при этом случайно переупорядочиваясь между собой:
+            if (replicasWithZeroWeight != null)
+            {
+                Shuffle(replicasWithZeroWeight);
+
+                foreach (var replica in replicasWithZeroWeight)
+                    yield return replica;
+            }
+        }
+
+        private void BuildTree(
+            TreeNode[] tree,
+            IList<Uri> replicas,
+            IReplicaStorageProvider storageProvider,
+            Request request,
+            RequestParameters parameters,
+            ref List<Uri> replicasWithInfiniteWeight,
+            ref List<Uri> replicasWithZeroWeight)
+        {
+            for (var i = 0; i < replicas.Count; i++)
+            {
+                var replica = replicas[i];
+                var weight = weightCalculator.GetWeight(replica, replicas, storageProvider, request, parameters);
+
+                if (weight < 0.0)
+                    throw new BugcheckException($"A negative weight has been calculated for replica '{replica}': {weight}.");
+
+                // (iloktionov): Бесконечности портят расчёты на дереве, поэтому они обрабатываются отдельно и не вставляются в него:
+                if (double.IsPositiveInfinity(weight))
+                {
+                    (replicasWithInfiniteWeight ?? (replicasWithInfiniteWeight = new List<Uri>())).Add(replica);
+                    continue;
+                }
+
+                // (iloktionov): Чтобы избежать детерминированного упорядочивания реплик с нулевым весом, их тоже придётся рассмотреть отдельно:
+                if (weight < double.Epsilon)
+                {
+                    (replicasWithZeroWeight ?? (replicasWithZeroWeight = new List<Uri>())).Add(replica);
+                    continue;
+                }
+
+                var index = replicas.Count + i;
+
+                // (iloktionov): Заполняем листовую ноду дерева:
+                tree[index] = new TreeNode
+                {
+                    Exists = true,
+                    Weight = weight,
+                    Replica = replica
+                };
+
+                // (iloktionov): И обновляем частичные суммы в промежуточных нодах вплоть до корня:
+                while (index > 0)
+                {
+                    index = GetParentIndex(index);
+
+                    tree[index].Exists = true;
+                    tree[index].Weight += weight;
+                }
+            }
         }
 
         private struct TreeNode

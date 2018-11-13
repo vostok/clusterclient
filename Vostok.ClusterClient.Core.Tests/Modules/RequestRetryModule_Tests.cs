@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Retry;
-using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Retry;
+using Vostok.Clusterclient.Core.Tests.Helpers;
 using Vostok.Logging.Console;
 
-namespace Vostok.ClusterClient.Core.Tests.Modules
+namespace Vostok.Clusterclient.Core.Tests.Modules
 {
     [TestFixture]
     internal class RequestRetryModule_Tests
@@ -40,7 +40,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             context.Request.Returns(request);
 
             retryPolicy = Substitute.For<IRetryPolicy>();
-            retryPolicy.NeedToRetry(Arg.Any<IList<ReplicaResult>>()).Returns(true);
+            retryPolicy.NeedToRetry(Arg.Any<Request>(), Arg.Any<RequestParameters>(), Arg.Any<IList<ReplicaResult>>()).Returns(true);
 
             retryStrategy = Substitute.For<IRetryStrategy>();
             retryStrategy.AttemptsCount.Returns(MaxAttempts);
@@ -62,7 +62,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             Execute();
 
-            retryPolicy.Received(4).NeedToRetry(result.ReplicaResults);
+            retryPolicy.Received(4).NeedToRetry(Arg.Any<Request>(), Arg.Any<RequestParameters>(), result.ReplicaResults);
         }
 
         [Test]
@@ -129,7 +129,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         [Test]
         public void Should_not_retry_if_retry_policy_forbids_it()
         {
-            retryPolicy.NeedToRetry(Arg.Any<IList<ReplicaResult>>()).Returns(false);
+            retryPolicy.NeedToRetry(Arg.Any<Request>(), Arg.Any<RequestParameters>(), Arg.Any<IList<ReplicaResult>>()).Returns(false);
 
             Execute().Should().BeSameAs(result);
 
@@ -139,7 +139,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         [Test]
         public void Should_reset_replica_results_in_native_context_implementation()
         {
-            var contextImpl = new RequestContext(context.Request, null, context.Budget, new ConsoleLog(), null, CancellationToken.None, null, int.MaxValue);
+            var contextImpl = new RequestContext(context.Request, null, context.Budget, new ConsoleLog(), null, int.MaxValue);
 
             contextImpl.SetReplicaResult(new ReplicaResult(new Uri("http://replica1"), Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero));
             contextImpl.SetReplicaResult(new ReplicaResult(new Uri("http://replica2"), Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero));
@@ -170,12 +170,15 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
         private ClusterResult Execute()
         {
-            return module.ExecuteAsync(context, ctx =>
-                {
-                    nextModuleCalls++;
-                    return Task.FromResult(result);
-                })
-                .GetAwaiter().GetResult();
+            return module.ExecuteAsync(
+                    context,
+                    ctx =>
+                    {
+                        nextModuleCalls++;
+                        return Task.FromResult(result);
+                    })
+                .GetAwaiter()
+                .GetResult();
         }
     }
 }

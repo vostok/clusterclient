@@ -3,10 +3,10 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     /// <summary>
     /// A module which limits replicas used per request to maintain sliding 'used-replicas/requests' ratio below given threshold.
@@ -15,8 +15,6 @@ namespace Vostok.ClusterClient.Core.Modules
     {
         private static readonly ConcurrentDictionary<string, Counter> Counters = new ConcurrentDictionary<string, Counter>();
         private static readonly Stopwatch Watch = Stopwatch.StartNew();
-
-        public static void ClearCache() => Counters.Clear();
 
         private readonly ReplicaBudgetingOptions options;
         private readonly Func<string, Counter> counterFactory;
@@ -27,6 +25,8 @@ namespace Vostok.ClusterClient.Core.Modules
             counterFactory = _ => new Counter(options.MinutesToTrack);
         }
 
+        public static void ClearCache() => Counters.Clear();
+
         public int Requests => GetCounter().GetMetrics().Requests;
 
         public int Replicas => GetCounter().GetMetrics().Replicas;
@@ -36,8 +36,6 @@ namespace Vostok.ClusterClient.Core.Modules
         public async Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
             var counter = GetCounter();
-
-            counter.AddRequest();
 
             double ratio;
 
@@ -51,30 +49,20 @@ namespace Vostok.ClusterClient.Core.Modules
 
             var result = await next(context).ConfigureAwait(false);
 
-            counter.AddReplicas(result.ReplicaResults.Count);
+            counter.AddResult(result.ReplicaResults.Count);
 
             return result;
         }
 
-        private Counter GetCounter() => Counters.GetOrAdd(options.StorageKey, counterFactory);
-
         private static double ComputeRatio(CounterMetrics metrics) =>
             1.0 * metrics.Replicas / Math.Max(1.0, metrics.Requests);
+
+        private Counter GetCounter() => Counters.GetOrAdd(options.StorageKey, counterFactory);
 
         #region Logging
 
         private void LogLimitingReplicasToUse(IRequestContext context, double ratio) =>
-            context.Log.Warn($"Limiting max used replicas for request to 1 due to current replicas/requests ratio = {ratio:F3}");
-
-        #endregion
-
-        #region CounterMetrics
-
-        private struct CounterMetrics
-        {
-            public int Requests;
-            public int Replicas;
-        }
+            context.Log.Warn("Limiting max used replicas for request to 1 due to current replicas/requests ratio = {ReplicasRequestsRatio:F3}", ratio);
 
         #endregion
 
@@ -120,9 +108,15 @@ namespace Vostok.ClusterClient.Core.Modules
                 return metrics;
             }
 
-            public void AddRequest() => Interlocked.Increment(ref ObtainBucket().Requests);
+            public void AddResult(int replicasCount)
+            {
+                var bucket = ObtainBucket();
+                Interlocked.Increment(ref bucket.Requests);
+                Interlocked.Add(ref bucket.Replicas, replicasCount);
+            }
 
-            public void AddReplicas(int count) => Interlocked.Add(ref ObtainBucket().Replicas, count);
+            private static int GetCurrentMinute() =>
+                (int) Math.Floor(Watch.Elapsed.TotalMinutes);
 
             private CounterBucket ObtainBucket()
             {
@@ -138,9 +132,16 @@ namespace Vostok.ClusterClient.Core.Modules
                     Interlocked.CompareExchange(ref buckets[bucketIndex], new CounterBucket {Minute = minute}, currentBucket);
                 }
             }
+        }
 
-            private static int GetCurrentMinute() =>
-                (int)Math.Floor(Watch.Elapsed.TotalMinutes);
+        #endregion
+
+        #region CounterMetrics
+
+        private struct CounterMetrics
+        {
+            public int Requests;
+            public int Replicas;
         }
 
         #endregion

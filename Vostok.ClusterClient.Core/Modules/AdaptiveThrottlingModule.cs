@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Helpers;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Commons.Threading;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     /// <summary>
     /// An implementation of adaptive client throttling mechanism described in https://landing.google.com/sre/book/chapters/handling-overload.html.
@@ -18,11 +18,6 @@ namespace Vostok.ClusterClient.Core.Modules
         private static readonly ConcurrentDictionary<string, Counter> Counters = new ConcurrentDictionary<string, Counter>();
         private static readonly Stopwatch Watch = Stopwatch.StartNew();
 
-        public static void ClearCache()
-        {
-            Counters.Clear();
-        }
-
         private readonly AdaptiveThrottlingOptions options;
         private readonly Func<string, Counter> counterFactory;
 
@@ -30,6 +25,11 @@ namespace Vostok.ClusterClient.Core.Modules
         {
             this.options = options;
             counterFactory = _ => new Counter(options.MinutesToTrack);
+        }
+
+        public static void ClearCache()
+        {
+            Counters.Clear();
         }
 
         public int Requests => GetCounter().GetMetrics().Requests;
@@ -45,6 +45,8 @@ namespace Vostok.ClusterClient.Core.Modules
             var counter = GetCounter();
 
             counter.BeginRequest();
+
+            ClusterResult result;
 
             try
             {
@@ -63,19 +65,23 @@ namespace Vostok.ClusterClient.Core.Modules
                     return ClusterResult.Throttled(context.Request);
                 }
 
-                var result = await next(context).ConfigureAwait(false);
+                result = await next(context).ConfigureAwait(false);
 
                 UpdateCounter(counter, result);
-
-                return result;
+            }
+            catch (OperationCanceledException)
+            {
+                if (context.CancellationToken.IsCancellationRequested)
+                    counter.AddAccept();
+                throw;
             }
             finally
             {
                 counter.EndRequest();
             }
-        }
 
-        private Counter GetCounter() => Counters.GetOrAdd(options.StorageKey, counterFactory);
+            return result;
+        }
 
         private static double ComputeRatio(CounterMetrics metrics) =>
             1.0 * metrics.Requests / Math.Max(1.0, metrics.Accepts);
@@ -96,20 +102,12 @@ namespace Vostok.ClusterClient.Core.Modules
                 counter.AddAccept();
         }
 
+        private Counter GetCounter() => Counters.GetOrAdd(options.StorageKey, counterFactory);
+
         #region Logging
 
         private void LogThrottledRequest(IRequestContext context, double ratio, double rejectionProbability) =>
-            context.Log.Warn($"Throttled request without sending it. Request/accept ratio = {ratio:F3}. Rejection probability = {rejectionProbability:F3}");
-
-        #endregion
-
-        #region CounterMetrics
-
-        private struct CounterMetrics
-        {
-            public int Requests;
-            public int Accepts;
-        }
+            context.Log.Warn("Throttled request without sending it. Request/accept ratio = {RequestAcceptsRatio:F3}. Rejection probability = {RejectionProbability:F3}", ratio, rejectionProbability);
 
         #endregion
 
@@ -166,6 +164,8 @@ namespace Vostok.ClusterClient.Core.Modules
 
             public void AddAccept() => Interlocked.Increment(ref ObtainBucket().Accepts);
 
+            private static int GetCurrentMinute() => (int) Math.Floor(Watch.Elapsed.TotalMinutes);
+
             private CounterBucket ObtainBucket()
             {
                 var minute = GetCurrentMinute();
@@ -180,8 +180,16 @@ namespace Vostok.ClusterClient.Core.Modules
                     Interlocked.CompareExchange(ref buckets[bucketIndex], new CounterBucket {Minute = minute}, currentBucket);
                 }
             }
+        }
 
-            private static int GetCurrentMinute() => (int)Math.Floor(Watch.Elapsed.TotalMinutes);
+        #endregion
+
+        #region CounterMetrics
+
+        private struct CounterMetrics
+        {
+            public int Requests;
+            public int Accepts;
         }
 
         #endregion

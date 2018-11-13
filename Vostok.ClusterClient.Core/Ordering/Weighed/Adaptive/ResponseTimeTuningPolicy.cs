@@ -1,16 +1,17 @@
 ﻿using System;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
+namespace Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive
 {
     /// <summary>
     /// <para>Represents a tuning policy which selects action based on replica's response time:</para>
     /// <list type="bullet">
-    /// <item>Response time less than given threshold leads to <see cref="AdaptiveHealthAction.Increase"/> of replica health.</item>
-    /// <item>Response time greater than given threshold leads to <see cref="AdaptiveHealthAction.Decrease"/> of replica health.</item>
+    /// <item><description>Response time less than given threshold leads to <see cref="AdaptiveHealthAction.Increase"/> of replica health.</description></item>
+    /// <item><description>Response time greater than given threshold leads to <see cref="AdaptiveHealthAction.Decrease"/> of replica health.</description></item>
     /// </list>
     /// </summary>
+    [PublicAPI]
     public class ResponseTimeTuningPolicy : IAdaptiveHealthTuningPolicy
     {
         private readonly Func<TimeSpan> thresholdProvider;
@@ -25,6 +26,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
             this.thresholdProvider = thresholdProvider ?? throw new ArgumentNullException(nameof(thresholdProvider));
         }
 
+        /// <inheritdoc />
         public AdaptiveHealthAction SelectAction(ReplicaResult result) =>
             result.Time >= thresholdProvider() ? AdaptiveHealthAction.Decrease : AdaptiveHealthAction.Increase;
     }

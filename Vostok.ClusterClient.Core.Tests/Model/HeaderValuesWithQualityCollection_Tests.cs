@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Tests.Model
+namespace Vostok.Clusterclient.Core.Tests.Model
 {
     [TestFixture]
     [SetCulture("ru-RU")]
-    public class HeaderValuesWithQualityCollection_Tests
+    internal class HeaderValuesWithQualityCollection_Tests
     {
         [Test]
         public void ParseTest()
@@ -34,7 +34,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [Test]
         public void ClearTest()
         {
-            var values = new HeaderValuesWithQualityCollection { {"value1", 0.1m } };
+            var values = new HeaderValuesWithQualityCollection {{"value1", 0.1m}};
             Assert.That(values, Is.Not.Empty);
 
             values.Clear();
@@ -44,14 +44,14 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [Test]
         public void AddTest()
         {
-            var values = new HeaderValuesWithQualityCollection{ "value1", {"value1", 0.999m}, "value2", "value2"};
+            var values = new HeaderValuesWithQualityCollection {"value1", {"value1", 0.999m}, "value2", "value2"};
             Assert.That(values.Count, Is.EqualTo(4));
         }
 
         [Test]
         public void RemoveTest()
         {
-            var values = new HeaderValuesWithQualityCollection { "value1", { "Value1", 0.999m }, "value2", "vAlue2", {"valUe1", 0.998m} };
+            var values = new HeaderValuesWithQualityCollection {"value1", {"Value1", 0.999m}, "value2", "vAlue2", {"valUe1", 0.998m}};
             Assert.That(values.Count, Is.EqualTo(5));
 
             values.Remove("value2");
@@ -68,10 +68,10 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [Test]
         public void IndexerTest()
         {
-            var values = new HeaderValuesWithQualityCollection { "value1", { "value1", 0.999m }, "value2", "value2", { "value1", 0.998m } };
+            var values = new HeaderValuesWithQualityCollection {"value1", {"value1", 0.999m}, "value2", "value2", {"value1", 0.998m}};
             Assert.That(values.Count, Is.EqualTo(5));
             Assert.That(values[0], Is.EqualTo(values.FirstOrDefault()));
-            Assert.That(values[values.Count-1], Is.EqualTo(values.LastOrDefault()));
+            Assert.That(values[values.Count - 1], Is.EqualTo(values.LastOrDefault()));
         }
 
         [Test]
@@ -92,11 +92,12 @@ namespace Vostok.ClusterClient.Core.Tests.Model
             Assert.That(() => HeaderValuesWithQualityCollection.Parse(value), Throws.InstanceOf<ArgumentException>());
         }
 
-        [Test, Explicit("Neat visualisation for research purposes")]
+        [Test]
+        [Explicit("Neat visualisation for research purposes")]
         public void DecimalTests()
         {
             // Define an array of Decimal values.
-            Decimal[] values =
+            decimal[] values =
             {
                 0.1m, 0.01m, 0.001m, 0.0001m, 0.00001m,
                 0.9m, 0.99m, 0.999m, 0.9999m, 0.99999m,

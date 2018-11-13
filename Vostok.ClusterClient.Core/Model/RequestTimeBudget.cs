@@ -1,33 +1,22 @@
-﻿using System;
-using System.Diagnostics;
-using Vostok.ClusterClient.Core.Helpers;
+using System;
+using Vostok.Commons.Time;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
-    internal class RequestTimeBudget : IRequestTimeBudget
+    internal class RequestTimeBudget : TimeBudget, IRequestTimeBudget
     {
-        public static RequestTimeBudget StartNew(TimeSpan total, TimeSpan precision) =>
-            new RequestTimeBudget(total, precision);
+        public new static RequestTimeBudget Infinite = new RequestTimeBudget(TimeSpan.MaxValue, TimeSpan.Zero);
 
-        private readonly Stopwatch watch;
-
-        private RequestTimeBudget(TimeSpan total, TimeSpan precision)
+        private RequestTimeBudget(TimeSpan budget, TimeSpan precision)
+            : base(budget, precision)
         {
-            Total = total;
-            Precision = precision;
-
-            watch = new Stopwatch();
-            watch.Start();
         }
 
-        public TimeSpan Total { get; }
-
-        public TimeSpan Precision { get; }
-
-        public TimeSpan Elapsed => watch.Elapsed;
-
-        public TimeSpan Remaining => TimeSpanExtensions.Max(TimeSpan.Zero, Total - Elapsed - Precision);
-
-        public bool HasExpired => Remaining <= TimeSpan.Zero;
+        public new static RequestTimeBudget StartNew(TimeSpan budget, TimeSpan precision)
+        {
+            var timeBudget = new RequestTimeBudget(budget, precision);
+            timeBudget.Start();
+            return timeBudget;
+        }
     }
 }

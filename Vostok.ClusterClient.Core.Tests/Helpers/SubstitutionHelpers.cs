@@ -3,8 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using NSubstitute;
 using NSubstitute.Core;
+using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Tests.Helpers
+namespace Vostok.Clusterclient.Core.Tests.Helpers
 {
     internal static class SubstitutionHelpers
     {
@@ -50,6 +51,11 @@ namespace Vostok.ClusterClient.Core.Tests.Helpers
             var fromResult = GetTaskResultAdapter(returnThis);
             var array = returnThese.Select(GetTaskResultAdapter).ToArray();
             return value.ReturnsForAnyArgs(fromResult, array);
+        }
+
+        public static void Received(this ILog log, int callsCount, LogLevel level)
+        {
+            log.Received(callsCount).Log(Arg.Is((LogEvent x) => x.Level == level));
         }
 
         private static Func<CallInfo, Task<T>> GetTaskResultAdapter<T>(Func<CallInfo, T> returnThis)

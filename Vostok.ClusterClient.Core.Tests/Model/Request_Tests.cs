@@ -1,14 +1,13 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
 // ReSharper disable PossibleNullReferenceException
 
-namespace Vostok.ClusterClient.Core.Tests.Model
+namespace Vostok.Clusterclient.Core.Tests.Model
 {
     [TestFixture]
     internal class Request_Tests
@@ -40,7 +39,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [Test]
         public void WithUrl_method_should_return_a_request_with_given_url()
         {
-            var newUrl = new Uri("http://kontur.ru");
+            var newUrl = new Uri("http://vostok.tools");
 
             var requestAfter = request.WithUrl(newUrl);
 
@@ -51,7 +50,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [Test]
         public void WithUrl_method_should_preserve_method_content_and_headers()
         {
-            var newUrl = new Uri("http://kontur.ru");
+            var newUrl = new Uri("http://vostok.tools");
 
             var requestAfter = request.WithUrl(newUrl);
 
@@ -65,7 +64,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         {
             request = request.WithContent(Stream.Null);
 
-            var newUrl = new Uri("http://kontur.ru");
+            var newUrl = new Uri("http://vostok.tools");
 
             var requestAfter = request.WithUrl(newUrl);
 
@@ -389,7 +388,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [TestCase(RequestMethods.Trace, nameof(RequestMethods.Trace))]
         public void Factory_method_should_work_correctly_for_uri_argument_and_given_method(string methodValue, string factoryMethodName)
         {
-            var factoryMethod = typeof (Request).GetMethod(factoryMethodName, new[] {typeof (Uri)});
+            var factoryMethod = typeof(Request).GetMethod(factoryMethodName, new[] {typeof(Uri)});
 
             factoryMethod.Should().NotBeNull();
 
@@ -411,7 +410,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [TestCase(RequestMethods.Trace, nameof(RequestMethods.Trace))]
         public void Factory_method_should_work_correctly_for_string_argument_and_given_method(string methodValue, string factoryMethodName)
         {
-            var factoryMethod = typeof (Request).GetMethod(factoryMethodName, new[] {typeof (string)});
+            var factoryMethod = typeof(Request).GetMethod(factoryMethodName, new[] {typeof(string)});
 
             factoryMethod.Should().NotBeNull();
 
@@ -433,7 +432,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [TestCase(nameof(RequestMethods.Trace))]
         public void Factory_method_should_work_correctly_for_string_argument_with_both_absolute_and_relative_urls(string factoryMethodName)
         {
-            var factoryMethod = typeof (Request).GetMethod(factoryMethodName, new[] {typeof (string)});
+            var factoryMethod = typeof(Request).GetMethod(factoryMethodName, new[] {typeof(string)});
 
             factoryMethod.Should().NotBeNull();
 
@@ -442,74 +441,6 @@ namespace Vostok.ClusterClient.Core.Tests.Model
 
             absoluteRequest.Url.IsAbsoluteUri.Should().BeTrue();
             relativeRequest.Url.IsAbsoluteUri.Should().BeFalse();
-        }
-
-        [Test]
-        public void Validation_procedures_should_pass_on_a_well_formed_http_request()
-        {
-            request.Validate().Should().BeEmpty();
-
-            request.IsValid.Should().BeTrue();
-        }
-
-        [Test]
-        public void Validation_procedures_should_pass_on_a_well_formed_https_request()
-        {
-            request = new Request(request.Method, new Uri("https://foo/bar"));
-
-            request.Validate().Should().BeEmpty();
-
-            request.IsValid.Should().BeTrue();
-        }
-
-        [Test]
-        public void Validation_should_fail_if_request_has_unsupported_method()
-        {
-            request = new Request("WHATEVER", request.Url);
-
-            request.IsValid.Should().BeFalse();
-
-            Console.Out.WriteLine(request.Validate().Single());
-        }
-
-        [Test]
-        public void Validation_should_fail_if_request_has_an_url_with_non_http_scheme()
-        {
-            request = new Request(request.Method, new Uri("ftp://foo/bar"));
-
-            request.IsValid.Should().BeFalse();
-
-            Console.Out.WriteLine(request.Validate().Single());
-        }
-
-        [Test]
-        public void Validation_should_fail_when_supplying_request_body_buffer_with_get_method()
-        {
-            request = Request.Get(request.Url).WithContent(new Content(new byte[16]));
-
-            request.IsValid.Should().BeFalse();
-
-            Console.Out.WriteLine(request.Validate().Single());
-        }
-
-        [Test]
-        public void Validation_should_fail_when_supplying_request_body_stream_with_get_method()
-        {
-            request = Request.Get(request.Url).WithContent(new StreamContent(Stream.Null, 123));
-
-            request.IsValid.Should().BeFalse();
-
-            Console.Out.WriteLine(request.Validate().Single());
-        }
-
-        [Test]
-        public void Validation_should_fail_when_supplying_request_body_with_head_method()
-        {
-            request = Request.Head(request.Url).WithContent(new Content(new byte[16]));
-
-            request.IsValid.Should().BeFalse();
-
-            Console.Out.WriteLine(request.Validate().Single());
         }
     }
 }

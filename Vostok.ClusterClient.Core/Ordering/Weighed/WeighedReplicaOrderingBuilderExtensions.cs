@@ -1,12 +1,16 @@
 ﻿using System;
-using Vostok.ClusterClient.Core.Helpers;
-using Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive;
-using Vostok.ClusterClient.Core.Ordering.Weighed.Gray;
-using Vostok.ClusterClient.Core.Ordering.Weighed.Leadership;
+using JetBrains.Annotations;
+using Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive;
+using Vostok.Clusterclient.Core.Ordering.Weighed.Gray;
+using Vostok.Clusterclient.Core.Ordering.Weighed.Leadership;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed
+namespace Vostok.Clusterclient.Core.Ordering.Weighed
 {
-    public static class IWeighedReplicaOrderingBuilderExtensions
+    /// <summary>
+    /// A set of extensions for <see cref="IWeighedReplicaOrderingBuilder"/>.
+    /// </summary>
+    [PublicAPI]
+    public static class WeighedReplicaOrderingBuilderExtensions
     {
         /// <summary>
         /// Adds a <see cref="GrayListModifier"/> with given <paramref name="grayPeriodProvider"/> to the chain.
@@ -82,7 +86,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
             double upMultiplier = ClusterClientDefaults.AdaptiveHealthUpMultiplier,
             double downMultiplier = ClusterClientDefaults.AdaptiveHealthDownMultiplier,
             double minimumHealthValue = ClusterClientDefaults.AdaptiveHealthMinimumValue) =>
-            builder.AddModifier(new AdaptiveHealthModifier<HealthWithDecay>(new AdaptiveHealthWithLinearDecay(new TimeProvider(), decayDuration, upMultiplier, downMultiplier, minimumHealthValue), tuningPolicy, builder.Log));
+            builder.AddModifier(new AdaptiveHealthModifier<HealthWithDecay>(new AdaptiveHealthWithLinearDecay(() => DateTime.UtcNow, decayDuration, upMultiplier, downMultiplier, minimumHealthValue), tuningPolicy, builder.Log));
 
         /// <summary>
         /// Adds a <see cref="LeadershipWeightModifier"/> with given <paramref name="leaderResultDetector"/> to the chain.

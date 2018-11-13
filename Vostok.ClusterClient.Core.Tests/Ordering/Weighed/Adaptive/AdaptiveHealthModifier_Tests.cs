@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Console;
 
-namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
+namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Adaptive
 {
     [TestFixture]
     internal class AdaptiveHealthModifier_Tests
@@ -25,6 +25,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
         private IAdaptiveHealthImplementation<int> implementation;
         private IAdaptiveHealthTuningPolicy tuningPolicy;
         private AdaptiveHealthModifier<int> modifier;
+        private RequestParameters parameters;
         private ILog log;
 
         [SetUp]
@@ -34,6 +35,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
             replica2 = new Uri("http://replica2");
             replicas = new List<Uri> {replica1, replica2};
             request = Request.Get("foo/bar");
+            parameters = RequestParameters.Empty;
 
             storageProvider = Substitute.For<IReplicaStorageProvider>();
             storageProvider.Obtain<int>(Arg.Any<string>()).Returns(storage = new ConcurrentDictionary<Uri, int>());
@@ -50,7 +52,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
 
             storage[replica2] = 123;
 
-            modifier.Modify(replica1, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica1, replicas, storageProvider, request, parameters, ref weight);
 
             weight.Should().Be(1.0);
         }
@@ -62,7 +64,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
 
             storage[replica2] = 123;
 
-            modifier.Modify(replica1, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica1, replicas, storageProvider, request, parameters, ref weight);
 
             implementation.ReceivedCalls().Should().BeEmpty();
         }
@@ -74,7 +76,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
 
             storage[replica1] = 123;
 
-            modifier.Modify(replica1, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica1, replicas, storageProvider, request, parameters, ref weight);
 
             implementation.Received(1).ModifyWeight(123, ref weight);
         }
@@ -84,7 +86,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Adaptive
         {
             var weight = 1.0;
 
-            modifier.Modify(replica1, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica1, replicas, storageProvider, request, parameters, ref weight);
 
             storageProvider.Received(1).Obtain<int>(implementation.GetType().FullName);
         }

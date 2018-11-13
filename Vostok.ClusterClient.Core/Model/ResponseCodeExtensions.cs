@@ -1,5 +1,11 @@
-﻿namespace Vostok.ClusterClient.Core.Model
+﻿using JetBrains.Annotations;
+
+namespace Vostok.Clusterclient.Core.Model
 {
+    /// <summary>
+    /// A set of extensions for <see cref="ResponseCode"/>.
+    /// </summary>
+    [PublicAPI]
     public static class ResponseCodeExtensions
     {
         /// <summary>
@@ -7,7 +13,8 @@
         /// </summary>
         public static bool IsInformational(this ResponseCode code)
         {
-            var numericCode = (int)code;
+            var numericCode = (int) code;
+
             return numericCode >= 100 && numericCode < 200;
         }
 
@@ -16,7 +23,8 @@
         /// </summary>
         public static bool IsSuccessful(this ResponseCode code)
         {
-            var numericCode = (int)code;
+            var numericCode = (int) code;
+
             return numericCode >= 200 && numericCode < 300;
         }
 
@@ -25,7 +33,8 @@
         /// </summary>
         public static bool IsRedirection(this ResponseCode code)
         {
-            var numericCode = (int)code;
+            var numericCode = (int) code;
+
             return numericCode >= 300 && numericCode < 400;
         }
 
@@ -34,7 +43,8 @@
         /// </summary>
         public static bool IsClientError(this ResponseCode code)
         {
-            var numericCode = (int)code;
+            var numericCode = (int) code;
+
             return numericCode >= 400 && numericCode < 500;
         }
 
@@ -43,7 +53,8 @@
         /// </summary>
         public static bool IsServerError(this ResponseCode code)
         {
-            var numericCode = (int)code;
+            var numericCode = (int) code;
+
             return numericCode >= 500 && numericCode < 600;
         }
 

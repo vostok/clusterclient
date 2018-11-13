@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Helpers;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Commons.Collections;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed.Gray
+namespace Vostok.Clusterclient.Core.Ordering.Weighed.Gray
 {
     /// <summary>
     /// <para>Represents a modifier which keeps a list of bad ("gray") replicas. Replicas which are not in this list are called "white".</para>
@@ -15,38 +15,44 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Gray
     /// <para>A replica is added to gray list when it returns a response with <see cref="ResponseVerdict.Reject"/> verdict.</para>
     /// <para>A replica remains in gray list for a period of time known as gray period, as given by the <see cref="IGrayPeriodProvider"/> implementation.</para>
     /// </summary>
+    [PublicAPI]
     public class GrayListModifier : IReplicaWeightModifier
     {
         private static readonly string StorageKey = typeof(GrayListModifier).FullName;
 
         private readonly IGrayPeriodProvider grayPeriodProvider;
-        private readonly ITimeProvider timeProvider;
+        private readonly Func<DateTime> getCurrentTime;
         private readonly ILog log;
 
+        /// <param name="grayPeriodProvider">A gray periods provider</param>
+        /// <param name="log"><see cref="ILog"/> instance.</param>
         public GrayListModifier([NotNull] IGrayPeriodProvider grayPeriodProvider, [CanBeNull] ILog log)
-            : this(grayPeriodProvider, new TimeProvider(), log)
+            : this(grayPeriodProvider, () => DateTime.UtcNow, log)
         {
         }
 
+        /// <param name="grayPeriod">A constant gray period.</param>
+        /// <param name="log"><see cref="ILog"/> instance.</param>
         public GrayListModifier(TimeSpan grayPeriod, [CanBeNull] ILog log)
             : this(new FixedGrayPeriodProvider(grayPeriod), log)
         {
         }
 
-        internal GrayListModifier([NotNull] IGrayPeriodProvider grayPeriodProvider, [NotNull] ITimeProvider timeProvider, [CanBeNull] ILog log)
+        internal GrayListModifier([NotNull] IGrayPeriodProvider grayPeriodProvider, [NotNull] Func<DateTime> getCurrentTime, [CanBeNull] ILog log)
         {
             this.grayPeriodProvider = grayPeriodProvider ?? throw new ArgumentNullException(nameof(grayPeriodProvider));
-            this.timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
+            this.getCurrentTime = getCurrentTime ?? throw new ArgumentNullException(nameof(getCurrentTime));
             this.log = log ?? new SilentLog();
         }
 
-        public void Modify(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request, ref double weight)
+        /// <inheritdoc />
+        public void Modify(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request, RequestParameters parameters, ref double weight)
         {
             var storage = storageProvider.Obtain<DateTime>(StorageKey);
             if (!storage.TryGetValue(replica, out var lastGrayTimestamp))
                 return;
 
-            var currentTime = timeProvider.GetCurrentTime();
+            var currentTime = getCurrentTime();
             var grayPeriod = grayPeriodProvider.GetGrayPeriod();
 
             if (lastGrayTimestamp + grayPeriod >= currentTime)
@@ -55,6 +61,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Gray
                 LogReplicaIsNoLongerGray(replica);
         }
 
+        /// <inheritdoc />
         public void Learn(ReplicaResult result, IReplicaStorageProvider storageProvider)
         {
             if (result.Verdict != ResponseVerdict.Reject)
@@ -67,16 +74,16 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Gray
             var storage = storageProvider.Obtain<DateTime>(StorageKey);
             var wasGray = storage.ContainsKey(result.Replica);
 
-            storage[result.Replica] = timeProvider.GetCurrentTime();
+            storage[result.Replica] = getCurrentTime();
 
             if (!wasGray)
                 LogReplicaIsGrayNow(result.Replica);
         }
 
         private void LogReplicaIsGrayNow(Uri replica) =>
-            log.Warn($"Replica '{replica}' is now gray.");
+            log.Warn("Replica '{Replica}' is now gray.", replica);
 
         private void LogReplicaIsNoLongerGray(Uri replica) =>
-            log.Info($"Replica '{replica}' is no longer gray.");
+            log.Info("Replica '{Replica}' is no longer gray.", replica);
     }
 }

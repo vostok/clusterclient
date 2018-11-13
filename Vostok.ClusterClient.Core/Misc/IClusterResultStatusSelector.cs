@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Misc
+namespace Vostok.Clusterclient.Core.Misc
 {
     internal interface IClusterResultStatusSelector
     {

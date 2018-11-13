@@ -1,8 +1,9 @@
 ﻿using System;
-using Vostok.ClusterClient.Core.Helpers;
-using Vostok.ClusterClient.Core.Model;
+using JetBrains.Annotations;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Commons.Time;
 
-namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
+namespace Vostok.Clusterclient.Core.Strategies.TimeoutProviders
 {
     /// <summary>
     /// <para>Represents a timeout provider which divides time budget equally between several replicas (their count is called division factor).</para>
@@ -14,10 +15,13 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
     /// <para>3 sec --> 4.5 sec --> 4.5 sec (first replica failed prematurely, redistribution occured).</para>
     /// <para>1 sec --> 1 sec --> 10 sec (first two replicas failed prematurely, redistribution occured).</para>
     /// </example>
+    [PublicAPI]
     public class EqualTimeoutsProvider : ISequentialTimeoutsProvider
     {
         private readonly int divisionFactor;
 
+        /// <param name="divisionFactor">A division factor. See more in <see cref="EqualTimeoutsProvider"/> doc. Must be > 0.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="divisionFactor"/> is not a positive number.</exception>
         public EqualTimeoutsProvider(int divisionFactor)
         {
             if (divisionFactor <= 0)
@@ -26,6 +30,7 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
             this.divisionFactor = divisionFactor;
         }
 
+        /// <inheritdoc />
         public TimeSpan GetTimeout(Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas)
         {
             if (currentReplicaIndex >= divisionFactor)
@@ -33,9 +38,13 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
 
             var effectiveDivisionFactor = Math.Min(divisionFactor, totalReplicas) - currentReplicaIndex;
 
-            return TimeSpanExtensions.Max(TimeSpan.Zero, budget.Remaining.Divide(effectiveDivisionFactor));
+            return TimeSpanArithmetics.Max(TimeSpan.Zero, budget.Remaining.Divide(effectiveDivisionFactor));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString() => "equal-" + divisionFactor;
     }
 }

@@ -1,12 +1,12 @@
 ﻿using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Transforms;
+using Vostok.Clusterclient.Core.Criteria;
+using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Transforms;
 using Vostok.Logging.Console;
 
-namespace Vostok.ClusterClient.Core.Tests
+namespace Vostok.Clusterclient.Core.Tests
 {
     [TestFixture]
     internal class ClusterClientConfigurationExtensions_Tests

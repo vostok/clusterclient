@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Helpers;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Retry;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Retry;
+using Vostok.Commons.Time;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     internal class RequestRetryModule : IRequestModule
     {
@@ -39,14 +39,14 @@ namespace Vostok.ClusterClient.Core.Modules
                 if (++attemptsUsed >= retryStrategy.AttemptsCount)
                     return result;
 
-                if (!retryPolicy.NeedToRetry(result.ReplicaResults))
+                if (!retryPolicy.NeedToRetry(context.Request, context.Parameters, result.ReplicaResults))
                     return result;
 
                 var retryDelay = retryStrategy.GetRetryDelay(attemptsUsed);
                 if (retryDelay >= context.Budget.Remaining)
                     return result;
 
-                context.Log.Info($"All replicas exhausted. Will retry after {retryDelay.ToPrettyString()}. Attempts used: {attemptsUsed}/{retryStrategy.AttemptsCount}.");
+                context.Log.Info("All replicas exhausted. Will retry after {RetryDelay}. Attempts used: {AttemptsUsed}/{AttemptsCount}.", retryDelay.ToPrettyString(), attemptsUsed, retryStrategy.AttemptsCount);
 
                 if (retryDelay > TimeSpan.Zero)
                     await Task.Delay(retryDelay, context.CancellationToken).ConfigureAwait(false);

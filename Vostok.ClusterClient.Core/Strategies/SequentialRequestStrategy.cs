@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Helpers;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Sending;
-using Vostok.ClusterClient.Core.Strategies.TimeoutProviders;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Sending;
+using Vostok.Clusterclient.Core.Strategies.TimeoutProviders;
+using Vostok.Commons.Time;
 
-namespace Vostok.ClusterClient.Core.Strategies
+namespace Vostok.Clusterclient.Core.Strategies
 {
     /// <summary>
     /// <para>Represents a strategy which traverses replicas sequentially, does not use parallelism and stops at any result with <see cref="ResponseVerdict.Accept"/> verdict.</para>
@@ -23,16 +23,19 @@ namespace Vostok.ClusterClient.Core.Strategies
     ///          ↑ failure(replica1)         ↑ failure(replica2)       ↑ success(replica3)
     /// </code>
     /// </example>
+    [PublicAPI]
     public class SequentialRequestStrategy : IRequestStrategy
     {
         private readonly ISequentialTimeoutsProvider timeoutsProvider;
 
+        /// <param name="timeoutsProvider">A timeout provider which will be used by strategy.</param>
         public SequentialRequestStrategy([NotNull] ISequentialTimeoutsProvider timeoutsProvider)
         {
             this.timeoutsProvider = timeoutsProvider ?? throw new ArgumentNullException(nameof(timeoutsProvider));
         }
 
-        public async Task SendAsync(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken)
+        /// <inheritdoc />
+        public async Task SendAsync(Request request, RequestParameters parameters, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken)
         {
             var currentReplicaIndex = 0;
 
@@ -44,9 +47,11 @@ namespace Vostok.ClusterClient.Core.Strategies
                 if (request.ContainsAlreadyUsedStream())
                     break;
 
-                var timeout = TimeSpanExtensions.Min(timeoutsProvider.GetTimeout(request, budget, currentReplicaIndex++, replicasCount), budget.Remaining);
+                var timeout = TimeSpanArithmetics.Min(timeoutsProvider.GetTimeout(request, budget, currentReplicaIndex++, replicasCount), budget.Remaining);
 
-                var result = await sender.SendToReplicaAsync(replica, request, timeout, cancellationToken).ConfigureAwait(false);
+                var connectionAttemptTimeout = currentReplicaIndex == replicasCount ? null : parameters.ConnectionTimeout;
+                
+                var result = await sender.SendToReplicaAsync(replica, request, connectionAttemptTimeout, timeout, cancellationToken).ConfigureAwait(false);
                 if (result.Verdict == ResponseVerdict.Accept)
                     break;
 
@@ -54,6 +59,7 @@ namespace Vostok.ClusterClient.Core.Strategies
             }
         }
 
+        /// <inheritdoc />
         public override string ToString() => $"Sequential({timeoutsProvider})";
     }
 }

@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Linq;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Helpers;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Commons.Time;
 
-namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
+namespace Vostok.Clusterclient.Core.Strategies.TimeoutProviders
 {
     /// <summary>
     /// Represents a timeout provider which issues timeouts using a fixed set of external delegates.
     /// </summary>
+    [PublicAPI]
     public class AdHocTimeoutsProvider : ISequentialTimeoutsProvider
     {
         private readonly Func<TimeSpan>[] providers;
         private readonly TailTimeoutBehaviour tailBehaviour;
 
+        /// <param name="tailBehaviour">>A behaviour in case when provided timeout values are exhausted.</param>
+        /// <param name="providers">An external delegates which will be used to obtain request timeouts.</param>
         public AdHocTimeoutsProvider(TailTimeoutBehaviour tailBehaviour, [NotNull] params Func<TimeSpan>[] providers)
         {
             if (providers == null)
@@ -26,21 +29,24 @@ namespace Vostok.ClusterClient.Core.Strategies.TimeoutProviders
             this.tailBehaviour = tailBehaviour;
         }
 
+        /// <param name="providers">An external delegates which will be used to obtain request timeouts.</param>
         public AdHocTimeoutsProvider([NotNull] params Func<TimeSpan>[] providers)
             : this(TailTimeoutBehaviour.UseRemainingBudget, providers)
         {
         }
 
+        /// <inheritdoc />
         public TimeSpan GetTimeout(Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas)
         {
             if (currentReplicaIndex >= providers.Length)
                 return tailBehaviour == TailTimeoutBehaviour.UseRemainingBudget
                     ? budget.Remaining
-                    : TimeSpanExtensions.Min(providers.Last()(), budget.Remaining);
+                    : TimeSpanArithmetics.Min(providers.Last()(), budget.Remaining);
 
-            return TimeSpanExtensions.Min(providers[currentReplicaIndex](), budget.Remaining);
+            return TimeSpanArithmetics.Min(providers[currentReplicaIndex](), budget.Remaining);
         }
 
+        /// <inheritdoc />
         public override string ToString() => "ad-hoc";
     }
 }

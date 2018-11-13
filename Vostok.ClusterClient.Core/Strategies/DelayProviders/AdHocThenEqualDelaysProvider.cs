@@ -1,12 +1,13 @@
 ﻿using System;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
+namespace Vostok.Clusterclient.Core.Strategies.DelayProviders
 {
     /// <summary>
     /// Represents a delay provider that combines a <see cref="AdHocDelaysProvider"/> for first few requests and uses an <see cref="EqualDelaysProvider"/> for the rest of them.
     /// </summary>
+    [PublicAPI]
     public class AdHocThenEqualDelaysProvider : IForkingDelaysProvider
     {
         private readonly AdHocDelaysProvider adHocProvider;
@@ -20,6 +21,7 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
             fixedDelaysCount = firstDelays.Length;
         }
 
+        /// <inheritdoc />
         public TimeSpan? GetForkingDelay(Request request, IRequestTimeBudget budget, int currentReplicaIndex, int totalReplicas)
         {
             return currentReplicaIndex < fixedDelaysCount
@@ -27,6 +29,7 @@ namespace Vostok.ClusterClient.Core.Strategies.DelayProviders
                 : equalProvider.GetForkingDelay(request, budget, currentReplicaIndex, totalReplicas);
         }
 
+        /// <inheritdoc />
         public override string ToString() => $"{adHocProvider} + {equalProvider}";
     }
 }

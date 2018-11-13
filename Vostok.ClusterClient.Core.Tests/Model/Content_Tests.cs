@@ -3,12 +3,12 @@ using System.Linq;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
 // ReSharper disable AssignNullToNotNullAttribute
 // ReSharper disable ObjectCreationAsStatement
 
-namespace Vostok.ClusterClient.Core.Tests.Model
+namespace Vostok.Clusterclient.Core.Tests.Model
 {
     [TestFixture]
     internal class Content_Tests
@@ -146,7 +146,8 @@ namespace Vostok.ClusterClient.Core.Tests.Model
         [Test]
         public void ToString_should_convert_bytes_to_utf8_string_by_default()
         {
-            var buffer = Guid.NewGuid().ToByteArray()
+            var buffer = Guid.NewGuid()
+                .ToByteArray()
                 .Concat(Encoding.UTF8.GetBytes("Hello!"))
                 .Concat(Guid.NewGuid().ToByteArray())
                 .ToArray();

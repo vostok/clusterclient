@@ -1,5 +1,11 @@
-﻿namespace Vostok.ClusterClient.Core.Model
+﻿using JetBrains.Annotations;
+
+namespace Vostok.Clusterclient.Core.Model
 {
+    /// <summary>
+    /// Provides cached <see cref="Response"/> instances for common <see cref="ResponseCode">ResponseCodes</see>."
+    /// </summary>
+    [PublicAPI]
     public static class Responses
     {
         // (iloktionov): 0xx
@@ -27,6 +33,7 @@
         public static readonly Response Gone = new Response(ResponseCode.Gone);
         public static readonly Response Throttled = new Response(ResponseCode.TooManyRequests);
         public static readonly Response UnknownFailure = new Response(ResponseCode.UnknownFailure);
+        public static readonly Response ConnectFailure = new Response(ResponseCode.ConnectFailure);
         public static readonly Response Canceled = new Response(ResponseCode.Canceled);
         public static readonly Response StreamReuseFailure = new Response(ResponseCode.StreamReuseFailure);
         public static readonly Response StreamInputFailure = new Response(ResponseCode.StreamInputFailure);

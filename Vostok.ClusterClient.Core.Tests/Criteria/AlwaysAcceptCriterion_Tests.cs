@@ -2,10 +2,10 @@
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Criteria;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Tests.Criteria
+namespace Vostok.Clusterclient.Core.Tests.Criteria
 {
     [TestFixture]
     internal class AlwaysAcceptCriterion_Tests
@@ -15,7 +15,7 @@ namespace Vostok.ClusterClient.Core.Tests.Criteria
         {
             var criterion = new AlwaysAcceptCriterion();
 
-            var codes = Enum.GetValues(typeof (ResponseCode)).Cast<ResponseCode>();
+            var codes = Enum.GetValues(typeof(ResponseCode)).Cast<ResponseCode>();
 
             foreach (var code in codes)
             {

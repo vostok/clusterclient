@@ -1,8 +1,11 @@
-﻿namespace Vostok.ClusterClient.Core.Model
+﻿using JetBrains.Annotations;
+
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// Represents a decision about response quality.
     /// </summary>
+    [PublicAPI]
     public enum ResponseVerdict
     {
         /// <summary>

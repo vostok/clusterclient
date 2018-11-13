@@ -1,9 +1,12 @@
-﻿namespace Vostok.ClusterClient.Core.Model
+﻿using JetBrains.Annotations;
+
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// <para>Contains the names of well-known common HTTP headers.</para>
     /// <para>Values are taken from corresponding RFC (https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).</para>
     /// </summary>
+    [PublicAPI]
     public static class HeaderNames
     {
         public const string Accept = "Accept";
@@ -64,10 +67,26 @@
         public const string Vary = "Vary";
         public const string Via = "Via";
 
-        public const string XKonturRequestTimeout = "X-Kontur-Request-Timeout";
-        public const string XKonturRequestPriority = "X-Kontur-Request-Priority";
-        public const string XKonturClientIdentity = "X-Kontur-Client-Identity";
-        public const string XKonturDontRetry = "X-Kontur-Dont-Retry";
-        public const string XKonturExternalUrl = "X-Kontur-ExternalURL";
+        /// <summary>
+        /// A custom response header which indicates that client must accept response from server and don't perform any retry attempts.
+        /// </summary>
+        public const string DontRetry = "Dont-Retry";
+
+        /// <summary>
+        /// <para>A custom request header which contains client request timeout.</para>
+        /// <para>A value specified in seconds with up to 3 decimal digits.</para>
+        /// </summary>
+        public const string RequestTimeout = "Request-Timeout";
+
+        /// <summary>
+        /// <para>A custom request header which contains request priority for throttling and scheduling purposes.</para>
+        /// <para>A possible values defined in <see cref="Model.RequestPriority"/> enumeration.</para>
+        /// </summary>
+        public const string RequestPriority = "Request-Priority";
+
+        /// <summary>
+        /// A custom header which contains application name.
+        /// </summary>
+        public const string ApplicationIdentity = "Application-Identity";
     }
 }

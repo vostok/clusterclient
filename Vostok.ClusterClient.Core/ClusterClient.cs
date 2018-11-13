@@ -1,27 +1,28 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Strategies;
-using Vostok.ClusterClient.Core.Topology;
+using JetBrains.Annotations;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Topology;
+using Vostok.Clusterclient.Core.Transforms;
+using Vostok.Clusterclient.Core.Transport;
 using Vostok.Logging.Abstractions;
-using Vostok.Logging.Context;
 
-namespace Vostok.ClusterClient.Core
+namespace Vostok.Clusterclient.Core
 {
     /// <summary>
     /// <para>Represents a client used to send HTTP requests to a cluster of replicas.</para>
     /// <para>This implementation guarantees following contracts:</para>
     /// <list type="bullet">
-    /// <item>It never throws exceptions. All failures are logged and reflected in returned <see cref="ClusterResult"/> instances.</item>
-    /// <item>It is thread-safe. It's recommended to reuse <see cref="ClusterClient"/> instances as much as possible.</item>
-    /// <item>It sends requests with absolute urls directly and does not perform implicit resolving. You can turn them into relative ones with <see cref="Transforms.IRequestTransform"/>.</item>
+    /// <item><description>It never throws exceptions. All failures are logged and reflected in returned <see cref="ClusterResult"/> instances.</description></item>
+    /// <item><description>It is thread-safe. It's recommended to reuse <see cref="ClusterClient"/> instances as much as possible.</description></item>
+    /// <item><description>It sends requests with absolute urls directly and does not perform implicit resolving. You can turn them into relative ones with <see cref="IRequestTransform"/>.</description></item>
     /// </list>
     /// <para>A <see cref="ClusterClient"/> instance is constructed by passing an <see cref="ILog"/> and a <see cref="ClusterClientSetup"/> delegate to a constructor.</para>
     /// <para>Provided setup delegate is expected to initialize some fields of an <see cref="IClusterClientConfiguration"/> instance.</para>
-    /// <para>The required minimum is to set <see cref="Transport.ITransport"/> and <see cref="IClusterProvider"/> implementations.</para>
+    /// <para>The required minimum is to set <see cref="ITransport"/> and <see cref="IClusterProvider"/> implementations.</para>
     /// <example>
     /// <code>
     /// var client = new ClusterClient(log, config =>
@@ -32,6 +33,7 @@ namespace Vostok.ClusterClient.Core
     /// </code>
     /// </example>
     /// </summary>
+    [PublicAPI]
     public class ClusterClient : IClusterClient
     {
         private static readonly TimeSpan BudgetPrecision = TimeSpan.FromMilliseconds(15);
@@ -45,7 +47,7 @@ namespace Vostok.ClusterClient.Core
         /// <exception cref="ClusterClientException">Configuration was incomplete or invalid.</exception>
         public ClusterClient(ILog log, ClusterClientSetup setup)
         {
-            configuration = new ClusterClientConfiguration((log ?? new SilentLog()).WithContextualPrefix());
+            configuration = new ClusterClientConfiguration(log ?? new SilentLog());
 
             setup(configuration);
 
@@ -57,42 +59,54 @@ namespace Vostok.ClusterClient.Core
 
             ReplicaStorageProvider = ReplicaStorageProviderFactory.Create(configuration.ReplicaStorageScope);
 
+            configuration.Transport = new RequestTimeoutTransport(configuration.Transport);
+
             var modules = RequestModuleChainBuilder.BuildChain(configuration, ReplicaStorageProvider);
 
             pipelineDelegate = RequestModuleChainBuilder.BuildChainDelegate(modules);
         }
 
+        /// <summary>
+        /// A <see cref="IClusterProvider"/> implementation that used by this <see cref="ClusterClient"/> instance.
+        /// </summary>
         public IClusterProvider ClusterProvider => configuration.ClusterProvider;
 
+        /// <summary>
+        /// A <see cref="IReplicaStorageProvider"/> implementation that used by this <see cref="ClusterClient"/> instance.
+        /// </summary>
         public IReplicaStorageProvider ReplicaStorageProvider { get; }
 
+        /// <inheritdoc />
         public Task<ClusterResult> SendAsync(
             Request request,
+            RequestParameters parameters = null,
             TimeSpan? timeout = null,
-            IRequestStrategy strategy = null,
-            CancellationToken cancellationToken = default,
-            RequestPriority? priority = null)
+            CancellationToken cancellationToken = new CancellationToken())
         {
             return pipelineDelegate(
-                CreateContext(
+                new RequestContext(
                     request,
-                    timeout ?? configuration.DefaultTimeout,
-                    strategy ?? configuration.DefaultRequestStrategy,
-                    cancellationToken,
-                    priority ?? configuration.DefaultPriority,
-                    configuration.MaxReplicasUsedPerRequest)
-            );
+                    CompleteParameters(parameters),
+                    RequestTimeBudget.StartNew(timeout ?? configuration.DefaultTimeout, BudgetPrecision),
+                    configuration.Log,
+                    configuration.Transport,
+                    configuration.MaxReplicasUsedPerRequest,
+                    configuration.ClientApplicationName,
+                    cancellationToken));
         }
 
-        private RequestContext CreateContext(Request request, TimeSpan timeout, IRequestStrategy strategy, CancellationToken cancellationToken, RequestPriority? priority, int maxReplicasToUse) =>
-            new RequestContext(
-                request,
-                strategy,
-                RequestTimeBudget.StartNew(timeout, BudgetPrecision),
-                configuration.Log,
-                configuration.Transport,
-                cancellationToken,
-                priority,
-                maxReplicasToUse);
+        private RequestParameters CompleteParameters(RequestParameters parameters)
+        {
+            if (parameters == null)
+                return new RequestParameters(configuration.DefaultRequestStrategy, configuration.DefaultPriority);
+
+            if (parameters.Strategy == null)
+                parameters = parameters.WithStrategy(configuration.DefaultRequestStrategy);
+            if (parameters.Priority == null)
+                parameters = parameters.WithPriority(configuration.DefaultPriority);
+            if (parameters.ConnectionTimeout == null)
+                parameters = parameters.WithConnectionTimeout(configuration.DefaultConnectionTimeout);
+            return parameters;
+        }
     }
 }

@@ -1,8 +1,12 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed.Gray
+namespace Vostok.Clusterclient.Core.Ordering.Weighed.Gray
 {
+    /// <summary>
+    /// A provider of gray period.
+    /// </summary>
+    [PublicAPI]
     public interface IGrayPeriodProvider
     {
         /// <summary>

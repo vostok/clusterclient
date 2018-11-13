@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Transport
+namespace Vostok.Clusterclient.Core.Transport
 {
     /// <summary>
     /// A transport decorator responsible for disposing all responses that do not make it to final <see cref="ClusterResult"/>.
@@ -45,9 +45,9 @@ namespace Vostok.ClusterClient.Core.Transport
             }
         }
 
-        public async Task<Response> SendAsync(Request request, TimeSpan timeout, CancellationToken cancellationToken)
+        public async Task<Response> SendAsync(Request request, TimeSpan? connectionTimeout, TimeSpan timeout, CancellationToken cancellationToken)
         {
-            var response = await transport.SendAsync(request, timeout, cancellationToken).ConfigureAwait(false);
+            var response = await transport.SendAsync(request, connectionTimeout, timeout, cancellationToken).ConfigureAwait(false);
 
             lock (syncObject)
             {

@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.Context;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
-    internal class RequestPriorityApplicationModule : IRequestModule
+    internal class AuxiliaryHeadersModule : IRequestModule
     {
         public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
-            var priority = context.Priority ?? FlowingContext.Properties.Get<RequestPriority?>("request.priority");
+            var priority = context.Parameters.Priority;
             if (priority.HasValue)
-                context.Request = context.Request.WithHeader(HeaderNames.XKonturRequestPriority, priority.Value);
+                context.Request = context.Request.WithHeader(HeaderNames.RequestPriority, priority.Value);
+
+            if (!string.IsNullOrEmpty(context.ClientApplicationName))
+                context.Request = context.Request.WithHeader(HeaderNames.ApplicationIdentity, context.ClientApplicationName);
 
             return next(context);
         }

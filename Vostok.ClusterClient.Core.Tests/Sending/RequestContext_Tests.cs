@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Strategies;
-using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Strategies;
+using Vostok.Clusterclient.Core.Tests.Helpers;
 using Vostok.Logging.Console;
 
-namespace Vostok.ClusterClient.Core.Tests.Sending
+namespace Vostok.Clusterclient.Core.Tests.Sending
 {
     [TestFixture]
     internal class RequestContext_Tests
@@ -18,7 +17,13 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
         [SetUp]
         public void TestSetup()
         {
-            context = new RequestContext(Request.Get("foo/bar"), Strategy.Sequential2, Budget.Infinite, new ConsoleLog(), null, CancellationToken.None, null, int.MaxValue);
+            context = new RequestContext(
+                Request.Get("foo/bar"),
+                new RequestParameters(Strategy.Sequential2),
+                Budget.Infinite,
+                new ConsoleLog(),
+                null,
+                int.MaxValue);
         }
 
         [Test]

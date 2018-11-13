@@ -1,10 +1,10 @@
 ﻿using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Transforms;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Transforms;
 
-namespace Vostok.ClusterClient.Core.Tests.Transforms
+namespace Vostok.Clusterclient.Core.Tests.Transforms
 {
     [TestFixture]
     internal class DefaultHeadersTransform_Tests
@@ -28,12 +28,13 @@ namespace Vostok.ClusterClient.Core.Tests.Transforms
         [Test]
         public void Ctor_should_correctly_handle_input_headers()
         {
-            var transform = new DefaultHeadersTransform(new[]
-            {
-                new Header("k1", "v1"),
-                new Header("k2", "v2"),
-                new Header("k3", "v3")
-            });
+            var transform = new DefaultHeadersTransform(
+                new[]
+                {
+                    new Header("k1", "v1"),
+                    new Header("k2", "v2"),
+                    new Header("k3", "v3")
+                });
 
             transform.DefaultHeaders.Count.Should().Be(3);
             transform.DefaultHeaders["k1"].Should().Be("v1");

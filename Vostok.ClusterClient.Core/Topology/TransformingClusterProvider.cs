@@ -1,39 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using Vostok.ClusterClient.Core.Transforms;
+using Vostok.Clusterclient.Core.Transforms;
+using Vostok.Commons.Collections;
 
-namespace Vostok.ClusterClient.Core.Topology
+namespace Vostok.Clusterclient.Core.Topology
 {
     internal class TransformingClusterProvider : IClusterProvider
     {
-        private readonly IClusterProvider provider;
         private readonly IReplicaTransform transform;
 
-        private Tuple<IList<Uri>, IList<Uri>> cache;
+        private readonly CachingTransform<IList<Uri>, IList<Uri>> cache;
 
         public TransformingClusterProvider(IClusterProvider provider, IReplicaTransform transform)
         {
-            this.provider = provider;
             this.transform = transform;
+            cache = new CachingTransform<IList<Uri>, IList<Uri>>(ApplyTransform, provider.GetCluster);
         }
 
         public IList<Uri> GetCluster()
-        {
-            var currentReplicas = provider.GetCluster();
-            if (currentReplicas == null || currentReplicas.Count == 0)
-                return currentReplicas;
+            => cache.Get();
 
-            var currentCache = cache;
-
-            if (currentCache != null && ReferenceEquals(currentCache.Item1, currentReplicas))
-                return currentCache.Item2;
-
-            var transformedReplicas = transform.Transform(currentReplicas);
-
-            Interlocked.CompareExchange(ref cache, Tuple.Create(currentReplicas, transformedReplicas), currentCache);
-
-            return transformedReplicas;
-        }
+        private IList<Uri> ApplyTransform(IList<Uri> replicas)
+            => replicas == null
+                ? null
+                : transform.Transform(replicas);
     }
 }

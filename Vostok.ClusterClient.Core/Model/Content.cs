@@ -3,15 +3,24 @@ using System.IO;
 using System.Text;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// Represents a buffered in-memory content transferred to/from server during request execution.
     /// </summary>
+    [PublicAPI]
     public class Content
     {
+        /// <summary>
+        /// Represents an empty <see cref="Content"/>.
+        /// </summary>
         public static readonly Content Empty = new Content(new byte[0]);
 
+        /// <param name="buffer">An underlying buffer which contains content data.</param>
+        /// <param name="offset">A content data offset in <paramref name="buffer"/>.</param>
+        /// <param name="length">A length of content.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">A data with specified <paramref name="offset"/> and <paramref name="length"/> doesn't fit into <paramref name="buffer"/>.</exception>
         public Content([NotNull] byte[] buffer, int offset, int length)
         {
             if (buffer == null)
@@ -28,6 +37,8 @@ namespace Vostok.ClusterClient.Core.Model
             Length = length;
         }
 
+        /// <param name="buffer">A buffer with content data.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="buffer"/> is null.</exception>
         public Content([NotNull] byte[] buffer)
         {
             Buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
@@ -35,7 +46,9 @@ namespace Vostok.ClusterClient.Core.Model
             Length = buffer.Length;
         }
 
+        /// <param name="segment">An <see cref="ArraySegment{T}"/> which refers to content data.</param>
         public Content(ArraySegment<byte> segment)
+            // ReSharper disable once AssignNullToNotNullAttribute (it's checked in underlying ctor)
             : this(segment.Array, segment.Offset, segment.Count)
         {
         }
@@ -74,24 +87,33 @@ namespace Vostok.ClusterClient.Core.Model
         /// <summary>
         /// Returns the data as byte array segment.
         /// </summary>
-        public ArraySegment<byte> ToArraySegment() =>
-            new ArraySegment<byte>(Buffer, Offset, Length);
+        public ArraySegment<byte> ToArraySegment()
+        {
+            return new ArraySegment<byte>(Buffer, Offset, Length);
+        }
 
         /// <summary>
         /// Wraps the data in a memory stream with public buffer.
         /// </summary>
-        public MemoryStream ToMemoryStream() =>
-            new MemoryStream(Buffer, Offset, Length, false, true);
+        public MemoryStream ToMemoryStream()
+        {
+            return new MemoryStream(Buffer, Offset, Length, false, true);
+        }
 
         /// <summary>
         /// Converts the data to a string using <see cref="UTF8Encoding"/>.
         /// </summary>
-        public override string ToString() => ToString(Encoding.UTF8);
+        public override string ToString()
+        {
+            return ToString(Encoding.UTF8);
+        }
 
         /// <summary>
         /// Converts the data to a string using given <paramref name="encoding"></paramref>.
         /// </summary>
-        public string ToString(Encoding encoding) =>
-            encoding.GetString(Buffer, Offset, Length);
+        public string ToString(Encoding encoding)
+        {
+            return encoding.GetString(Buffer, Offset, Length);
+        }
     }
 }

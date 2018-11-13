@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed
+namespace Vostok.Clusterclient.Core.Ordering.Weighed
 {
     internal class ReplicaWeightCalculator : IReplicaWeightCalculator
     {
@@ -40,13 +40,13 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed
             this.initialWeight = initialWeight;
         }
 
-        public double GetWeight(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request)
+        public double GetWeight(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request, RequestParameters parameters)
         {
             var weight = initialWeight;
 
             foreach (var modifier in modifiers)
             {
-                modifier.Modify(replica, allReplicas, storageProvider, request, ref weight);
+                modifier.Modify(replica, allReplicas, storageProvider, request, parameters, ref weight);
 
                 if (weight < minimumWeight)
                     weight = minimumWeight;

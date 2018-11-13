@@ -1,17 +1,20 @@
-﻿namespace Vostok.ClusterClient.Core.Model
+﻿using JetBrains.Annotations;
+
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// <para>Represents an http response code. All members have correct numeric values.</para>
     /// <para>Values are taken from corresponding RFC (http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html) with several custom extensions:</para>
     /// <list type="bullet">
-    /// <item><see cref="ConnectFailure"/></item>
-    /// <item><see cref="ReceiveFailure"/></item>
-    /// <item><see cref="SendFailure"/></item>
-    /// <item><see cref="UnknownFailure"/></item>
-    /// <item><see cref="Unknown"/></item>
-    /// <item><see cref="Canceled"/></item>
+    /// <item><description><see cref="ConnectFailure"/></description></item>
+    /// <item><description><see cref="ReceiveFailure"/></description></item>
+    /// <item><description><see cref="SendFailure"/></description></item>
+    /// <item><description><see cref="UnknownFailure"/></description></item>
+    /// <item><description><see cref="Unknown"/></description></item>
+    /// <item><description><see cref="Canceled"/></description></item>
     /// </list>
     /// </summary>
+    [PublicAPI]
     public enum ResponseCode
     {
         /// <summary>
@@ -60,7 +63,6 @@
         UnsupportedMediaType = 415,
         RequestedRangeNotSatisfiable = 416,
         ExpectationFailed = 417,
-        /*IAmATeaPot = 418,*/
         TooManyRequests = 429,
 
         // (iloktionov): Network error (extensions) 4xx

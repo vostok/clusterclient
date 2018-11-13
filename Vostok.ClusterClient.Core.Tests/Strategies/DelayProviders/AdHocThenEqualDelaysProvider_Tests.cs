@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Strategies.DelayProviders;
-using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Strategies.DelayProviders;
+using Vostok.Clusterclient.Core.Tests.Helpers;
 
-namespace Vostok.ClusterClient.Core.Tests.Strategies.DelayProviders
+namespace Vostok.Clusterclient.Core.Tests.Strategies.DelayProviders
 {
     [TestFixture]
     internal class AdHocThenEqualDelaysProvider_Tests

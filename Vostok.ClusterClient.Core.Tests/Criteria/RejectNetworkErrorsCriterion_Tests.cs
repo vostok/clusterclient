@@ -2,10 +2,10 @@
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Criteria;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Tests.Criteria
+namespace Vostok.Clusterclient.Core.Tests.Criteria
 {
     [TestFixture]
     internal class RejectNetworkErrorsCriterion_Tests
@@ -30,7 +30,7 @@ namespace Vostok.ClusterClient.Core.Tests.Criteria
         [Test]
         public void Should_know_nothing_about_codes_which_are_not_network_errors()
         {
-            var codes = Enum.GetValues(typeof (ResponseCode)).Cast<ResponseCode>().Where(code => !code.IsNetworkError());
+            var codes = Enum.GetValues(typeof(ResponseCode)).Cast<ResponseCode>().Where(code => !code.IsNetworkError());
 
             foreach (var code in codes)
             {

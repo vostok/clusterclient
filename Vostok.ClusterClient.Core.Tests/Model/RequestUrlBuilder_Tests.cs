@@ -1,10 +1,10 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Tests.Helpers;
 
-namespace Vostok.ClusterClient.Core.Tests.Model
+namespace Vostok.Clusterclient.Core.Tests.Model
 {
     [TestFixture]
     internal class RequestUrlBuilder_Tests
@@ -65,7 +65,7 @@ namespace Vostok.ClusterClient.Core.Tests.Model
                 {"a?a", "b?b"},
             };
 
-            builder.Build().OriginalString.Should().Be("foo/bar/baz?a%3fa=b%3fb");
+            builder.Build().OriginalString.Should().Be("foo/bar/baz?a%3Fa=b%3Fb");
         }
 
         [Test]

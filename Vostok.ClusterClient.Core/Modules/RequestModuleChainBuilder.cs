@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Misc;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Sending;
+using Vostok.Clusterclient.Core.Criteria;
+using Vostok.Clusterclient.Core.Misc;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Sending;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     internal static class RequestModuleChainBuilder
     {
@@ -18,32 +19,33 @@ namespace Vostok.ClusterClient.Core.Modules
             var requestSender = new RequestSender(config, storageProvider, responseClassifier, requestConverter);
             var resultStatusSelector = new ClusterResultStatusSelector();
 
-            var modules = new List<IRequestModule>(12 + config.Modules?.Count ?? 0)
-            {
-                new LeakPreventionModule(),
-                new ErrorCatchingModule(),
-                new RequestTransformationModule(config.RequestTransforms),
-                new RequestPriorityApplicationModule()
-            };
+            // ReSharper disable once UseObjectOrCollectionInitializer
+            var modules = new List<IRequestModule>(12 + config.Modules?.Sum(x => x.Value.Count) ?? 0);
 
-            if (config.Modules != null)
-                modules.AddRange(config.Modules);
+            var addedModules = new HashSet<Type>();
 
-            modules.Add(new LoggingModule(config.LogPrefixEnabled, config.LogRequestDetails, config.LogResultDetails));
-            modules.Add(new ResponseTransformationModule(config.ResponseTransforms));
-            modules.Add(new ErrorCatchingModule());
-            modules.Add(new RequestValidationModule());
-            modules.Add(new TimeoutValidationModule());
-            modules.Add(new RequestRetryModule(config.RetryPolicy, config.RetryStrategy));
+            AddModule(new LeakPreventionModule());
+            AddModule(new GlobalErrorCatchingModule());
+            AddModule(new RequestTransformationModule(config.RequestTransforms));
+            AddModule(new AuxiliaryHeadersModule());
 
-            if (config.AdaptiveThrottling != null)
-                modules.Add(new AdaptiveThrottlingModule(config.AdaptiveThrottling));
+            // -->> user-defined modules by default inserted here <<-- //
 
-            if (config.ReplicaBudgeting != null)
-                modules.Add(new ReplicaBudgetingModule(config.ReplicaBudgeting));
+            AddModule(new LoggingModule(config.Logging.LogRequestDetails, config.Logging.LogResultDetails));
+            AddModule(new ResponseTransformationModule(config.ResponseTransforms));
+            AddModule(new ErrorCatchingModule());
+            AddModule(new RequestValidationModule());
 
-            modules.Add(new AbsoluteUrlSenderModule(responseClassifier, config.ResponseCriteria, resultStatusSelector));
-            modules.Add(
+            AddModule(new TimeoutValidationModule());
+            AddModule(new RequestRetryModule(config.RetryPolicy, config.RetryStrategy));
+
+            // -->> adaptive throttling module <<-- //
+
+            AddModule(new AbsoluteUrlSenderModule(responseClassifier, config.ResponseCriteria, resultStatusSelector));
+
+            // -->> replica budgeting module <<-- //
+
+            AddModule(
                 new RequestExecutionModule(
                     config.ClusterProvider,
                     config.ReplicaOrdering,
@@ -53,6 +55,34 @@ namespace Vostok.ClusterClient.Core.Modules
                     resultStatusSelector));
 
             return modules;
+
+            void AddModules(IEnumerable<IRequestModule> modulesRange)
+            {
+                if (modulesRange == null)
+                    return;
+
+                foreach (var module in modulesRange)
+                    AddModule(module);
+            }
+
+            void AddModule(IRequestModule module)
+            {
+                var moduleType = module.GetType();
+
+                var isNewModule = addedModules.Add(moduleType);
+
+                if (!isNewModule || config.Modules == null)
+                {
+                    modules.Add(module);
+                    return;
+                }
+
+                var relatedModules = config.Modules.TryGetValue(moduleType, out var v) ? v : null;
+
+                AddModules(relatedModules?.Before);
+                modules.Add(module);
+                AddModules(relatedModules?.After);
+            }
         }
 
         public static Func<IRequestContext, Task<ClusterResult>> BuildChainDelegate(IList<IRequestModule> modules)

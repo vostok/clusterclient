@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Topology;
-using Vostok.ClusterClient.Core.Transforms;
+using Vostok.Clusterclient.Core.Topology;
+using Vostok.Clusterclient.Core.Transforms;
 
-namespace Vostok.ClusterClient.Core.Tests.Topology
+namespace Vostok.Clusterclient.Core.Tests.Topology
 {
     [TestFixture]
     internal class TransformingClusterProvider_Tests

@@ -3,34 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// Represent the final result of sending request to a cluster of replicas.
     /// </summary>
     // ReSharper disable once InheritdocConsiderUsage
+    [PublicAPI]
     public class ClusterResult : IDisposable
     {
-        internal static ClusterResult TimeExpired(Request request) =>
-            new ClusterResult(ClusterResultStatus.TimeExpired, new ReplicaResult[] {}, null, request);
-
-        internal static ClusterResult ReplicasNotFound(Request request) =>
-            new ClusterResult(ClusterResultStatus.ReplicasNotFound, new ReplicaResult[] {}, null, request);
-
-        internal static ClusterResult IncorrectArguments(Request request) =>
-            new ClusterResult(ClusterResultStatus.IncorrectArguments, new ReplicaResult[] {}, null, request);
-
-        internal static ClusterResult UnexpectedException(Request request) =>
-            new ClusterResult(ClusterResultStatus.UnexpectedException, new ReplicaResult[] {}, null, request);
-
-        internal static ClusterResult Canceled(Request request) =>
-            new ClusterResult(ClusterResultStatus.Canceled, new ReplicaResult[] {}, null, request);
-
-        internal static ClusterResult Throttled(Request request) =>
-            new ClusterResult(ClusterResultStatus.Throttled, new ReplicaResult[] {}, null, request);
-
         private readonly Response selectedResponse;
 
+        /// <param name="status">Result status.</param>
+        /// <param name="replicaResults">The results of replica requests made during request execution.</param>
+        /// <param name="selectedResponse">The final selected response.</param>
+        /// <param name="request">A request which has been sent with this result.</param>
+        [PublicAPI]
         public ClusterResult(
             ClusterResultStatus status,
             [NotNull] IList<ReplicaResult> replicaResults,
@@ -65,9 +53,9 @@ namespace Vostok.ClusterClient.Core.Model
         /// <para>By default this property returns a response selected by <see cref="Misc.IResponseSelector"/> implementation.</para>
         /// <para>If no response was received or explicitly selected, this property returns a generated response:</para>
         /// <list type="bullet">
-        /// <item><see cref="ClusterResultStatus.TimeExpired"/> --> <see cref="ResponseCode.RequestTimeout"/></item>
-        /// <item><see cref="ClusterResultStatus.UnexpectedException"/> --> <see cref="ResponseCode.UnknownFailure"/></item>
-        /// <item>any other status --> <see cref="ResponseCode.Unknown"/></item>
+        /// <item><description><see cref="ClusterResultStatus.TimeExpired"/> --> <see cref="ResponseCode.RequestTimeout"/></description></item>
+        /// <item><description><see cref="ClusterResultStatus.UnexpectedException"/> --> <see cref="ResponseCode.UnknownFailure"/></description></item>
+        /// <item><description>any other status --> <see cref="ResponseCode.Unknown"/></description></item>
         /// </list>
         /// </summary>
         [NotNull]
@@ -86,12 +74,45 @@ namespace Vostok.ClusterClient.Core.Model
         [NotNull]
         public Request Request { get; }
 
+        /// <summary>
+        /// Disposes all response streams which linked with this <see cref="ClusterResult"/>.
+        /// </summary>
         public void Dispose()
         {
             selectedResponse?.Dispose();
 
             foreach (var replicaResult in ReplicaResults)
                 replicaResult.Response.Dispose();
+        }
+
+        internal static ClusterResult TimeExpired(Request request)
+        {
+            return new ClusterResult(ClusterResultStatus.TimeExpired, new ReplicaResult[] {}, null, request);
+        }
+
+        internal static ClusterResult ReplicasNotFound(Request request)
+        {
+            return new ClusterResult(ClusterResultStatus.ReplicasNotFound, new ReplicaResult[] {}, null, request);
+        }
+
+        internal static ClusterResult IncorrectArguments(Request request)
+        {
+            return new ClusterResult(ClusterResultStatus.IncorrectArguments, new ReplicaResult[] {}, null, request);
+        }
+
+        internal static ClusterResult UnexpectedException(Request request)
+        {
+            return new ClusterResult(ClusterResultStatus.UnexpectedException, new ReplicaResult[] {}, null, request);
+        }
+
+        internal static ClusterResult Canceled(Request request)
+        {
+            return new ClusterResult(ClusterResultStatus.Canceled, new ReplicaResult[] {}, null, request);
+        }
+
+        internal static ClusterResult Throttled(Request request)
+        {
+            return new ClusterResult(ClusterResultStatus.Throttled, new ReplicaResult[] {}, null, request);
         }
 
         private Response GetResponseByStatus()

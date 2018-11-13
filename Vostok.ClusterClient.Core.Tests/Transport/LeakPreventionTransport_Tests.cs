@@ -5,10 +5,10 @@ using System.Threading;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Transport;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Transport;
 
-namespace Vostok.ClusterClient.Core.Tests.Transport
+namespace Vostok.Clusterclient.Core.Tests.Transport
 {
     [TestFixture]
     internal class LeakPreventionTransport_Tests
@@ -89,9 +89,9 @@ namespace Vostok.ClusterClient.Core.Tests.Transport
 
         private Response Send(Response response)
         {
-            baseTransport.SendAsync(null, TimeSpan.Zero, CancellationToken.None).ReturnsForAnyArgs(response);
+            baseTransport.SendAsync(null, TimeSpan.Zero, TimeSpan.Zero, CancellationToken.None).ReturnsForAnyArgs(response);
 
-            return leakTransport.SendAsync(Request.Get(""), TimeSpan.MaxValue, CancellationToken.None).GetAwaiter().GetResult();
+            return leakTransport.SendAsync(Request.Get(""), TimeSpan.Zero, TimeSpan.Zero, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         private void Complete(params Response[] responses)
@@ -100,7 +100,7 @@ namespace Vostok.ClusterClient.Core.Tests.Transport
 
             var replicaResults = responses.Select(r => new ReplicaResult(new Uri("http://replica"), r, ResponseVerdict.Accept, TimeSpan.Zero));
 
-            var result = new ClusterResult(ClusterResultStatus.Success, replicaResults.ToList(), responses.FirstOrDefault(), Request.Get("")); 
+            var result = new ClusterResult(ClusterResultStatus.Success, replicaResults.ToList(), responses.FirstOrDefault(), Request.Get(""));
 
             leakTransport.CompleteRequest(result);
         }

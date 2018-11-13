@@ -4,16 +4,16 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Helpers;
+using Vostok.Commons.Collections;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// <para>Represents an efficient builder of request urls.</para>
     /// <para>Supports collection initializer syntax:</para>
     /// <list type="bullet">
-    /// <item>You can add string or object which are treated as path segments.</item>
-    /// <item>You can add key-value pairs which are treated as query parameters.</item>
+    /// <item><description>You can add string or object which are treated as path segments.</description></item>
+    /// <item><description>You can add key-value pairs which are treated as query parameters.</description></item>
     /// </list>
     /// </summary>
     /// <example>
@@ -27,40 +27,50 @@ namespace Vostok.ClusterClient.Core.Model
     /// </code>
     /// This creates following url: <c>foo/bar/baz?key=value</c>
     /// </example>
+    [PublicAPI]
     public class RequestUrlBuilder : IDisposable, IEnumerable
     {
-        private static readonly Pool<StringBuilder> builders;
-
-        static RequestUrlBuilder()
-        {
-            builders = new Pool<StringBuilder>(() => new StringBuilder(128));
-        }
+        private static readonly Func<string, string> Escape = Uri.EscapeDataString;
+        private static readonly UnboundedObjectPool<StringBuilder> Builders;
 
         private StringBuilder builder;
         private bool hasQueryParameters;
         private Uri result;
 
+        static RequestUrlBuilder()
+        {
+            Builders = new UnboundedObjectPool<StringBuilder>(() => new StringBuilder(128));
+        }
+
+        /// <param name="initialUrl">The initial Url.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="initialUrl"/> is <c>null</c>.</exception>
         public RequestUrlBuilder([NotNull] string initialUrl = "")
         {
             if (initialUrl == null)
                 throw new ArgumentNullException(nameof(initialUrl));
 
-            builder = builders.Acquire();
+            builder = Builders.Acquire();
             builder.Clear();
             builder.Append(initialUrl);
 
             hasQueryParameters = initialUrl.IndexOf("?", StringComparison.Ordinal) >= 0;
         }
 
+        /// <summary>
+        /// Check that builder instance is disposed.
+        /// </summary>
         public bool IsDisposed => builder == null;
 
+        /// <summary>
+        /// Releases underlying buffer.
+        /// </summary>
         public void Dispose()
         {
             var oldBuilder = Interlocked.Exchange(ref builder, null);
             if (oldBuilder == null)
                 return;
 
-            builders.Release(oldBuilder);
+            Builders.Return(oldBuilder);
         }
 
         /// <summary>
@@ -81,8 +91,10 @@ namespace Vostok.ClusterClient.Core.Model
         /// <para>Note that it's not possible to append to path when url already has some query parameters.</para>
         /// </summary>
         [NotNull]
-        public RequestUrlBuilder AppendToPath<T>([CanBeNull] T segment) =>
-            AppendToPath(FormatValue(segment));
+        public RequestUrlBuilder AppendToPath<T>([CanBeNull] T segment)
+        {
+            return AppendToPath(FormatValue(segment));
+        }
 
         /// <summary>
         /// <para>Appends a new path <paramref name="segment"/>.</para>
@@ -118,8 +130,10 @@ namespace Vostok.ClusterClient.Core.Model
         /// <para><paramref name="key"/> and <paramref name="value"/> are encoded using percent-encoding.</para>
         /// </summary>
         [NotNull]
-        public RequestUrlBuilder AppendToQuery<T>([CanBeNull] string key, [CanBeNull] T value) =>
-            AppendToQuery(key, FormatValue(value));
+        public RequestUrlBuilder AppendToQuery<T>([CanBeNull] string key, [CanBeNull] T value)
+        {
+            return AppendToQuery(key, FormatValue(value));
+        }
 
         /// <summary>
         /// <para>Appends a new query parameter with given <paramref name="key"/> and <paramref name="value"/>.</para>
@@ -143,9 +157,9 @@ namespace Vostok.ClusterClient.Core.Model
                 hasQueryParameters = true;
             }
 
-            builder.Append(UrlEncodingHelper.UrlEncode(key, Encoding.UTF8));
+            builder.Append(Escape(key));
             builder.Append('=');
-            builder.Append(UrlEncodingHelper.UrlEncode(value, Encoding.UTF8));
+            builder.Append(Escape(value));
 
             return this;
         }
@@ -153,44 +167,62 @@ namespace Vostok.ClusterClient.Core.Model
         /// <summary>
         /// Same as <see cref="AppendToPath"/>. Needed for collection initializer syntax.
         /// </summary>
-        public void Add([CanBeNull] string segment) => AppendToPath(segment);
+        public void Add([CanBeNull] string segment)
+        {
+            AppendToPath(segment);
+        }
 
         /// <summary>
         /// Same as <see cref="AppendToPath{T}"/>. Needed for collection initializer syntax.
         /// </summary>
-        public void Add<T>([CanBeNull] T segment) => AppendToPath(segment);
+        public void Add<T>([CanBeNull] T segment)
+        {
+            AppendToPath(segment);
+        }
 
         /// <summary>
         /// Same as <see cref="AppendToQuery"/>. Needed for collection initializer syntax.
         /// </summary>
-        public void Add([CanBeNull] string key, [CanBeNull] string value) => AppendToQuery(key, value);
+        public void Add([CanBeNull] string key, [CanBeNull] string value)
+        {
+            AppendToQuery(key, value);
+        }
 
         /// <summary>
         /// Same as <see cref="AppendToQuery{T}"/>. Needed for collection initializer syntax.
         /// </summary>
-        public void Add<T>([CanBeNull] string key, [CanBeNull] T value) => AppendToQuery(key, value);
+        public void Add<T>([CanBeNull] string key, [CanBeNull] T value)
+        {
+            AppendToQuery(key, value);
+        }
 
+        /// <summary>
+        /// Throws if builder is disposed.
+        /// </summary>
         protected void EnsureNotDisposed()
         {
             if (builder == null)
                 throw new ObjectDisposedException(nameof(builder), "Can not reuse a builder which already built an url.");
         }
 
+        /// <summary>
+        /// Throws if request url already has query parameters
+        /// </summary>
         protected void EnsureQueryNotStarted()
         {
             if (hasQueryParameters)
                 throw new InvalidOperationException("Can not append to path after appending query parameters.");
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => throw new NotSupportedException();
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string FormatValue<T>(T value)
         {
-            if (!typeof(T).IsValueType && Equals(value, null))
-                return null;
+            return value?.ToString();
+        }
 
-            return value.ToString();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotSupportedException();
         }
     }
 }

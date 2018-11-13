@@ -2,11 +2,11 @@
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
 // ReSharper disable PossibleNullReferenceException
 
-namespace Vostok.ClusterClient.Core.Tests.Model
+namespace Vostok.Clusterclient.Core.Tests.Model
 {
     [TestFixture]
     internal class RequestHeadersExtensions_Tests
@@ -181,17 +181,6 @@ namespace Vostok.ClusterClient.Core.Tests.Model
             request = request.WithUserAgentHeader("CERN-LineMode/2.15 libwww/2.17b3");
 
             request.Headers.UserAgent.Should().Be("CERN-LineMode/2.15 libwww/2.17b3");
-        }
-
-        [Test]
-        [SetCulture("ru-RU")]
-        public void AppendToHeaderWithQuality_should_produce_correct_header_value()
-        {
-            request = request
-                .AppendToHeaderWithQuality(HeaderNames.Accept, "foo", 0.4m)
-                .AppendToHeaderWithQuality(HeaderNames.Accept, "bar", 0.5m);
-
-            request.Headers[HeaderNames.Accept].Should().Be("bar;q=0.5,foo;q=0.4");
         }
     }
 }

@@ -5,13 +5,13 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Sending;
-using Vostok.ClusterClient.Core.Strategies;
-using Vostok.ClusterClient.Core.Strategies.TimeoutProviders;
-using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Sending;
+using Vostok.Clusterclient.Core.Strategies;
+using Vostok.Clusterclient.Core.Strategies.TimeoutProviders;
+using Vostok.Clusterclient.Core.Tests.Helpers;
 
-namespace Vostok.ClusterClient.Core.Tests.Strategies
+namespace Vostok.Clusterclient.Core.Tests.Strategies
 {
     [TestFixture]
     internal class SequentialRequestStrategy_Tests
@@ -21,6 +21,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         private Uri replica3;
         private Uri[] replicas;
         private Request request;
+        private RequestParameters parameters;
 
         private ISequentialTimeoutsProvider timeoutsProvider;
         private IRequestSender sender;
@@ -38,6 +39,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
             replicas = new[] {replica1, replica2, replica3};
 
             request = Request.Get("/foo");
+            parameters = RequestParameters.Empty.WithConnectionTimeout(1.Seconds());
 
             timeoutsProvider = Substitute.For<ISequentialTimeoutsProvider>();
             timeoutsProvider.GetTimeout(null, null, 0, 0).ReturnsForAnyArgs(1.Seconds(), 2.Seconds(), 3.Seconds());
@@ -92,9 +94,9 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
             Send(Budget.Infinite);
 
             sender.ReceivedCalls().Should().HaveCount(3);
-            sender.Received(1).SendToReplicaAsync(replica1, request, 1.Seconds(), token);
-            sender.Received(1).SendToReplicaAsync(replica2, request, 2.Seconds(), token);
-            sender.Received(1).SendToReplicaAsync(replica3, request, 3.Seconds(), token);
+            sender.Received(1).SendToReplicaAsync(replica1, request, Arg.Any<TimeSpan?>(), 1.Seconds(), token);
+            sender.Received(1).SendToReplicaAsync(replica2, request, Arg.Any<TimeSpan?>(), 2.Seconds(), token);
+            sender.Received(1).SendToReplicaAsync(replica3, request, Arg.Any<TimeSpan?>(), 3.Seconds(), token);
         }
 
         [Test]
@@ -103,9 +105,20 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
             Send(Budget.WithRemaining(1500.Milliseconds()));
 
             sender.ReceivedCalls().Should().HaveCount(3);
-            sender.Received(1).SendToReplicaAsync(replica1, request, 1.Seconds(), token);
-            sender.Received(1).SendToReplicaAsync(replica2, request, 1500.Milliseconds(), token);
-            sender.Received(1).SendToReplicaAsync(replica3, request, 1500.Milliseconds(), token);
+            sender.Received(1).SendToReplicaAsync(replica1, request, Arg.Any<TimeSpan?>(), 1.Seconds(), token);
+            sender.Received(1).SendToReplicaAsync(replica2, request, Arg.Any<TimeSpan?>(), 1500.Milliseconds(), token);
+            sender.Received(1).SendToReplicaAsync(replica3, request, Arg.Any<TimeSpan?>(), 1500.Milliseconds(), token);
+        }
+
+        [Test]
+        public void Should_not_use_connection_timeout_for_last_attempt()
+        {
+            Send(Budget.WithRemaining(1500.Milliseconds()));
+
+            sender.ReceivedCalls().Should().HaveCount(3);
+            sender.Received(1).SendToReplicaAsync(replica1, request, parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), token);
+            sender.Received(1).SendToReplicaAsync(replica2, request, parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), token);
+            sender.Received(1).SendToReplicaAsync(replica3, request, null, Arg.Any<TimeSpan>(), token);
         }
 
         [Test]
@@ -116,21 +129,21 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
             Send(Budget.Infinite);
 
             sender.ReceivedCalls().Should().HaveCount(2);
-            sender.Received(1).SendToReplicaAsync(replica1, request, Arg.Any<TimeSpan>(), token);
-            sender.Received(1).SendToReplicaAsync(replica2, request, Arg.Any<TimeSpan>(), token);
-            sender.DidNotReceive().SendToReplicaAsync(replica3, request, Arg.Any<TimeSpan>(), token);
+            sender.Received(1).SendToReplicaAsync(replica1, request, Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), token);
+            sender.Received(1).SendToReplicaAsync(replica2, request, Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), token);
+            sender.DidNotReceive().SendToReplicaAsync(replica3, request, Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), token);
         }
 
         private void SetupResult(Uri replica, ResponseVerdict verdict)
         {
             sender
-                .SendToReplicaAsync(replica, Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
+                .SendToReplicaAsync(replica, Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
                 .ReturnsTask(new ReplicaResult(replica, new Response(ResponseCode.Ok), verdict, TimeSpan.Zero));
         }
 
         private void Send(IRequestTimeBudget budget)
         {
-            strategy.SendAsync(request, sender, budget, replicas, replicas.Length, token).GetAwaiter().GetResult();
+            strategy.SendAsync(request, parameters, sender, budget, replicas, replicas.Length, token).GetAwaiter().GetResult();
         }
     }
 }

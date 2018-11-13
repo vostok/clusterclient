@@ -1,8 +1,11 @@
-﻿namespace Vostok.ClusterClient.Core.Model
+﻿using JetBrains.Annotations;
+
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// Represents a priority of given request.
     /// </summary>
+    [PublicAPI]
     public enum RequestPriority
     {
         /// <summary>

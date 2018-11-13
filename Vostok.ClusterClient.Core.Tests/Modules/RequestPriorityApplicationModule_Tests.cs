@@ -2,32 +2,25 @@
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.Context;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
 
-namespace Vostok.ClusterClient.Core.Tests.Modules
+namespace Vostok.Clusterclient.Core.Tests.Modules
 {
     [TestFixture]
-    internal class RequestPriorityApplicationModule_Tests
+    internal class AuxiliaryHeadersModule_Tests
     {
         private IRequestContext context;
-        private RequestPriorityApplicationModule module;
+        private AuxiliaryHeadersModule module;
 
         [SetUp]
         public void TestSetup()
         {
             context = Substitute.For<IRequestContext>();
             context.Request.Returns(Request.Get("foo/bar"));
-            context.Priority.Returns(null as RequestPriority?);
+            context.Parameters.Returns(RequestParameters.Empty);
 
-            module = new RequestPriorityApplicationModule();
-        }
-
-        [TearDown]
-        public void TestTeardown()
-        {
-            // FlowingContextProvider.Set(null as RequestPriority?);    // todo(Mansiper): fix it
+            module = new AuxiliaryHeadersModule();
         }
 
         [Test]
@@ -38,30 +31,34 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             context.DidNotReceive().Request = Arg.Any<Request>();
         }
 
-        [TestCase(RequestPriority.Sheddable)]
-        [TestCase(RequestPriority.Ordinary)]
         [TestCase(RequestPriority.Critical)]
-        public void Should_add_a_priority_header_if_priority_is_not_null(RequestPriority priority)
+        [TestCase(RequestPriority.Ordinary)]
+        [TestCase(RequestPriority.Sheddable)]
+        public void Should_set_priority_to_headers(RequestPriority priority)
         {
-            context.Priority.Returns(priority);
+            context.Parameters.Returns(new RequestParameters(priority: priority));
 
+            Request request = null;
+            context.When(x => x.Request = Arg.Any<Request>()).Do(x => request = x.Arg<Request>());
             Execute();
 
-            context.Received().Request = Arg.Is<Request>(r => r.Headers[HeaderNames.XKonturRequestPriority] == priority.ToString());
+            context.Received(1).Request = Arg.Any<Request>();
+            request.Headers[HeaderNames.RequestPriority].Should().Be(priority.ToString());
         }
-
-        [TestCase(RequestPriority.Sheddable)]
-        [TestCase(RequestPriority.Ordinary)]
-        [TestCase(RequestPriority.Critical)]
-        public void Should_add_a_priority_header_if_priority_is_null_but_there_is_a_value_in_context(RequestPriority priority)
+        
+        [TestCase("qwe")]
+        [TestCase("xyz")]
+        public void Should_add_client_app_name_from_context(string name)
         {
-            FlowingContext.Properties.Set("request.priority", priority as RequestPriority?);
+            context.ClientApplicationName.Returns(name);
 
-            Execute();
-
-            context.Received().Request = Arg.Is<Request>(r => r.Headers[HeaderNames.XKonturRequestPriority] == priority.ToString());
-
-            FlowingContext.Properties.Remove("request.priority");
+            module.ExecuteAsync(
+                context,
+                requestContext =>
+                {
+                    requestContext.Request.Headers[HeaderNames.ApplicationIdentity].Should().Be(name);
+                    return null;
+                });
         }
 
         private void Execute()

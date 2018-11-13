@@ -5,13 +5,12 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Helpers;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Ordering.Weighed.Gray;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Ordering.Weighed.Gray;
 using Vostok.Logging.Console;
 
-namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
+namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Gray
 {
     [TestFixture]
     internal class GrayListModifier_Tests
@@ -21,12 +20,13 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
         private Uri replica2;
         private IList<Uri> replicas;
         private Request request;
+        private RequestParameters parameters;
         private DateTime currentTime;
         private ConcurrentDictionary<Uri, DateTime> storage;
 
         private IReplicaStorageProvider storageProvider;
         private IGrayPeriodProvider periodProvider;
-        private ITimeProvider timeProvider;
+        private Func<DateTime> getCurrentTime;
 
         private GrayListModifier modifier;
 
@@ -36,20 +36,21 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
             weight = 1.0;
             request = Request.Get("foo/bar");
             replica1 = new Uri("http://replica1");
-            replica2 = new Uri("http://replica2");
-            replicas = new List<Uri> {replica1, replica2};
+            parameters = RequestParameters.Empty;
             storage = new ConcurrentDictionary<Uri, DateTime>();
 
             storageProvider = Substitute.For<IReplicaStorageProvider>();
             storageProvider.Obtain<DateTime>(Arg.Any<string>()).Returns(storage);
+            replica2 = new Uri("http://replica2");
+            replicas = new List<Uri> {replica1, replica2};
 
             periodProvider = Substitute.For<IGrayPeriodProvider>();
             periodProvider.GetGrayPeriod().Returns(5.Minutes());
 
-            timeProvider = Substitute.For<ITimeProvider>();
-            timeProvider.GetCurrentTime().Returns(currentTime = DateTime.UtcNow);
+            currentTime = DateTime.UtcNow;
+            getCurrentTime = () => currentTime;
 
-            modifier = new GrayListModifier(periodProvider, timeProvider, new ConsoleLog());
+            modifier = new GrayListModifier(periodProvider, getCurrentTime, new ConsoleLog());
         }
 
         [Test]
@@ -109,7 +110,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
         {
             storage[replica1] = currentTime;
 
-            modifier.Modify(replica2, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica2, replicas, storageProvider, request, parameters, ref weight);
 
             weight.Should().Be(1.0);
         }
@@ -119,7 +120,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
         {
             storage[replica1] = currentTime - 5.Minutes() - 1.Seconds();
 
-            modifier.Modify(replica1, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica1, replicas, storageProvider, request, parameters, ref weight);
 
             weight.Should().Be(1.0);
         }
@@ -129,7 +130,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
         {
             storage[replica1] = currentTime - 5.Minutes() - 1.Seconds();
 
-            modifier.Modify(replica1, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica1, replicas, storageProvider, request, parameters, ref weight);
 
             storage.Should().NotContainKey(replica1);
         }
@@ -139,7 +140,7 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
         {
             storage[replica1] = currentTime - 4.Minutes();
 
-            modifier.Modify(replica1, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica1, replicas, storageProvider, request, parameters, ref weight);
 
             weight.Should().Be(0.0);
         }
@@ -149,19 +150,19 @@ namespace Vostok.ClusterClient.Core.Tests.Ordering.Weighed.Gray
         {
             storage[replica1] = currentTime - 4.Minutes();
 
-            modifier.Modify(replica1, replicas, storageProvider, request, ref weight);
+            modifier.Modify(replica1, replicas, storageProvider, request, parameters, ref weight);
 
             storage.Should().ContainKey(replica1);
-        }
-
-        private void ShiftCurrentTime(TimeSpan delta)
-        {
-            timeProvider.GetCurrentTime().Returns(currentTime = currentTime + delta);
         }
 
         private static ReplicaResult CreateResult(Uri replica, ResponseVerdict verdict, Response response = null)
         {
             return new ReplicaResult(replica, response ?? Responses.Timeout, verdict, TimeSpan.Zero);
+        }
+
+        private void ShiftCurrentTime(TimeSpan delta)
+        {
+            currentTime = currentTime + delta;
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Sending
+namespace Vostok.Clusterclient.Core.Sending
 {
     internal class RequestConverter : IRequestConverter
     {
@@ -51,27 +51,6 @@ namespace Vostok.ClusterClient.Core.Sending
             }
         }
 
-        private Uri ConvertUrl(Uri requestUrl, Uri replica)
-        {
-            var baseUrl = replica.OriginalString;
-            var baseUrlEndsWithSlash = baseUrl.EndsWith("/");
-
-            var appendedUrl = requestUrl.OriginalString;
-
-            if (deduplicateSegments)
-                DeduplicateSegments(replica.AbsolutePath, ref appendedUrl);
-
-            var appendedUrlStartsWithSlash = appendedUrl.StartsWith("/");
-
-            if (baseUrlEndsWithSlash && appendedUrlStartsWithSlash)
-                appendedUrl = appendedUrl.Substring(1);
-
-            if (!baseUrlEndsWithSlash && !appendedUrlStartsWithSlash)
-                appendedUrl = "/" + appendedUrl;
-
-            return new Uri(baseUrl + appendedUrl, UriKind.Absolute);
-        }
-
         private static void DeduplicateSegments(string replicaPath, ref string requestUrl)
         {
             var lastMatchingSegment = null as Segment?;
@@ -95,10 +74,16 @@ namespace Vostok.ClusterClient.Core.Sending
                     {
                         lastMatchingSegment = requestSegments.Current;
 
-                        if (!requestSegments.MoveNext())
-                            break;
+                        if (requestSegments.MoveNext())
+                            continue;
+
+                        if (!replicaSegments.MoveNext())
+                            seenAllReplicaSegments = true;
+
+                        break;
                     }
-                    else if (lastMatchingSegment.HasValue)
+
+                    if (lastMatchingSegment.HasValue)
                         return;
                 }
             }
@@ -133,22 +118,42 @@ namespace Vostok.ClusterClient.Core.Sending
                 yield return new Segment(url, segmentBeginning, pathLength - segmentBeginning);
         }
 
+        private Uri ConvertUrl(Uri requestUrl, Uri replica)
+        {
+            var baseUrl = replica.OriginalString;
+            var baseUrlEndsWithSlash = baseUrl.EndsWith("/");
+
+            var appendedUrl = requestUrl.OriginalString;
+
+            if (deduplicateSegments)
+                DeduplicateSegments(replica.AbsolutePath, ref appendedUrl);
+
+            var appendedUrlStartsWithSlash = appendedUrl.StartsWith("/");
+
+            if (baseUrlEndsWithSlash && appendedUrlStartsWithSlash)
+                appendedUrl = appendedUrl.Substring(1);
+
+            if (!baseUrlEndsWithSlash && !appendedUrlStartsWithSlash && !string.IsNullOrEmpty(appendedUrl))
+                // (deniaa): If appendedUrl is empty, we should not add slash to the end of the Uri. In RFC Uri's with a slash on the end are not equals to Uris without it.
+                appendedUrl = "/" + appendedUrl;
+
+            return new Uri(baseUrl + appendedUrl, UriKind.Absolute);
+        }
+
         #region Segment
 
         private struct Segment
         {
             public readonly int Offset;
             public readonly int Length;
-            private readonly string Origin;
+            private readonly string origin;
 
             public Segment(string origin, int offset, int length)
             {
-                Origin = origin;
+                this.origin = origin;
                 Offset = offset;
                 Length = length;
             }
-
-            private char this[int index] => Origin[Offset + index];
 
             public bool Equals(Segment other)
             {
@@ -161,6 +166,8 @@ namespace Vostok.ClusterClient.Core.Sending
 
                 return true;
             }
+
+            private char this[int index] => origin[Offset + index];
         }
 
         #endregion
@@ -168,16 +175,16 @@ namespace Vostok.ClusterClient.Core.Sending
         #region Logging 
 
         private void LogReplicaUrlNotAbsolute(Uri replica) =>
-            log.Error($"Given replica url is not absolute: '{replica}'. Absolute url is expected here.");
+            log.Error("Given replica url is not absolute: '{Replica}'. Absolute url is expected here.", replica);
 
         private void LogReplicaUrlContainsQuery(Uri replica) =>
-            log.Error($"Replica url contains query parameters: '{replica}'. No query parameters are allowed for replicas.");
+            log.Error("Replica url contains query parameters: '{Replica}'. No query parameters are allowed for replicas.", replica);
 
         private void LogRequestHasAbsoluteUrl(Uri requestUrl) =>
-            log.Error($"Request contains absolute url: '{requestUrl}'. Relative url is expected instead.");
+            log.Error("Request contains absolute url: '{RequestUrl}'. Relative url is expected instead.", requestUrl);
 
         private void LogUrlConversionException(Uri replica, Uri requestUrl, Exception error) =>
-            log.Error(error, $"Failed to merge replica url '{replica}' and request url '{requestUrl}'.");
+            log.Error(error, "Failed to merge replica url '{Replica}' and request url '{RequestUrl}'.", replica, requestUrl);
 
         #endregion
     }

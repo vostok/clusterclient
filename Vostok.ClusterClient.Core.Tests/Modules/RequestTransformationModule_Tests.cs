@@ -1,20 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Strategies;
-using Vostok.ClusterClient.Core.Tests.Helpers;
-using Vostok.ClusterClient.Core.Transforms;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Strategies;
+using Vostok.Clusterclient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Transforms;
 using Vostok.Logging.Console;
 
 // ReSharper disable PossibleNullReferenceException
 
-namespace Vostok.ClusterClient.Core.Tests.Modules
+namespace Vostok.Clusterclient.Core.Tests.Modules
 {
     [TestFixture]
     internal class RequestTransformationModule_Tests
@@ -36,7 +35,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             request2 = Request.Get("/2");
             request3 = Request.Get("/3");
 
-            context = new RequestContext(request1, Strategy.SingleReplica, Budget.Infinite, new ConsoleLog(), null, CancellationToken.None, null, int.MaxValue);
+            context = new RequestContext(request1, new RequestParameters(Strategy.SingleReplica), Budget.Infinite, new ConsoleLog(), null, int.MaxValue);
 
             transform1 = Substitute.For<IRequestTransform>();
             transform1.Transform(Arg.Any<Request>()).Returns(_ => request2);
@@ -56,7 +55,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             Execute();
 
-            AssertionExtensions.Should((object)context.Request).BeSameAs(request1);
+            context.Request.Should().BeSameAs(request1);
         }
 
         [Test]
@@ -66,7 +65,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             Execute();
 
-            AssertionExtensions.Should((object)context.Request).BeSameAs(request1);
+            context.Request.Should().BeSameAs(request1);
         }
 
         [Test]
@@ -74,13 +73,14 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             Execute();
 
-            AssertionExtensions.Should((object)context.Request).BeSameAs(request3);
+            context.Request.Should().BeSameAs(request3);
 
-            Received.InOrder(() =>
-            {
-                transform1.Transform(request1);
-                transform2.Transform(request2);
-            });
+            Received.InOrder(
+                () =>
+                {
+                    transform1.Transform(request1);
+                    transform2.Transform(request2);
+                });
         }
 
         [Test]
@@ -90,9 +90,9 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             Execute();
 
-            AssertionExtensions.Should((object)context.Request.StreamContent).BeOfType<SingleUseStreamContent>();
-            AssertionExtensions.Should((object)context.Request.StreamContent.Stream).BeSameAs(Stream.Null);
-            AssertionExtensions.Should((long?)context.Request.StreamContent.Length).Be(123L);
+            context.Request.StreamContent.Should().BeOfType<SingleUseStreamContent>();
+            context.Request.StreamContent.Stream.Should().BeSameAs(Stream.Null);
+            context.Request.StreamContent.Length.Should().Be(123L);
         }
 
         private void Execute()
@@ -101,7 +101,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             var task = taskSource.Task;
 
-            AssertionExtensions.Should((object)module.ExecuteAsync(context, _ => task)).BeSameAs(task);
+            module.ExecuteAsync(context, _ => task).Should().BeSameAs(task);
         }
     }
 }

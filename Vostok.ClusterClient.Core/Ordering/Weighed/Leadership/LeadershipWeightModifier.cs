@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
+using JetBrains.Annotations;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed.Leadership
+namespace Vostok.Clusterclient.Core.Ordering.Weighed.Leadership
 {
     /// <summary>
     /// <para>Represents a modifier which divides all replicas into two categories: leader and reservists.</para>
@@ -16,6 +17,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Leadership
     /// <para>A reservist becomes a leader when an implementation of <see cref="ILeaderResultDetector.IsLeaderResult"/> returns <c>true</c> for its response.</para>
     /// <para>A leader becomes a reservist when an implementation of <see cref="ILeaderResultDetector.IsLeaderResult"/> returns <c>false</c> for its response.</para>
     /// </summary>
+    [PublicAPI]
     public class LeadershipWeightModifier : IReplicaWeightModifier
     {
         private static readonly string StorageKey = typeof(LeadershipWeightModifier).FullName;
@@ -23,18 +25,22 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Leadership
         private readonly ILeaderResultDetector resultDetector;
         private readonly ILog log;
 
+        /// <param name="resultDetector">A leader result detector.</param>
+        /// <param name="log">A instance of <see cref="ILog"/>,</param>
         public LeadershipWeightModifier(ILeaderResultDetector resultDetector, ILog log)
         {
             this.resultDetector = resultDetector ?? throw new ArgumentNullException(nameof(resultDetector));
             this.log = log ?? new SilentLog();
         }
 
-        public void Modify(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request, ref double weight)
+        /// <inheritdoc />
+        public void Modify(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request, RequestParameters parameters, ref double weight)
         {
             if (!IsLeader(replica, storageProvider.Obtain<bool>(StorageKey)))
                 weight = 0.0;
         }
 
+        /// <inheritdoc />
         public void Learn(ReplicaResult result, IReplicaStorageProvider storageProvider)
         {
             var storage = storageProvider.Obtain<bool>(StorageKey);
@@ -64,9 +70,9 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Leadership
             (hadStoredStatus = storage.TryGetValue(replica, out var isLeader)) && isLeader;
 
         private void LogLeaderDetected(Uri resultReplica) =>
-            log.Info($"Replica '{resultReplica}' is leader now.");
+            log.Info("Replica '{ResultReplica}' is leader now.", resultReplica);
 
         private void LogLeaderFailed(Uri resultReplica) =>
-            log.Warn($"Replica '{resultReplica}' is no longer considered a leader.");
+            log.Warn("Replica '{ResultReplica}' is no longer considered a leader.", resultReplica);
     }
 }

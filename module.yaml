@@ -6,12 +6,15 @@ notests *default:
       name: dotnet
 
   install:
-      - Vostok.ClusterClient.Core/bin/Release/netstandard2.0/Vostok.ClusterClient.Core.dll
+    - Vostok.ClusterClient.Core/bin/Release/netstandard2.0/Vostok.ClusterClient.Core.dll
+    - module vostok.logging.abstractions
 
   deps:
-    - vostok.context
+    - vostok.commons.threading/src
+    - vostok.commons.collections/src
+    - vostok.commons.time/src
+    - vostok.commons.environment/src
     - vostok.logging.abstractions
-    - vostok.logging.context
     - vostok.devtools
 
 full-build > notests:

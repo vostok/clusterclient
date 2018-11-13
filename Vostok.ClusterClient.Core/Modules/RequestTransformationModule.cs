@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Transforms;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Transforms;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     internal class RequestTransformationModule : IRequestModule
     {
@@ -18,8 +18,10 @@ namespace Vostok.ClusterClient.Core.Modules
         public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
             if (transforms != null && transforms.Count > 0)
+            {
                 foreach (var transform in transforms)
                     context.Request = transform.Transform(context.Request);
+            }
 
             SubstituteStreamContent(context);
 

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
+using JetBrains.Annotations;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
+namespace Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive
 {
     /// <summary>
     /// <para>Represents a weight modifier which uses a concept of replica health that dynamically increases and decreases in response to replica behaviour.</para>
@@ -12,6 +13,7 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
     /// <para>The actions to be taken on replica health in response to observed <see cref="ReplicaResult"/>s are defined by <see cref="IAdaptiveHealthTuningPolicy"/> instance.</para>
     /// </summary>
     /// <typeparam name="THealth">Type of health values used in <see cref="IAdaptiveHealthImplementation{THealth}"/>.</typeparam>
+    [PublicAPI]
     public class AdaptiveHealthModifier<THealth> : IReplicaWeightModifier
     {
         private readonly IAdaptiveHealthImplementation<THealth> implementation;
@@ -28,12 +30,14 @@ namespace Vostok.ClusterClient.Core.Ordering.Weighed.Adaptive
             storageKey = implementation.GetType().FullName;
         }
 
-        public void Modify(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request, ref double weight)
+        /// <inheritdoc />
+        public void Modify(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request, RequestParameters parameters, ref double weight)
         {
             if (storageProvider.Obtain<THealth>(storageKey).TryGetValue(replica, out var currentHealth))
                 implementation.ModifyWeight(currentHealth, ref weight);
         }
 
+        /// <inheritdoc />
         public void Learn(ReplicaResult result, IReplicaStorageProvider storageProvider)
         {
             var storage = storageProvider.Obtain<THealth>(storageKey);

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// <para>Represents an HTTP request (method, url, headers and body content).</para>
@@ -14,6 +12,7 @@ namespace Vostok.ClusterClient.Core.Model
     /// <para>Look at <see cref="RequestContentExtensions"/> to quickly add content to requests.</para>
     /// <para>Look at <see cref="RequestQueryExtensions"/> to quickly add query parameters to requests.</para>
     /// </summary>
+    [PublicAPI]
     public class Request
     {
         public Request(
@@ -28,8 +27,8 @@ namespace Vostok.ClusterClient.Core.Model
         public Request(
             [NotNull] string method,
             [NotNull] Uri url,
-            [NotNull] IStreamContent content,
-            [CanBeNull] Headers headers = null)
+            [CanBeNull] IStreamContent content,
+            [CanBeNull] Headers headers = default)
             : this(method, url, content, null, headers)
         {
         }
@@ -79,12 +78,6 @@ namespace Vostok.ClusterClient.Core.Model
         public Headers Headers { get; }
 
         /// <summary>
-        /// <para>Returns true if current <see cref="Request"/> instance is valid, or false otherwise.</para>
-        /// <para><see cref="Validate"/> method can be used to obtain error messages.</para>
-        /// </summary>
-        public bool IsValid => !Validate().Any();
-
-        /// <summary>
         /// Returns true if current instance has either non-null <see cref="Content"/> or <see cref="StreamContent"/>.
         /// </summary>
         public bool HasBody => Content != null || StreamContent != null;
@@ -95,8 +88,10 @@ namespace Vostok.ClusterClient.Core.Model
         /// <returns>A new <see cref="Request"/> object with updated url.</returns>
         [Pure]
         [NotNull]
-        public Request WithUrl([NotNull] string url) =>
-            WithUrl(new Uri(url, UriKind.RelativeOrAbsolute));
+        public Request WithUrl([NotNull] string url)
+        {
+            return WithUrl(new Uri(url, UriKind.RelativeOrAbsolute));
+        }
 
         /// <summary>
         /// Produces a new <see cref="Request"/> instance with given url. Current instance is not modified.
@@ -104,8 +99,10 @@ namespace Vostok.ClusterClient.Core.Model
         /// <returns>A new <see cref="Request"/> object with updated url.</returns>
         [Pure]
         [NotNull]
-        public Request WithUrl([NotNull] Uri url) =>
-            new Request(Method, url, StreamContent, Content, Headers);
+        public Request WithUrl([NotNull] Uri url)
+        {
+            return new Request(Method, url, StreamContent, Content, Headers);
+        }
 
         /// <summary>
         /// <para>Produces a new <see cref="Request"/> instance with given body content. Current instance is not modified.</para>
@@ -114,8 +111,10 @@ namespace Vostok.ClusterClient.Core.Model
         /// <returns>A new <see cref="Request"/> object with updated content.</returns>
         [Pure]
         [NotNull]
-        public Request WithContent([NotNull] Content content) =>
-            new Request(Method, Url, content, (Headers ?? Headers.Empty).Set(HeaderNames.ContentLength, content.Length));
+        public Request WithContent([NotNull] Content content)
+        {
+            return new Request(Method, Url, content, (Headers ?? Headers.Empty).Set(HeaderNames.ContentLength, content.Length));
+        }
 
         /// <summary>
         /// <para>Produces a new <see cref="Request"/> instance with given body stream content. Current instance is not modified.</para>
@@ -124,8 +123,10 @@ namespace Vostok.ClusterClient.Core.Model
         /// <returns>A new <see cref="Request"/> object with updated content.</returns>
         [Pure]
         [NotNull]
-        public Request WithContent([NotNull] IStreamContent content) =>
-            new Request(Method, Url, content, content.Length.HasValue ? (Headers ?? Headers.Empty).Set(HeaderNames.ContentLength, content.Length.Value) : Headers);
+        public Request WithContent([NotNull] IStreamContent content)
+        {
+            return new Request(Method, Url, content, content.Length.HasValue ? (Headers ?? Headers.Empty).Set(HeaderNames.ContentLength, content.Length.Value) : Headers);
+        }
 
         /// <summary>
         /// <para>Produces a new <see cref="Request"/> instance where the header with given name will have given value.</para>
@@ -136,8 +137,10 @@ namespace Vostok.ClusterClient.Core.Model
         /// <returns>A new <see cref="Request"/> object with updated headers.</returns>
         [Pure]
         [NotNull]
-        public Request WithHeader<T>([NotNull] string name, [NotNull] T value) =>
-            WithHeader(name, value.ToString());
+        public Request WithHeader<T>([NotNull] string name, [NotNull] T value)
+        {
+            return WithHeader(name, value.ToString());
+        }
 
         /// <summary>
         /// <para>Produces a new <see cref="Request"/> instance where the header with given name will have given value.</para>
@@ -148,8 +151,10 @@ namespace Vostok.ClusterClient.Core.Model
         /// <returns>A new <see cref="Request"/> object with updated headers.</returns>
         [Pure]
         [NotNull]
-        public Request WithHeader([NotNull] string name, [NotNull] string value) =>
-            new Request(Method, Url, StreamContent, Content, (Headers ?? Headers.Empty).Set(name, value));
+        public Request WithHeader([NotNull] string name, [NotNull] string value)
+        {
+            return new Request(Method, Url, StreamContent, Content, (Headers ?? Headers.Empty).Set(name, value));
+        }
 
         /// <summary>
         /// <para>Produces a new <see cref="Request"/> instance with headers substituted by given collection.</para>
@@ -158,11 +163,18 @@ namespace Vostok.ClusterClient.Core.Model
         /// <returns>A new <see cref="Request"/> object with given headers.</returns>
         [Pure]
         [NotNull]
-        public Request WithHeaders([NotNull] Headers headers) =>
-            new Request(Method, Url, StreamContent, Content, headers);
+        public Request WithHeaders([NotNull] Headers headers)
+        {
+            return new Request(Method, Url, StreamContent, Content, headers);
+        }
 
-        public override string ToString() => ToString(false, false);
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return ToString(false, false);
+        }
 
+        /// <returns>String representation of <see cref="Request"/> instance.</returns>
         public string ToString(bool includeQuery, bool includeHeaders)
         {
             var builder = new StringBuilder();
@@ -190,138 +202,151 @@ namespace Vostok.ClusterClient.Core.Model
             return builder.ToString();
         }
 
-        /// <summary>
-        /// Returns all validation errors for this <see cref="Request"/> instance. An empty sequence is returned for a valid request.
-        /// </summary>
-        public IEnumerable<string> Validate()
-        {
-            if (!RequestMethods.All.Contains(Method))
-                yield return $"Request method has unsupported value '{Method}'.";
-
-            if (Url.IsAbsoluteUri)
-            {
-                var scheme = Url.Scheme;
-                if (scheme != Uri.UriSchemeHttp && scheme != Uri.UriSchemeHttps)
-                    yield return $"Request url has unsupported scheme '{scheme}'. Only http and https schemes are allowed.";
-            }
-
-            if (HasBody && (Method == RequestMethods.Get || Method == RequestMethods.Head))
-                yield return $"Sending a body is not allowed with {Method} requests.";
-        }
-
         #region Factory methods
 
         /// <summary>
         /// Creates a new request with <c>GET</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Get([NotNull] Uri url) =>
-            new Request(RequestMethods.Get, url);
+        public static Request Get([NotNull] Uri url)
+        {
+            return new Request(RequestMethods.Get, url);
+        }
 
         /// <summary>
         /// Creates a new request with <c>GET</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Get([NotNull] string url) =>
-            Get(new Uri(url, UriKind.RelativeOrAbsolute));
+        public static Request Get([NotNull] string url)
+        {
+            return Get(new Uri(url, UriKind.RelativeOrAbsolute));
+        }
 
         /// <summary>
         /// Creates a new request with <c>POST</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Post([NotNull] Uri url) =>
-            new Request(RequestMethods.Post, url);
+        public static Request Post([NotNull] Uri url)
+        {
+            return new Request(RequestMethods.Post, url);
+        }
 
         /// <summary>
         /// Creates a new request with <c>POST</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Post([NotNull] string url) =>
-            Post(new Uri(url, UriKind.RelativeOrAbsolute));
+        public static Request Post([NotNull] string url)
+        {
+            return Post(new Uri(url, UriKind.RelativeOrAbsolute));
+        }
 
         /// <summary>
         /// Creates a new request with <c>PUT</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Put([NotNull] Uri url) =>
-            new Request(RequestMethods.Put, url);
+        public static Request Put([NotNull] Uri url)
+        {
+            return new Request(RequestMethods.Put, url);
+        }
 
         /// <summary>
         /// Creates a new request with <c>PUT</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Put([NotNull] string url) =>
-            Put(new Uri(url, UriKind.RelativeOrAbsolute));
+        public static Request Put([NotNull] string url)
+        {
+            return Put(new Uri(url, UriKind.RelativeOrAbsolute));
+        }
 
         /// <summary>
         /// Creates a new request with <c>HEAD</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Head([NotNull] Uri url) =>
-            new Request(RequestMethods.Head, url);
+        public static Request Head([NotNull] Uri url)
+        {
+            return new Request(RequestMethods.Head, url);
+        }
 
         /// <summary>
         /// Creates a new request with <c>HEAD</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Head([NotNull] string url) =>
-            Head(new Uri(url, UriKind.RelativeOrAbsolute));
+        public static Request Head([NotNull] string url)
+        {
+            return Head(new Uri(url, UriKind.RelativeOrAbsolute));
+        }
 
         /// <summary>
         /// Creates a new request with <c>PATCH</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Patch([NotNull] Uri url) =>
-            new Request(RequestMethods.Patch, url);
+        public static Request Patch([NotNull] Uri url)
+        {
+            return new Request(RequestMethods.Patch, url);
+        }
 
         /// <summary>
         /// Creates a new request with <c>PATCH</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Patch([NotNull] string url) =>
-            Patch(new Uri(url, UriKind.RelativeOrAbsolute));
+        public static Request Patch([NotNull] string url)
+        {
+            return Patch(new Uri(url, UriKind.RelativeOrAbsolute));
+        }
 
         /// <summary>
         /// Creates a new request with <c>DELETE</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Delete([NotNull] Uri url) =>
-            new Request(RequestMethods.Delete, url);
+        public static Request Delete([NotNull] Uri url)
+        {
+            return new Request(RequestMethods.Delete, url);
+        }
 
         /// <summary>
         /// Creates a new request with <c>DELETE</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Delete([NotNull] string url) =>
-            Delete(new Uri(url, UriKind.RelativeOrAbsolute));
+        public static Request Delete([NotNull] string url)
+        {
+            return Delete(new Uri(url, UriKind.RelativeOrAbsolute));
+        }
 
         /// <summary>
         /// Creates a new request with <c>OPTIONS</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Options([NotNull] Uri url) =>
-            new Request(RequestMethods.Options, url);
+        public static Request Options([NotNull] Uri url)
+        {
+            return new Request(RequestMethods.Options, url);
+        }
 
         /// <summary>
         /// Creates a new request with <c>OPTIONS</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Options([NotNull] string url) =>
-            Options(new Uri(url, UriKind.RelativeOrAbsolute));
+        public static Request Options([NotNull] string url)
+        {
+            return Options(new Uri(url, UriKind.RelativeOrAbsolute));
+        }
 
         /// <summary>
         /// Creates a new request with <c>TRACE</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Trace([NotNull] Uri url) =>
-            new Request(RequestMethods.Trace, url);
+        public static Request Trace([NotNull] Uri url)
+        {
+            return new Request(RequestMethods.Trace, url);
+        }
 
         /// <summary>
         /// Creates a new request with <c>TRACE</c> method and given <paramref name="url"/>.
         /// </summary>
         [NotNull]
-        public static Request Trace([NotNull] string url) =>
-            Trace(new Uri(url, UriKind.RelativeOrAbsolute));
+        public static Request Trace([NotNull] string url)
+        {
+            return Trace(new Uri(url, UriKind.RelativeOrAbsolute));
+        }
 
         #endregion
     }

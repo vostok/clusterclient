@@ -1,11 +1,14 @@
 ﻿using System;
-using Vostok.ClusterClient.Core.Helpers;
+using JetBrains.Annotations;
+using Vostok.Commons.Threading;
+using Vostok.Commons.Time;
 
-namespace Vostok.ClusterClient.Core.Retry
+namespace Vostok.Clusterclient.Core.Retry
 {
     /// <summary>
     /// Represents a retry strategy with fixed attempts count and a linearly increasing delay between attempts.
     /// </summary>
+    [PublicAPI]
     public class LinearBackoffRetryStrategy : IRetryStrategy
     {
         /// <param name="attemptsCount">Maximum attempts count.</param>
@@ -31,16 +34,32 @@ namespace Vostok.ClusterClient.Core.Retry
         {
         }
 
+        /// <summary>
+        /// Maximum attempts count.
+        /// </summary>
         public int AttemptsCount { get; }
 
+        /// <summary>
+        /// Delay before first and second attempts.
+        /// </summary>
         public TimeSpan InitialRetryDelay { get; }
 
+        /// <summary>
+        /// Upper bound for delay growth.
+        /// </summary>
         public TimeSpan MaximumRetryDelay { get; }
 
+        /// <summary>
+        /// A value added to delay on each retry except the first one.
+        /// </summary>
         public TimeSpan RetryDelayIncrement { get; }
 
+        /// <summary>
+        /// A maximum relative amount of jitter applied to resulting delays.
+        /// </summary>
         public double Jitter { get; }
 
+        /// <inheritdoc />
         public TimeSpan GetRetryDelay(int attemptsUsed)
         {
             var delay = InitialRetryDelay + RetryDelayIncrement.Multiply(Math.Max(0, attemptsUsed - 1));
@@ -50,7 +69,7 @@ namespace Vostok.ClusterClient.Core.Retry
             if (ThreadSafeRandom.NextDouble() <= 0.5)
                 jitterAmount = jitterAmount.Negate();
 
-            return TimeSpanExtensions.Min(MaximumRetryDelay, delay + jitterAmount);
+            return TimeSpanArithmetics.Min(MaximumRetryDelay, delay + jitterAmount);
         }
     }
 }

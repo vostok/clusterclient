@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Retry;
+using Vostok.Clusterclient.Core.Retry;
 
-namespace Vostok.ClusterClient.Core.Tests.Retry
+namespace Vostok.Clusterclient.Core.Tests.Retry
 {
     [TestFixture]
     internal class ExponentialBackoffRetryStrategy_Tests

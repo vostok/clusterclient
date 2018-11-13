@@ -1,13 +1,16 @@
 ﻿using System.Collections.Generic;
-using Vostok.ClusterClient.Core.Model;
+using JetBrains.Annotations;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Retry
+namespace Vostok.Clusterclient.Core.Retry
 {
     /// <summary>
     /// Represents a policy which never chooses to retry cluster communication.
     /// </summary>
+    [PublicAPI]
     public class NeverRetryPolicy : IRetryPolicy
     {
-        public bool NeedToRetry(IList<ReplicaResult> results) => false;
+        /// <inheritdoc />
+        public bool NeedToRetry(Request request, RequestParameters parameters, IList<ReplicaResult> results) => false;
     }
 }

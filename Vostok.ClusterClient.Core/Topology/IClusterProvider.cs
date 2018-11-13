@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Topology
+namespace Vostok.Clusterclient.Core.Topology
 {
+    /// <summary>
+    /// Represents a storage of cluster replica urls.
+    /// </summary>
+    [PublicAPI]
     public interface IClusterProvider
     {
         /// <summary>

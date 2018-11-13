@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Sending;
+using JetBrains.Annotations;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Sending;
 
-namespace Vostok.ClusterClient.Core.Strategies
+namespace Vostok.Clusterclient.Core.Strategies
 {
     /// <summary>
     /// Represents a strategy which only sends a request to a single, first replica, using all available time budget.
@@ -17,11 +18,14 @@ namespace Vostok.ClusterClient.Core.Strategies
     /// o--------------------- (replica) -----------> V (success)
     /// </code>
     /// </example>
+    [PublicAPI]
     public class SingleReplicaRequestStrategy : IRequestStrategy
     {
-        public Task SendAsync(Request request, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken) =>
-            sender.SendToReplicaAsync(replicas.First(), request, budget.Remaining, cancellationToken);
+        /// <inheritdoc />
+        public Task SendAsync(Request request, RequestParameters parameters, IRequestSender sender, IRequestTimeBudget budget, IEnumerable<Uri> replicas, int replicasCount, CancellationToken cancellationToken) =>
+            sender.SendToReplicaAsync(replicas.First(), request, null, budget.Remaining, cancellationToken);
 
+        /// <inheritdoc />
         public override string ToString() => "SingleReplica";
     }
 }

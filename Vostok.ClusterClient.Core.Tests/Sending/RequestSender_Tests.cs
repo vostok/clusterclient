@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Sending;
-using Vostok.ClusterClient.Core.Tests.Helpers;
-using Vostok.ClusterClient.Core.Transport;
-using Vostok.Logging.Console;
+using Vostok.Clusterclient.Core.Criteria;
+using Vostok.Clusterclient.Core.Misc;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Sending;
+using Vostok.Clusterclient.Core.Transport;
+using Vostok.Clusterclient.Core.Tests.Helpers;
+using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Tests.Sending
+namespace Vostok.Clusterclient.Core.Tests.Sending
 {
     [TestFixture]
     internal class RequestSender_Tests
@@ -25,13 +27,14 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
         private Request absoluteRequest;
         private Response response;
         private TimeSpan timeout;
+        private TimeSpan? connectionTimeout;
 
         private IClusterClientConfiguration configuration;
         private IReplicaStorageProvider storageProvider;
         private IResponseClassifier responseClassifier;
         private IRequestConverter requestConverter;
         private ITransport transport;
-        private ConsoleLog log;
+        private ILog log;
 
         private RequestSender sender;
 
@@ -43,13 +46,20 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
             absoluteRequest = Request.Get("http://replica/foo/bar");
             response = new Response(ResponseCode.Ok);
             timeout = 5.Seconds();
+            connectionTimeout = null;
 
             configuration = Substitute.For<IClusterClientConfiguration>();
             configuration.ResponseCriteria.Returns(new List<IResponseCriterion> {Substitute.For<IResponseCriterion>()});
-            configuration.LogReplicaRequests.Returns(true);
-            configuration.LogReplicaResults.Returns(true);
+            configuration.Logging.Returns(
+                new LoggingOptions
+                {
+                    LogReplicaRequests = true,
+                    LogReplicaResults = true
+                });
             configuration.ReplicaOrdering.Returns(Substitute.For<IReplicaOrdering>());
-            configuration.Log.Returns(log = new ConsoleLog());
+            configuration.Log.Returns(log = Substitute.For<ILog>());
+
+            log.IsEnabledFor(default).ReturnsForAnyArgs(true);
 
             storageProvider = Substitute.For<IReplicaStorageProvider>();
 
@@ -60,9 +70,11 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
             requestConverter.TryConvertToAbsolute(relativeRequest, replica).Returns(_ => absoluteRequest);
 
             transport = Substitute.For<ITransport>();
-            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Returns(_ => response);
+            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Returns(_ => response);
 
             sender = new RequestSender(configuration, storageProvider, responseClassifier, requestConverter);
+
+            configuration.ConnectionAttempts.Returns(1);
         }
 
         [Test]
@@ -80,7 +92,27 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
 
             Send(tokenSource.Token);
 
-            transport.Received(1).SendAsync(absoluteRequest, timeout, tokenSource.Token);
+            transport.Received(1).SendAsync(absoluteRequest, connectionTimeout, Arg.Any<TimeSpan>(), tokenSource.Token);
+        }
+        
+        [Test]
+        public void Should_pass_connection_timeout()
+        {
+            connectionTimeout = 1.Seconds();
+            
+            Send();
+
+            transport.Received(1).SendAsync(absoluteRequest, connectionTimeout, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void Should_pass_null_connection_timeout_when_it_is_greater_than_full_timeout()
+        {
+            connectionTimeout = 10.Seconds();
+            
+            Send();
+
+            transport.Received(1).SendAsync(absoluteRequest, null, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -104,17 +136,17 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
         [Test]
         public void Should_return_unknown_failure_response_when_transport_throws_an_exception()
         {
-            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Throws(new Exception("Fail!"));
+            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Throws(new Exception("Fail!"));
 
             Send().Response.Should().BeSameAs(Responses.UnknownFailure);
 
-            // log.CallsErrorCount.Should().Be(1);  // todo(Mansiper): fix it
+            log.Received(1, LogLevel.Error);
         }
 
         [Test]
         public void Should_not_catch_cancellation_exceptions()
         {
-            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Throws(new OperationCanceledException());
+            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Throws(new OperationCanceledException());
 
             Action action = () => Send();
 
@@ -124,7 +156,7 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
         [Test]
         public void Should_throw_a_cancellation_exception_when_transport_returns_canceled_response()
         {
-            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).ReturnsTask(Responses.Canceled);
+            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).ReturnsTask(Responses.Canceled);
 
             Action action = () => Send();
 
@@ -173,33 +205,63 @@ namespace Vostok.ClusterClient.Core.Tests.Sending
         {
             Send();
 
-            // log.CallsInfoCount.Should().Be(2);   // todo(Mansiper): fix it
+            log.Received(2).Log(Arg.Any<LogEvent>());
         }
 
         [Test]
         public void Should_not_log_requests_and_results_if_not_asked_to()
         {
-            configuration.LogReplicaRequests.Returns(false);
-            configuration.LogReplicaResults.Returns(false);
+            configuration.Logging.Returns(
+                new LoggingOptions
+                {
+                    LogReplicaResults = false,
+                    LogReplicaRequests = false
+                });
 
             Send();
 
-            // log.CallsInfoCount.Should().Be(0);   // todo(Mansiper): fix it
+            log.Received(0).Log(Arg.Any<LogEvent>());
         }
 
         [Test]
         public void Should_return_stream_reuse_failure_code_upon_catching_according_exception()
         {
             transport
-                .SendAsync(null, TimeSpan.Zero, CancellationToken.None)
+                .SendAsync(null, null, TimeSpan.Zero, CancellationToken.None)
                 .ThrowsForAnyArgs(_ => new StreamAlreadyUsedException("No luck here!"));
 
             Send().Response.Code.Should().Be(ResponseCode.StreamReuseFailure);
         }
 
-        private ReplicaResult Send(CancellationToken token = default(CancellationToken))
+        [Test]
+        public void Should_retry_connection_timeout()
         {
-            return sender.SendToReplicaAsync(transport, replica, relativeRequest, timeout, token).GetAwaiter().GetResult();
+            configuration.ConnectionAttempts.Returns(2);
+            
+            transport
+                .SendAsync(null, null, TimeSpan.Zero, CancellationToken.None)
+                .ReturnsForAnyArgs(new Response(ResponseCode.ConnectFailure), new Response(ResponseCode.Ok));
+
+            Send().Response.Code.Should().Be(ResponseCode.Ok);
+            transport.ReceivedWithAnyArgs(2).SendAsync(null, null, TimeSpan.Zero, CancellationToken.None);
+        }
+
+        [Test]
+        public void Should_respect_connection_attempts_setting()
+        {
+            configuration.ConnectionAttempts.Returns(1);
+
+            transport
+                .SendAsync(null, null, TimeSpan.Zero, CancellationToken.None)
+                .ReturnsForAnyArgs(Responses.ConnectFailure, Responses.Ok);
+
+            Send().Response.Code.Should().Be(ResponseCode.ConnectFailure);
+            transport.ReceivedWithAnyArgs(1).SendAsync(null, null, TimeSpan.Zero, CancellationToken.None);
+        }
+
+        private ReplicaResult Send(CancellationToken token = default)
+        {
+            return sender.SendToReplicaAsync(transport, replica, relativeRequest, connectionTimeout, timeout, token).GetAwaiter().GetResult();
         }
     }
 }

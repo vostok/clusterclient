@@ -1,13 +1,16 @@
-﻿using Vostok.ClusterClient.Core.Model;
+﻿using JetBrains.Annotations;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Criteria
+namespace Vostok.Clusterclient.Core.Criteria
 {
     /// <summary>
-    /// Represents a criterion which accepts any response with <see cref="HeaderNames.XKonturDontRetry"/> header.
+    /// Represents a criterion which accepts any response with <see cref="HeaderNames.DontRetry" /> header.
     /// </summary>
+    [PublicAPI]
     public class AcceptNonRetriableCriterion : IResponseCriterion
     {
+        /// <inheritdoc />
         public ResponseVerdict Decide(Response response) =>
-            response.Headers[HeaderNames.XKonturDontRetry] != null ? ResponseVerdict.Accept : ResponseVerdict.DontKnow;
+            response.Headers[HeaderNames.DontRetry] != null ? ResponseVerdict.Accept : ResponseVerdict.DontKnow;
     }
 }

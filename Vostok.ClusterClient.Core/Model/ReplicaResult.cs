@@ -1,13 +1,18 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// Represents the result of sending request to a replica.
     /// </summary>
+    [PublicAPI]
     public class ReplicaResult
     {
+        /// <param name="replica">Replica address.</param>
+        /// <param name="response">Replica response.</param>
+        /// <param name="verdict">Response verdict.</param>
+        /// <param name="time">Request execution time.</param>
         public ReplicaResult([NotNull] Uri replica, [NotNull] Response response, ResponseVerdict verdict, TimeSpan time)
         {
             Replica = replica;

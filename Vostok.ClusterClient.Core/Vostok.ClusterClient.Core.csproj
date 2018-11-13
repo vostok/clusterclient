@@ -1,45 +1,72 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
+  
   <Import Project="..\..\vostok.devtools\library-common-props\Main-Project.props" />
   <Import Project="..\..\vostok.devtools\git-commit-to-assembly-title\Vostok.Tools.GitCommit2AssemblyTitle.props" />
-
+  
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Configurations>Debug;Release</Configurations>
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
-
+  
   <PropertyGroup>
     <VersionPrefix>0.0.1</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
   </PropertyGroup>
-
-  <PropertyGroup>
-    <PackageReleaseNotes>TODO</PackageReleaseNotes>
-  </PropertyGroup>
-
+  
   <PropertyGroup>
     <Title>Vostok ClusterClient core library</Title>
     <Description>ClusterClient core library for microservice toolkit http://vostok.tools/</Description>
+    <RootNamespace>Vostok.Clusterclient.Core</RootNamespace>
   </PropertyGroup>
-
+  
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/vostok/clusterclient.core</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/vostok/clusterclient.core/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageTags>vostok vostok.clusterclient.core</PackageTags>
+    <PackageTags>vostok vostok.clusterclient</PackageTags>
     <RepositoryUrl>https://github.com/vostok/clusterclient.core</RepositoryUrl>
   </PropertyGroup>
-
+  
   <ItemGroup>
-    <Reference Include="Vostok.Context">
-      <HintPath>..\..\vostok.context\Vostok.Context\bin\Release\netstandard2.0\Vostok.Context.dll</HintPath>
-    </Reference>
     <Reference Include="Vostok.Logging.Abstractions">
       <HintPath>..\..\vostok.logging.abstractions\Vostok.Logging.Abstractions\bin\Release\netstandard2.0\Vostok.Logging.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Vostok.Logging.Context">
-      <HintPath>..\..\vostok.logging.context\Vostok.Logging.Context\bin\Release\netstandard2.0\Vostok.Logging.Context.dll</HintPath>
-    </Reference>
   </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\ThreadSafeRandom.cs">
+      <Link>Commons\ThreadSafeRandom.cs</Link>
+    </Compile>
+    <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\UnboundedObjectPool.cs">
+      <Link>Commons\UnboundedObjectPool.cs</Link>
+    </Compile>
+    <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ImmutableArrayDictionary.cs">
+      <Link>Commons\ImmutableArrayDictionary.cs</Link>
+    </Compile>
+    <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ConcurrentDictionaryExtensions.cs">
+      <Link>Commons\ConcurrentDictionaryExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\CachingTransform.cs">
+      <Link>Commons\CachingTransform.cs</Link>
+    </Compile>
+    <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ByReferenceEqualityComparer.cs">
+      <Link>Commons\ByReferenceEqualityComparer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanArithmetics.cs">
+      <Link>Commons\TimeSpanArithmetics.cs</Link>
+    </Compile>
+    <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanFormatting.cs">
+      <Link>Commons\TimeSpanFormatting.cs</Link>
+    </Compile>
+    <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeBudget.cs">
+      <Link>Commons\TimeBudget.cs</Link>
+    </Compile>
+    <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\RuntimeDetector.cs">
+      <Link>Commons\RuntimeDetector.cs</Link>
+    </Compile>
+    <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\EnvironmentInfo.cs">
+      <Link>Commons\EnvironmentInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  
 </Project>

@@ -6,14 +6,14 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Misc;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Tests.Helpers;
-using Vostok.ClusterClient.Core.Transport;
+using Vostok.Clusterclient.Core.Criteria;
+using Vostok.Clusterclient.Core.Misc;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Transport;
 
-namespace Vostok.ClusterClient.Core.Tests.Modules
+namespace Vostok.Clusterclient.Core.Tests.Modules
 {
     [TestFixture]
     internal class AbsoluteUrlSenderModule_Tests
@@ -26,6 +26,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         private IRequestContext context;
         private Request request;
         private Response response;
+        private RequestParameters parameters;
 
         private AbsoluteUrlSenderModule module;
 
@@ -35,15 +36,18 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             request = Request.Get("http://foo/bar");
             response = new Response(ResponseCode.Ok);
 
+            parameters = RequestParameters.Empty.WithConnectionTimeout(1.Seconds());
+            
             var budget = Budget.WithRemaining(5.Seconds());
 
             transport = Substitute.For<ITransport>();
-            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).ReturnsTask(_ => response);
+            transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).ReturnsTask(_ => response);
 
             context = Substitute.For<IRequestContext>();
             context.Request.Returns(_ => request);
             context.Budget.Returns(_ => budget);
             context.Transport.Returns(_ => transport);
+            context.Parameters.Returns(_ => parameters);
 
             responseCriteria = new List<IResponseCriterion>();
             responseClassifier = Substitute.For<IResponseClassifier>();
@@ -72,7 +76,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             Execute();
 
-            transport.Received().SendAsync(request, 5.Seconds(), context.CancellationToken);
+            transport.Received().SendAsync(request, Arg.Any<TimeSpan?>(), 5.Seconds(), context.CancellationToken);
         }
 
         [Test]
@@ -115,6 +119,17 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
             replicaResult.Replica.Should().BeSameAs(request.Url);
             replicaResult.Response.Should().BeSameAs(response);
             replicaResult.Verdict.Should().Be(ResponseVerdict.Accept);
+        }
+
+        [Test]
+        public void Should_ignore_connection_timeout()
+        {
+            parameters = parameters.WithConnectionTimeout(1.Seconds());
+            
+            Execute();
+
+            transport.Received(1).SendAsync(Arg.Any<Request>(), null, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+
         }
 
         private ClusterResult Execute(ClusterResult result = null)

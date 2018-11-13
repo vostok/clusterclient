@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Helpers;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Ordering.Storage;
-using Vostok.ClusterClient.Core.Transport;
+using Vostok.Clusterclient.Core.Criteria;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Clusterclient.Core.Transport;
+using Vostok.Commons.Time;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Sending
+namespace Vostok.Clusterclient.Core.Sending
 {
     internal class RequestSender : IRequestSenderInternal
     {
@@ -31,22 +30,22 @@ namespace Vostok.ClusterClient.Core.Sending
             this.requestConverter = requestConverter;
         }
 
-        public async Task<ReplicaResult> SendToReplicaAsync(ITransport transport, Uri replica, Request request, TimeSpan timeout, CancellationToken cancellationToken)
+        public async Task<ReplicaResult> SendToReplicaAsync(ITransport transport, Uri replica, Request request, TimeSpan? connectionTimeout, TimeSpan timeout, CancellationToken cancellationToken)
         {
-            if (configuration.LogReplicaRequests)
+            if (configuration.Logging.LogReplicaRequests)
                 LogRequest(replica, timeout);
 
-            var watch = Stopwatch.StartNew();
+            var timeBudget = TimeBudget.StartNew(timeout, TimeSpan.FromMilliseconds(1));
 
             var absoluteRequest = requestConverter.TryConvertToAbsolute(request, replica);
 
-            var response = await SendRequestAsync(transport, absoluteRequest, timeout, cancellationToken).ConfigureAwait(false);
+            var response = await SendRequestAsync(transport, absoluteRequest, timeBudget, configuration.ConnectionAttempts, connectionTimeout, cancellationToken).ConfigureAwait(false);
 
             var responseVerdict = responseClassifier.Decide(response, configuration.ResponseCriteria);
 
-            var result = new ReplicaResult(replica, response, responseVerdict, watch.Elapsed);
+            var result = new ReplicaResult(replica, response, responseVerdict, timeBudget.Elapsed);
 
-            if (configuration.LogReplicaResults)
+            if (configuration.Logging.LogReplicaResults)
                 LogResult(result);
 
             configuration.ReplicaOrdering.Learn(result, storageProvider);
@@ -54,18 +53,37 @@ namespace Vostok.ClusterClient.Core.Sending
             return result;
         }
 
-        private async Task<Response> SendRequestAsync(ITransport transport, [CanBeNull] Request request, TimeSpan timeout, CancellationToken cancellationToken)
+        private async Task<Response> SendRequestAsync(
+            ITransport transport,
+            [CanBeNull] Request request,
+            TimeBudget timeBudget,
+            int connectionAttempts,
+            TimeSpan? connectionTimeout,
+            CancellationToken cancellationToken)
         {
             if (request == null)
                 return Responses.Unknown;
 
             try
             {
-                var response = await transport.SendAsync(request, timeout, cancellationToken).ConfigureAwait(false);
-                if (response.Code == ResponseCode.Canceled)
-                    throw new OperationCanceledException();
+                for (var attempt = 1; attempt <= connectionAttempts; ++attempt)
+                {
+                    var connectionAttemptTimeout = connectionTimeout == null || timeBudget.Remaining < connectionTimeout
+                        ? (TimeSpan?) null
+                        : connectionTimeout.Value;
 
-                return response;
+                    var response = await transport.SendAsync(request, connectionAttemptTimeout, timeBudget.Remaining, cancellationToken).ConfigureAwait(false);
+
+                    if (response.Code == ResponseCode.Canceled)
+                        throw new OperationCanceledException();
+
+                    if (response.Code == ResponseCode.ConnectFailure)
+                        continue;
+
+                    return response;
+                }
+
+                return Responses.ConnectFailure;
             }
             catch (OperationCanceledException)
             {
@@ -86,10 +104,16 @@ namespace Vostok.ClusterClient.Core.Sending
         #region Logging
 
         private void LogRequest(Uri replica, TimeSpan timeout) =>
-            configuration.Log.Info($"Sending request to replica '{replica}' with timeout {timeout.ToPrettyString()}.");
+            configuration.Log.Info("Sending request to replica '{Replica}' with timeout {Timeout}.", replica, timeout.ToPrettyString());
 
         private void LogResult(ReplicaResult result) =>
-            configuration.Log.Info($"Result: replica = '{result.Replica}'; code = {(int)result.Response.Code} ('{result.Response.Code}'); verdict = {result.Verdict}; time = {result.Time.ToPrettyString()}.");
+            configuration.Log.Info("Result: replica = '{Replica}'; code = {ResponseCode:D} ('{ResponseCode}'); verdict = {Verdict}; time = {ElapsedTime}.", new
+            {
+                Replica = result.Replica,
+                ResponseCode = result.Response.Code,
+                Verdict = result.Verdict,
+                ElapsedTime = result.Time.ToPrettyString()
+            });
 
         private void LogStreamReuseFailure() =>
             configuration.Log.Warn("Detected an attempt to use request body stream more than once, which is not allowed.");

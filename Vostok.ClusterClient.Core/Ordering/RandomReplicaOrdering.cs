@@ -1,11 +1,13 @@
 using System.Collections.Generic;
-using Vostok.ClusterClient.Core.Ordering.Weighed;
+using JetBrains.Annotations;
+using Vostok.Clusterclient.Core.Ordering.Weighed;
 
-namespace Vostok.ClusterClient.Core.Ordering
+namespace Vostok.Clusterclient.Core.Ordering
 {
     /// <summary>
     /// Represents an ordering which returns replicas in random order.
     /// </summary>
+    [PublicAPI]
     public class RandomReplicaOrdering : WeighedReplicaOrdering
     {
         public RandomReplicaOrdering()

@@ -8,21 +8,22 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Sending;
-using Vostok.ClusterClient.Core.Strategies;
-using Vostok.ClusterClient.Core.Strategies.DelayProviders;
-using Vostok.ClusterClient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Sending;
+using Vostok.Clusterclient.Core.Strategies;
+using Vostok.Clusterclient.Core.Strategies.DelayProviders;
+using Vostok.Clusterclient.Core.Tests.Helpers;
 
 #pragma warning disable CS4014
 
-namespace Vostok.ClusterClient.Core.Tests.Strategies
+namespace Vostok.Clusterclient.Core.Tests.Strategies
 {
     [TestFixture]
     internal class ForkingRequestStrategy_Tests
     {
         private Uri[] replicas;
         private Request request;
+        private RequestParameters parameters;
         private IRequestSender sender;
         private IForkingDelaysProvider delaysProvider;
         private IForkingDelaysPlanner delaysPlanner;
@@ -40,10 +41,11 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
             request = Request.Get("foo/bar");
             replicas = Enumerable.Range(0, 10).Select(i => new Uri($"http://replica-{i}/")).ToArray();
             resultSources = replicas.ToDictionary(r => r, _ => new TaskCompletionSource<ReplicaResult>());
+            parameters = RequestParameters.Empty.WithConnectionTimeout(1.Seconds());
 
             sender = Substitute.For<IRequestSender>();
             sender
-                .SendToReplicaAsync(Arg.Any<Uri>(), Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
+                .SendToReplicaAsync(Arg.Any<Uri>(), Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
                 .Returns(info => resultSources[info.Arg<Uri>()].Task);
 
             delaySources = replicas.Select(_ => new TaskCompletionSource<bool>()).ToList();
@@ -87,7 +89,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         [Test]
         public void Should_immediately_fire_just_one_request()
         {
-            strategy.SendAsync(request, sender, Budget.Infinite, replicas, replicas.Length, token);
+            strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
 
             sender.ReceivedCalls().Should().HaveCount(1);
         }
@@ -95,15 +97,15 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         [Test]
         public void Should_fire_initial_request_with_correct_parameters()
         {
-            strategy.SendAsync(request, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
+            strategy.SendAsync(request, parameters, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
 
-            sender.Received(1).SendToReplicaAsync(replicas[0], request, 5.Seconds(), Arg.Any<CancellationToken>());
+            sender.Received(1).SendToReplicaAsync(replicas[0], request, parameters.ConnectionTimeout, 5.Seconds(), Arg.Any<CancellationToken>());
         }
 
         [Test]
         public void Should_fail_with_bugcheck_exception_if_replicas_enumerable_is_insufficient()
         {
-            var task = strategy.SendAsync(request, sender, Budget.WithRemaining(5.Seconds()), new Uri[] {}, replicas.Length, token);
+            var task = strategy.SendAsync(request, parameters, sender, Budget.WithRemaining(5.Seconds()), new Uri[] {}, replicas.Length, token);
 
             task.IsFaulted.Should().BeTrue();
             task.Exception.InnerExceptions.Single().Should().BeOfType<InvalidOperationException>().Which.ShouldBePrinted();
@@ -112,7 +114,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         [Test]
         public void Should_determine_forking_delay_when_firing_a_request()
         {
-            strategy.SendAsync(request, sender, Budget.Infinite, replicas, replicas.Length, token);
+            strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
 
             delaysProvider.Received(1).GetForkingDelay(request, Budget.Infinite, 0, replicas.Length);
         }
@@ -122,7 +124,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         {
             strategy = new ForkingRequestStrategy(delaysProvider, delaysPlanner, 1);
 
-            strategy.SendAsync(request, sender, Budget.Infinite, replicas, replicas.Length, token);
+            strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
 
             delaysProvider.ReceivedCalls().Should().BeEmpty();
         }
@@ -130,7 +132,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         [Test]
         public void Should_not_try_to_determine_forking_delay_when_there_are_no_more_replicas()
         {
-            strategy.SendAsync(request, sender, Budget.Infinite, replicas.Take(1).ToArray(), 1, token);
+            strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas.Take(1).ToArray(), 1, token);
 
             delaysProvider.ReceivedCalls().Should().BeEmpty();
         }
@@ -138,7 +140,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         [Test]
         public void Should_invoke_delay_planner_when_produced_forking_delay_is_correct()
         {
-            strategy.SendAsync(request, sender, Budget.Infinite, replicas, replicas.Length, token);
+            strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
 
             delaysPlanner.Received(1).Plan(1.Milliseconds(), Arg.Any<CancellationToken>());
         }
@@ -148,7 +150,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         {
             SetupForkingDelays(TimeSpan.Zero);
 
-            strategy.SendAsync(request, sender, Budget.Infinite, replicas, replicas.Length, token);
+            strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
 
             delaysPlanner.Received(1).Plan(TimeSpan.Zero, Arg.Any<CancellationToken>());
         }
@@ -158,7 +160,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         {
             SetupForkingDelays(-1.Seconds());
 
-            strategy.SendAsync(request, sender, Budget.Infinite, replicas, replicas.Length, token);
+            strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
 
             delaysPlanner.ReceivedCalls().Should().BeEmpty();
         }
@@ -168,7 +170,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         {
             SetupForkingDelays(6.Seconds());
 
-            strategy.SendAsync(request, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
+            strategy.SendAsync(request, parameters, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
 
             delaysPlanner.ReceivedCalls().Should().BeEmpty();
         }
@@ -176,7 +178,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         [Test]
         public void Should_launch_parallel_requests_when_forking_delay_fires()
         {
-            strategy.SendAsync(request, sender, Budget.Infinite, replicas, replicas.Length, token);
+            strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
 
             CompleteForkingDelay();
 
@@ -190,15 +192,33 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         [Test]
         public void Should_launch_parallel_requests_with_correct_parameters()
         {
-            strategy.SendAsync(request, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
+            strategy.SendAsync(request, parameters, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
 
             sender.ClearReceivedCalls();
 
             CompleteForkingDelay();
             CompleteForkingDelay();
 
-            sender.Received(1).SendToReplicaAsync(replicas[1], request, 5.Seconds(), Arg.Any<CancellationToken>());
-            sender.Received(1).SendToReplicaAsync(replicas[2], request, 5.Seconds(), Arg.Any<CancellationToken>());
+            sender.Received(1).SendToReplicaAsync(replicas[1], request, parameters.ConnectionTimeout, 5.Seconds(), Arg.Any<CancellationToken>());
+            sender.Received(1).SendToReplicaAsync(replicas[2], request, parameters.ConnectionTimeout, 5.Seconds(), Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void Should_launch_requests_except_last_with_connection_timeout()
+        {
+            sender.ClearReceivedCalls();
+            
+            strategy = new ForkingRequestStrategy(delaysProvider, delaysPlanner, replicas.Length);
+            
+            strategy.SendAsync(request, parameters, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
+
+            for (var i = 0; i < replicas.Length; ++i)
+                CompleteForkingDelay();
+
+            for (var i = 0; i < replicas.Length - 1; ++i)
+                sender.Received(1).SendToReplicaAsync(replicas[i], request, parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+            
+            sender.Received(1).SendToReplicaAsync(replicas.Last(), request, null, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
         }
 
         [TestCase(0)]
@@ -206,7 +226,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         [TestCase(2)]
         public void Should_stop_when_any_of_requests_completes_with_accepted_result(int replicaIndex)
         {
-            var task = strategy.SendAsync(request, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
+            var task = strategy.SendAsync(request, parameters, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
 
             CompleteForkingDelay();
             CompleteForkingDelay();
@@ -218,7 +238,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         [Test]
         public void Should_issue_another_request_when_a_pending_one_ends_with_rejected_status()
         {
-            var task = strategy.SendAsync(request, sender, Budget.Infinite, replicas, replicas.Length, token);
+            var task = strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
 
             CompleteForkingDelay();
             CompleteForkingDelay();
@@ -226,13 +246,13 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
 
             task.IsCompleted.Should().BeFalse();
 
-            sender.Received(1).SendToReplicaAsync(replicas[3], request, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+            sender.Received(1).SendToReplicaAsync(replicas[3], request, parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
         }
 
         [Test]
         public void Should_stop_when_all_replicas_ended_up_returning_rejected_statuses()
         {
-            var task = strategy.SendAsync(request, sender, Budget.Infinite, replicas, replicas.Length, token);
+            var task = strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
 
             CompleteForkingDelay();
             CompleteForkingDelay();
@@ -258,7 +278,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
 
             request = Request.Post("foo/bar").WithContent(content);
 
-            var task = strategy.SendAsync(request, sender, Budget.Infinite, replicas, replicas.Length, token);
+            var task = strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
 
             content.Stream.GetHashCode();
 
@@ -275,11 +295,10 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
             delaysPlanner.ReceivedCalls().Should().HaveCount(1);
         }
 
-
         [Test]
         public void Should_forget_existing_forking_delays_upon_any_request_completion()
         {
-            strategy.SendAsync(request, sender, Budget.Infinite, replicas, replicas.Length, token);
+            strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
 
             CompleteForkingDelay();
 
@@ -298,7 +317,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
             var tokens = new List<CancellationToken>();
 
             sender
-                .When(s => s.SendToReplicaAsync(Arg.Any<Uri>(), Arg.Any<Request>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()))
+                .When(s => s.SendToReplicaAsync(Arg.Any<Uri>(), Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()))
                 .Do(info => tokens.Add(info.Arg<CancellationToken>()));
 
             delaysPlanner
@@ -307,7 +326,7 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
 
             strategy = new ForkingRequestStrategy(delaysProvider, delaysPlanner, int.MaxValue);
 
-            var sendTask = strategy.SendAsync(request, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
+            var sendTask = strategy.SendAsync(request, parameters, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
 
             CompleteForkingDelay();
             CompleteForkingDelay();
@@ -329,12 +348,13 @@ namespace Vostok.ClusterClient.Core.Tests.Strategies
         {
             delaysPlanner
                 .Plan(Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
-                .Returns(_ =>
-                {
-                    delaySourcesEnumerator.MoveNext();
+                .Returns(
+                    _ =>
+                    {
+                        delaySourcesEnumerator.MoveNext();
 
-                    return delaySourcesEnumerator.Current.Task;
-                });
+                        return delaySourcesEnumerator.Current.Task;
+                    });
         }
 
         private void SetupForkingDelays(TimeSpan? first, params TimeSpan?[] next)

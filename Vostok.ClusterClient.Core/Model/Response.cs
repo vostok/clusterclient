@@ -3,12 +3,13 @@ using System.IO;
 using System.Text;
 using JetBrains.Annotations;
 
-namespace Vostok.ClusterClient.Core.Model
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// Represents an HTTP response from server.
     /// </summary>
     // ReSharper disable once InheritdocConsiderUsage
+    [PublicAPI]
     public class Response : IDisposable
     {
         private readonly Content content;
@@ -73,8 +74,13 @@ namespace Vostok.ClusterClient.Core.Model
         /// </summary>
         public bool IsSuccessful => Code.IsSuccessful();
 
-        // TODO(iloktionov): Dispose this piece of shit wherever it might leak.
-        public void Dispose() => stream?.Dispose();
+        /// <summary>
+        /// Dispose underlying response stream.
+        /// </summary>
+        public void Dispose()
+        {
+            stream?.Dispose();
+        }
 
         /// <summary>
         /// <para>Produces a new <see cref="Response"/> instance where the header with given name will have given value.</para>
@@ -85,8 +91,10 @@ namespace Vostok.ClusterClient.Core.Model
         /// <returns>A new <see cref="Response"/> object with updated headers.</returns>
         [Pure]
         [NotNull]
-        public Response WithHeader([NotNull] string name, [NotNull] string value) =>
-            new Response(Code, content, Headers.Set(name, value), stream);
+        public Response WithHeader([NotNull] string name, [NotNull] string value)
+        {
+            return new Response(Code, content, Headers.Set(name, value), stream);
+        }
 
         /// <summary>
         /// <para>Produces a new <see cref="Response"/> instance where the header with given name will have given value.</para>
@@ -97,8 +105,10 @@ namespace Vostok.ClusterClient.Core.Model
         /// <returns>A new <see cref="Response"/> object with updated headers.</returns>
         [Pure]
         [NotNull]
-        public Response WithHeader<T>([NotNull] string name, [NotNull] T value) =>
-            WithHeader(name, value.ToString());
+        public Response WithHeader<T>([NotNull] string name, [NotNull] T value)
+        {
+            return WithHeader(name, value.ToString());
+        }
 
         /// <summary>
         /// <para>Produces a new <see cref="Response"/> instance where the header with given name will not exist.</para>
@@ -124,8 +134,10 @@ namespace Vostok.ClusterClient.Core.Model
         /// <returns>A new <see cref="Response"/> object with updated content.</returns>
         [Pure]
         [NotNull]
-        public Response WithContent([NotNull] Content newContent) =>
-            new Response(Code, newContent, headers, stream);
+        public Response WithContent([NotNull] Content newContent)
+        {
+            return new Response(Code, newContent, headers, stream);
+        }
 
         /// <summary>
         /// Produces a new <see cref="Response"/> instance with given body stream. Current instance is not modified.
@@ -133,8 +145,10 @@ namespace Vostok.ClusterClient.Core.Model
         /// <returns>A new <see cref="Response"/> object with updated stream.</returns>
         [Pure]
         [NotNull]
-        public Response WithStream([NotNull] Stream newStream) =>
-            new Response(Code, content, headers, newStream);
+        public Response WithStream([NotNull] Stream newStream)
+        {
+            return new Response(Code, content, headers, newStream);
+        }
 
         /// <summary>
         /// Throws a <see cref="ClusterClientException"/> if <see cref="Code"/> doesn't belong to 2xx range (see <see cref="ResponseCodeExtensions.IsSuccessful"/>)
@@ -147,13 +161,19 @@ namespace Vostok.ClusterClient.Core.Model
             return this;
         }
 
-        public override string ToString() => ToString(false);
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return ToString(false);
+        }
 
+        /// <returns>String representation of current <see cref="Response"/> instance.</returns>
+        [PublicAPI]
         public string ToString(bool includeHeaders)
         {
             var builder = new StringBuilder();
 
-            builder.Append((int)Code);
+            builder.Append((int) Code);
             builder.Append(" ");
             builder.Append(Code);
 

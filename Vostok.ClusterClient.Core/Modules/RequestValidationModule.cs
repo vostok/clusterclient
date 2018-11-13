@@ -2,19 +2,20 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Strategies;
-using Vostok.ClusterClient.Core.Transport;
+using Vostok.Clusterclient.Core.Misc;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Strategies;
+using Vostok.Clusterclient.Core.Transport;
 using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Modules
+namespace Vostok.Clusterclient.Core.Modules
 {
     internal class RequestValidationModule : IRequestModule
     {
         public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
-            if (!context.Request.IsValid)
-                return OnInvalidRequest(context, context.Request.Validate());
+            if (!RequestValidator.IsValid(context.Request))
+                return OnInvalidRequest(context, RequestValidator.Validate(context.Request));
 
             if (HasStreamUnsupportedByTransport(context))
                 return OnInvalidRequest(context, "Request has a body stream, which is not supported by transport implementation.");
@@ -43,7 +44,7 @@ namespace Vostok.ClusterClient.Core.Modules
             if (context.Request.StreamContent == null)
                 return false;
 
-            var parallelStrategy = context.Strategy as ParallelRequestStrategy;
+            var parallelStrategy = context.Parameters.Strategy as ParallelRequestStrategy;
 
             return parallelStrategy?.ParallelismLevel > 1;
         }

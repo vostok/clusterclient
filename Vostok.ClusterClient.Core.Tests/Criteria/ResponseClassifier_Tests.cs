@@ -2,10 +2,10 @@
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Criteria;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Tests.Criteria
+namespace Vostok.Clusterclient.Core.Tests.Criteria
 {
     [TestFixture]
     internal class ResponseClassifier_Tests

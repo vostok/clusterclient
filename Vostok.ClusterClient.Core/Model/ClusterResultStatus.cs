@@ -1,8 +1,11 @@
-﻿namespace Vostok.ClusterClient.Core.Model
+﻿using JetBrains.Annotations;
+
+namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
     /// Represent the final status of sending request to a cluster of replicas.
     /// </summary>
+    [PublicAPI]
     public enum ClusterResultStatus
     {
         /// <summary>

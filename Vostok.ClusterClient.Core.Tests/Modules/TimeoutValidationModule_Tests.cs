@@ -3,26 +3,27 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Tests.Helpers;
-using Vostok.Logging.Console;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Tests.Helpers;
+using Vostok.Logging.Abstractions;
 
-namespace Vostok.ClusterClient.Core.Tests.Modules
+namespace Vostok.Clusterclient.Core.Tests.Modules
 {
     [TestFixture]
     internal class TimeoutValidationModule_Tests
     {
         private IRequestContext context;
-        private ConsoleLog log;
+        private ILog log;
         private TimeoutValidationModule module;
 
         [SetUp]
         public void TestSetup()
         {
             context = Substitute.For<IRequestContext>();
-            context.Log.Returns(log = new ConsoleLog());
+            context.Log.Returns(log = Substitute.For<ILog>());
             context.Request.Returns(Request.Get("foo/bar"));
+            log.IsEnabledFor(default).ReturnsForAnyArgs(true);
             module = new TimeoutValidationModule();
         }
 
@@ -45,7 +46,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             module.ExecuteAsync(context, _ => null).GetAwaiter().GetResult();
 
-            // log.CallsErrorCount.Should().Be(1);  // todo(Mansiper): fix it
+            log.Received(1, LogLevel.Error);
         }
 
         [Test]
@@ -67,7 +68,7 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
 
             module.ExecuteAsync(context, _ => null).GetAwaiter().GetResult();
 
-            // log.CallsErrorCount.Should().Be(1);  // todo(Mansiper): fix it
+            log.Received(1, LogLevel.Error);
         }
 
         [Test]

@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
-using Vostok.ClusterClient.Core.Model;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Retry
+namespace Vostok.Clusterclient.Core.Retry
 {
     /// <summary>
     /// <para>Represents a policy which determines whether it's needed to retry cluster communication based on current attempt results.</para>
     /// <para>Note that this retry mechanism applies to whole cluster communication attempts (it only gets used when all replicas have failed to produce an <see cref="ResponseVerdict.Accept"/>ed response).</para>
     /// <para>Such a retry mechanism is suitable for small clusters which can be fully temporarily unavailable during normal operation (such as leadership ensembles).</para>
     /// </summary>
+    [PublicAPI]
     public interface IRetryPolicy
     {
         /// <summary>
@@ -16,6 +17,6 @@ namespace Vostok.ClusterClient.Core.Retry
         /// <para>Implementations of this method MUST BE thread-safe.</para>
         /// </summary>
         [Pure]
-        bool NeedToRetry([NotNull] [ItemNotNull] IList<ReplicaResult> results);
+        bool NeedToRetry([NotNull] Request request, [NotNull] RequestParameters parameters, [NotNull] [ItemNotNull] IList<ReplicaResult> results);
     }
 }

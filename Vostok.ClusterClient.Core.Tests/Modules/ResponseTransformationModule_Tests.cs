@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Model;
-using Vostok.ClusterClient.Core.Modules;
-using Vostok.ClusterClient.Core.Transforms;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Transforms;
 
-namespace Vostok.ClusterClient.Core.Tests.Modules
+namespace Vostok.Clusterclient.Core.Tests.Modules
 {
     [TestFixture]
     internal class ResponseTransformationModule_Tests
@@ -70,11 +70,12 @@ namespace Vostok.ClusterClient.Core.Tests.Modules
         {
             Execute().Response.Should().BeSameAs(response3);
 
-            Received.InOrder(() =>
-            {
-                transform1.Transform(response1);
-                transform2.Transform(response2);
-            });
+            Received.InOrder(
+                () =>
+                {
+                    transform1.Transform(response1);
+                    transform2.Transform(response2);
+                });
         }
 
         [Test]

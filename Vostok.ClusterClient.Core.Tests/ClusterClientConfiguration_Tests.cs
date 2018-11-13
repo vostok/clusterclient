@@ -3,19 +3,19 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.ClusterClient.Core.Criteria;
-using Vostok.ClusterClient.Core.Misc;
-using Vostok.ClusterClient.Core.Ordering;
-using Vostok.ClusterClient.Core.Retry;
-using Vostok.ClusterClient.Core.Strategies;
-using Vostok.ClusterClient.Core.Tests.Helpers;
-using Vostok.ClusterClient.Core.Topology;
-using Vostok.ClusterClient.Core.Transforms;
-using Vostok.ClusterClient.Core.Transport;
+using Vostok.Clusterclient.Core.Criteria;
+using Vostok.Clusterclient.Core.Misc;
+using Vostok.Clusterclient.Core.Ordering;
+using Vostok.Clusterclient.Core.Retry;
+using Vostok.Clusterclient.Core.Strategies;
+using Vostok.Clusterclient.Core.Topology;
+using Vostok.Clusterclient.Core.Transforms;
+using Vostok.Clusterclient.Core.Transport;
+using Vostok.Clusterclient.Core.Tests.Helpers;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Console;
 
-namespace Vostok.ClusterClient.Core.Tests
+namespace Vostok.Clusterclient.Core.Tests
 {
     [TestFixture]
     internal class ClusterClientConfiguration_Tests
@@ -88,7 +88,7 @@ namespace Vostok.ClusterClient.Core.Tests
         }
 
         [Test]
-        public void Should_initially_have_empty_modules_list()
+        public void Should_initially_have_empty_modules_collection()
         {
             configuration.Modules.Should().BeEmpty();
         }
@@ -126,10 +126,10 @@ namespace Vostok.ClusterClient.Core.Tests
         [Test]
         public void Should_initially_have_all_logging_options_enabled()
         {
-            configuration.LogRequestDetails.Should().BeTrue();
-            configuration.LogResultDetails.Should().BeTrue();
-            configuration.LogReplicaRequests.Should().BeTrue();
-            configuration.LogReplicaResults.Should().BeTrue();
+            configuration.Logging.LogRequestDetails.Should().BeTrue();
+            configuration.Logging.LogResultDetails.Should().BeTrue();
+            configuration.Logging.LogReplicaRequests.Should().BeTrue();
+            configuration.Logging.LogReplicaResults.Should().BeTrue();
         }
 
         [Test]
@@ -534,6 +534,12 @@ namespace Vostok.ClusterClient.Core.Tests
             configuration.AugmentWithDefaults();
 
             configuration.DefaultTimeout.Should().Be(1.Hours());
+        }
+
+        [Test]
+        public void Default_client_application_name_should_be_not_empty()
+        {
+            string.IsNullOrWhiteSpace(configuration.ClientApplicationName).Should().BeFalse();
         }
     }
 }

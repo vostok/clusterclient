@@ -1,21 +1,24 @@
 using System.Collections.Generic;
 using System.Linq;
-using Vostok.ClusterClient.Core.Model;
+using JetBrains.Annotations;
+using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.ClusterClient.Core.Misc
+namespace Vostok.Clusterclient.Core.Misc
 {
     /// <summary>
     /// Represents a response selector which works using following priority system:
     /// <list type="number">
-    /// <item>If there are no results at all, it returns <c>null</c>.</item>
-    /// <item>If there are any results with <see cref="ResponseVerdict.Accept"/> verdict, it returns the last of them.</item>
-    /// <item>If there are any results with response code other than <see cref="ResponseCode.Unknown"/>, it returns the last of them.</item>
-    /// <item>As a last resort, it just returns response of last result in the list.</item>
+    /// <item><description>If there are no results at all, it returns <c>null</c>.</description></item>
+    /// <item><description>If there are any results with <see cref="ResponseVerdict.Accept"/> verdict, it returns the last of them.</description></item>
+    /// <item><description>If there are any results with response code other than <see cref="ResponseCode.Unknown"/>, it returns the last of them.</description></item>
+    /// <item><description>As a last resort, it just returns response of last result in the list.</description></item>
     /// </list>
     /// </summary>
+    [PublicAPI]
     public class LastAcceptedResponseSelector : IResponseSelector
     {
-        public Response Select(IList<ReplicaResult> results) =>
+        /// <inheritdoc />
+        public Response Select(Request request, RequestParameters parameters, IList<ReplicaResult> results) =>
             GetLastAcceptedResponse(results) ?? GetLastKnownResponse(results) ?? GetLastResponse(results);
 
         private static Response GetLastAcceptedResponse(IList<ReplicaResult> results) =>
@@ -23,9 +26,9 @@ namespace Vostok.ClusterClient.Core.Misc
 
         private static Response GetLastKnownResponse(IList<ReplicaResult> results) =>
             results.LastOrDefault(
-                result => result.Response.Code != ResponseCode.Unknown &&
-                          result.Response.Code != ResponseCode.StreamReuseFailure)
-            ?.Response;
+                    result => result.Response.Code != ResponseCode.Unknown &&
+                              result.Response.Code != ResponseCode.StreamReuseFailure)
+                ?.Response;
 
         private static Response GetLastResponse(IList<ReplicaResult> results) =>
             results.LastOrDefault()?.Response;
