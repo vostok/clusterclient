@@ -46,7 +46,7 @@ namespace Vostok.Clusterclient.Core.Modules
 
         public string ClientApplicationName { get; }
 
-        public RequestParameters Parameters { get; }
+        public RequestParameters Parameters { get; set; }
 
         public void SetReplicaResult(ReplicaResult result)
         {

@@ -22,7 +22,7 @@ namespace Vostok.Clusterclient.Core.Modules
         /// Gets or sets used request parameters.
         /// </summary>
         [NotNull]
-        RequestParameters Parameters { get; }
+        RequestParameters Parameters { get; set; }
 
         /// <summary>
         /// Returns request time budget. Use <see cref="IRequestTimeBudget.Remaining"/> method to check remaining time.
