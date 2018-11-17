@@ -98,7 +98,7 @@ namespace Vostok.Clusterclient.Core
         private RequestParameters CompleteParameters(RequestParameters parameters)
         {
             if (parameters == null)
-                return new RequestParameters(configuration.DefaultRequestStrategy, configuration.DefaultPriority);
+                return new RequestParameters(configuration.DefaultRequestStrategy);
 
             if (parameters.Strategy == null)
                 parameters = parameters.WithStrategy(configuration.DefaultRequestStrategy);
