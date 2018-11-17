@@ -102,8 +102,6 @@ namespace Vostok.Clusterclient.Core
 
             if (parameters.Strategy == null)
                 parameters = parameters.WithStrategy(configuration.DefaultRequestStrategy);
-            if (parameters.Priority == null)
-                parameters = parameters.WithPriority(configuration.DefaultPriority);
             if (parameters.ConnectionTimeout == null)
                 parameters = parameters.WithConnectionTimeout(configuration.DefaultConnectionTimeout);
             return parameters;
