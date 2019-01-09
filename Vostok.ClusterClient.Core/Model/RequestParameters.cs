@@ -7,7 +7,10 @@ using Vostok.Commons.Collections;
 namespace Vostok.Clusterclient.Core.Model
 {
     /// <summary>
-    /// Represents clusterclient specific parameters of request (strategy, priority and custom properties).
+    /// <para><see cref="RequestParameters"/> is the primary extension point used to pass per-request info to <see cref="IClusterClient"/>'s <see cref="IClusterClient.SendAsync"/> method.</para>
+    /// <para>It contains some of the built-in customization options, allowing to override default request <see cref="Strategy"/> and <see cref="Priority"/>.</para>
+    /// <para>It can also be used to carry arbitrary user-defined <see cref="Properties"/>.</para>
+    /// <para>All <see cref="RequestParameters"/> instances are effectively immutable.</para>
     /// </summary>
     [PublicAPI]
     public class RequestParameters
