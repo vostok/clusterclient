@@ -9,8 +9,15 @@ namespace Vostok.Clusterclient.Core.Criteria
     [PublicAPI]
     public class AcceptNonRetriableCriterion : IResponseCriterion
     {
+        private readonly string headerName;
+
+        public AcceptNonRetriableCriterion(string headerName = HeaderNames.DontRetry)
+        {
+            this.headerName = headerName;
+        }
+
         /// <inheritdoc />
         public ResponseVerdict Decide(Response response) =>
-            response.Headers[HeaderNames.DontRetry] != null ? ResponseVerdict.Accept : ResponseVerdict.DontKnow;
+            response.Headers[headerName] != null ? ResponseVerdict.Accept : ResponseVerdict.DontKnow;
     }
 }

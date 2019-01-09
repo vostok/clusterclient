@@ -17,9 +17,19 @@ namespace Vostok.Clusterclient.Core.Tests.Criteria
         }
 
         [Test]
-        public void Should_accept_an_error_response_with_dont_retry_header()
+        public void Should_accept_an_error_response_with_default_dont_retry_header()
         {
             var response = new Response(ResponseCode.ServiceUnavailable, headers: Headers.Empty.Set(HeaderNames.DontRetry, ""));
+
+            criterion.Decide(response).Should().Be(ResponseVerdict.Accept);
+        }
+
+        [Test]
+        public void Should_accept_an_error_response_with_custom_dont_retry_header()
+        {
+            criterion = new AcceptNonRetriableCriterion("custom-name");
+
+            var response = new Response(ResponseCode.ServiceUnavailable, headers: Headers.Empty.Set("custom-name", ""));
 
             criterion.Decide(response).Should().Be(ResponseVerdict.Accept);
         }
