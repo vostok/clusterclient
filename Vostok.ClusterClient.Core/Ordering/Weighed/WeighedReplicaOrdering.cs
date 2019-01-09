@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using Vostok.Clusterclient.Core.Helpers;
+using Vostok.Clusterclient.Core.Misc;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Commons.Collections;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Vostok.Clusterclient.Core.Helpers
+namespace Vostok.Clusterclient.Core.Misc
 {
     internal class BugcheckException : Exception
     {
