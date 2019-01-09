@@ -12,6 +12,18 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             .WithProperty("b", 1);
 
         [Test]
+        public void Empty_parameters_instance_should_have_no_strategy()
+        {
+            RequestParameters.Empty.Strategy.Should().BeNull();
+        }
+
+        [Test]
+        public void Empty_parameters_instance_should_have_empty_properties()
+        {
+            RequestParameters.Empty.Properties.Should().BeEmpty();
+        }
+
+        [Test]
         public void WithStrategy_Should_return_updated_parameters_with_updated_strategy()
         {
             var newParameters = parameters.WithStrategy(Strategy.Sequential3);
@@ -84,7 +96,5 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             var newParameters = parameters.WithProperty("a", parameters.Properties["a"]);
             newParameters.Should().BeSameAs(parameters);
         }
-
-        
     }
 }

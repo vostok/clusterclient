@@ -10,17 +10,17 @@ namespace Vostok.Clusterclient.Core.Model
     /// <para><see cref="RequestParameters"/> is the primary extension point used to pass per-request info to <see cref="IClusterClient"/>'s <see cref="IClusterClient.SendAsync"/> method.</para>
     /// <para>It contains some of the built-in customization options, allowing to override default request <see cref="Strategy"/> and <see cref="Priority"/>.</para>
     /// <para>It can also be used to carry arbitrary user-defined <see cref="Properties"/>.</para>
-    /// <para>All <see cref="RequestParameters"/> instances are effectively immutable.</para>
+    /// <para>All <see cref="RequestParameters"/> instances are effectively immutable. To build a custom instance, start with <see cref="Empty"/> parameters and use its methods to produce new ones.</para>
     /// </summary>
     [PublicAPI]
     public class RequestParameters
     {
         /// <summary>
-        /// Represents an empty <see cref="RequestParameters"/> object. Useful to start building request properties from scratch.
+        /// Represents an empty <see cref="RequestParameters"/> object. Useful to start building parameters from scratch.
         /// </summary>
         public static readonly RequestParameters Empty = new RequestParameters();
 
-        private readonly ImmutableArrayDictionary<string, object> properties = new ImmutableArrayDictionary<string, object>();
+        private readonly ImmutableArrayDictionary<string, object> properties = ImmutableArrayDictionary<string, object>.Empty;
 
         /// <summary>
         /// Create a new instance of <see cref="RequestParameters"/> with specified <paramref name="strategy"/> and <paramref name="priority"/>.
@@ -48,9 +48,9 @@ namespace Vostok.Clusterclient.Core.Model
         }
 
         /// <summary>
-        /// <para>A <see cref="Strategy"/> which will be used to send the request.</para>
+        /// <para>An <see cref="IRequestStrategy"/> which will be used to send the request.</para>
         /// <para>Uses <see cref="IClusterClientConfiguration.DefaultRequestStrategy"/> if value is <c>null</c>.</para>
-        /// <para>See <see cref="Strategy"/> class for some prebuilt strategies and convenient factory methods.</para>
+        /// <para>See <see cref="Strategies.Strategy"/> class for some prebuilt strategies and convenient factory methods.</para>
         /// </summary>
         [CanBeNull]
         public IRequestStrategy Strategy { get; }
@@ -61,7 +61,7 @@ namespace Vostok.Clusterclient.Core.Model
         public RequestPriority? Priority { get; }
 
         /// <summary>
-        /// A set of additional request properties.
+        /// A set of additional arbitrary request properties.
         /// </summary>
         [NotNull]
         public IReadOnlyDictionary<string, object> Properties => properties;
