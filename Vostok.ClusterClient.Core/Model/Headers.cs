@@ -18,7 +18,7 @@ namespace Vostok.Clusterclient.Core.Model
         /// <summary>
         /// Represents an empty <see cref="Headers"/> object. Useful to start building headers from scratch.
         /// </summary>
-        public static readonly Headers Empty = new Headers(new ImmutableArrayDictionary<string, string>(0, StringComparer.OrdinalIgnoreCase));
+        public static readonly Headers Empty = new Headers(0);
 
         private readonly ImmutableArrayDictionary<string, string> headers;
 
@@ -42,13 +42,13 @@ namespace Vostok.Clusterclient.Core.Model
         /// Returns the names of all headers contained in this <see cref="Headers"/> object.
         /// </summary>
         [NotNull]
-        public IEnumerable<string> Names => this.Select(header => header.Name);
+        public IEnumerable<string> Names => headers.Select(pair => pair.Key);
 
         /// <summary>
         /// Returns the values of all headers contained in this <see cref="Headers"/> object.
         /// </summary>
         [NotNull]
-        public IEnumerable<string> Values => this.Select(header => header.Value);
+        public IEnumerable<string> Values => headers.Select(header => header.Value);
 
         /// <summary>
         /// <para>Produces a new <see cref="Headers"/> instance where the header with given name will have given value.</para>
@@ -63,7 +63,7 @@ namespace Vostok.Clusterclient.Core.Model
         [NotNull]
         public Headers Set<T>([NotNull] string name, [NotNull] T value)
         {
-            return new Headers(headers.Set(name, value.ToString()));
+            return Set(name, value.ToString());
         }
 
         /// <summary>
