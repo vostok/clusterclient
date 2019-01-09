@@ -6,7 +6,7 @@ namespace Vostok.Clusterclient.Core.Transforms
     /// <summary>
     /// A set of <see cref="IReplicaTransform"/> extensions.
     /// </summary>
-    public static class ReplicaTransformExtensions
+    public static class IReplicaTransformExtensions
     {
         /// <summary>
         /// Applies <paramref name="transform"/> for each <see cref="Uri"/> in <paramref name="replicas"/>.
