@@ -310,7 +310,7 @@ namespace Vostok.Clusterclient.Core.Tests.Model
                 .Set("name", "value1")
                 .Set("name", "value2");
 
-            headers["name"].Should().Be("value2");
+            headers["NAME"].Should().Be("value2");
         }
 
         [Test]
