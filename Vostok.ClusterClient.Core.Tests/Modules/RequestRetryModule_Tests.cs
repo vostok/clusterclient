@@ -49,9 +49,12 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             module = new RequestRetryModule(retryPolicy, retryStrategy);
         }
 
-        [Test]
-        public void Should_use_all_available_attempts_when_retry_is_possible_and_requested()
+        [TestCase(ClusterResultStatus.ReplicasExhausted)]
+        [TestCase(ClusterResultStatus.ReplicasNotFound)]
+        public void Should_use_all_available_attempts_when_retry_is_possible_and_requested(ClusterResultStatus status)
         {
+            result = new ClusterResult(status, result.ReplicaResults, result.Response, request);
+
             Execute().Should().BeSameAs(result);
 
             nextModuleCalls.Should().Be(MaxAttempts);
@@ -80,7 +83,6 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
 
         [TestCase(ClusterResultStatus.Success)]
         [TestCase(ClusterResultStatus.TimeExpired)]
-        [TestCase(ClusterResultStatus.ReplicasNotFound)]
         [TestCase(ClusterResultStatus.IncorrectArguments)]
         [TestCase(ClusterResultStatus.UnexpectedException)]
         public void Should_not_retry_if_result_has_given_status(ClusterResultStatus status)

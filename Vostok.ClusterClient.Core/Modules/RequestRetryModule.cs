@@ -27,7 +27,8 @@ namespace Vostok.Clusterclient.Core.Modules
                 context.CancellationToken.ThrowIfCancellationRequested();
 
                 var result = await next(context).ConfigureAwait(false);
-                if (result.Status != ClusterResultStatus.ReplicasExhausted)
+                if (result.Status != ClusterResultStatus.ReplicasExhausted &&
+                    result.Status != ClusterResultStatus.ReplicasNotFound)
                     return result;
 
                 if (context.Budget.HasExpired)
@@ -46,7 +47,7 @@ namespace Vostok.Clusterclient.Core.Modules
                 if (retryDelay >= context.Budget.Remaining)
                     return result;
 
-                context.Log.Info("All replicas exhausted. Will retry after {RetryDelay}. Attempts used: {AttemptsUsed}/{AttemptsCount}.", retryDelay.ToPrettyString(), attemptsUsed, retryStrategy.AttemptsCount);
+                context.Log.Info("Could not obtain an acceptable response from cluster. Will retry after {RetryDelay}. Attempts used: {AttemptsUsed}/{AttemptsCount}.", retryDelay.ToPrettyString(), attemptsUsed, retryStrategy.AttemptsCount);
 
                 if (retryDelay > TimeSpan.Zero)
                     await Task.Delay(retryDelay, context.CancellationToken).ConfigureAwait(false);
