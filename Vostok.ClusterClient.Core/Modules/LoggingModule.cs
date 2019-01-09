@@ -8,8 +8,6 @@ namespace Vostok.Clusterclient.Core.Modules
 {
     internal class LoggingModule : IRequestModule
     {
-        private static long currentOperationId;
-
         private readonly bool logRequests;
         private readonly bool logResults;
 
