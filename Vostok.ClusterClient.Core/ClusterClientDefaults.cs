@@ -24,10 +24,12 @@ namespace Vostok.Clusterclient.Core
         /// The default initial replica weight used by <see cref="WeighedReplicaOrdering"/>.
         /// </summary>
         public const double InitialReplicaWeight = 1.0;
+
         /// <summary>
         /// The default minimum replica weight used by <see cref="WeighedReplicaOrdering"/>.
         /// </summary>
         public const double MinimumReplicaWeight = 0.0;
+
         /// <summary>
         /// The default maximum replica weight used by <see cref="WeighedReplicaOrdering"/>.
         /// </summary>
@@ -117,6 +119,7 @@ namespace Vostok.Clusterclient.Core
         /// The default value of <see cref="IClusterClientConfiguration.ConnectionAttempts"/>.
         /// </summary>
         public const int ConnectionAttempts = 2;
+
         /// <summary>
         /// The default duration of full health damage decay. See <see cref="AdaptiveHealthWithLinearDecay"/> for details.
         /// </summary>
