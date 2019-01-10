@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
-using NSubstitute;
 using NUnit.Framework;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Modules;
@@ -13,52 +13,44 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         private IRequestContext context;
         private AuxiliaryHeadersModule module;
 
+        private string priorityHeader;
+        private string identityHeader;
+
         [SetUp]
         public void TestSetup()
         {
-            context = Substitute.For<IRequestContext>();
-            context.Request.Returns(Request.Get("foo/bar"));
-            context.Parameters.Returns(RequestParameters.Empty);
+            context = new RequestContext(
+                Request.Get("foo/bar"), 
+                RequestParameters.Empty, 
+                default,
+                default,
+                default,
+                default,
+                Guid.NewGuid().ToString());
 
-            module = new AuxiliaryHeadersModule();
-        }
-
-        [Test]
-        public void Should_not_touch_request_if_priority_is_null()
-        {
-            Execute();
-
-            context.DidNotReceive().Request = Arg.Any<Request>();
+            module = new AuxiliaryHeadersModule(
+                priorityHeader = Guid.NewGuid().ToString(),
+                identityHeader = Guid.NewGuid().ToString());
         }
 
         [TestCase(RequestPriority.Critical)]
         [TestCase(RequestPriority.Ordinary)]
         [TestCase(RequestPriority.Sheddable)]
-        public void Should_set_priority_to_headers(RequestPriority priority)
+        public void Should_set_request_priority_to_headers(RequestPriority priority)
         {
-            context.Parameters.Returns(new RequestParameters(priority: priority));
+            context.Parameters = context.Parameters.WithPriority(priority);
 
-            Request request = null;
-            context.When(x => x.Request = Arg.Any<Request>()).Do(x => request = x.Arg<Request>());
             Execute();
 
-            context.Received(1).Request = Arg.Any<Request>();
-            request.Headers[HeaderNames.RequestPriority].Should().Be(priority.ToString());
+            context.Request.Headers?[priorityHeader].Should().Be(priority.ToString());
         }
         
-        [TestCase("qwe")]
-        [TestCase("xyz")]
-        public void Should_add_client_app_name_from_context(string name)
+        [Test]
+        public void Should_set_client_application_name_to_headers()
         {
-            context.ClientApplicationName.Returns(name);
+            Execute();
 
-            module.ExecuteAsync(
-                context,
-                requestContext =>
-                {
-                    requestContext.Request.Headers[HeaderNames.ApplicationIdentity].Should().Be(name);
-                    return null;
-                });
+            context.Request.Headers?[identityHeader].Should().Be(context.ClientApplicationName);
         }
 
         private void Execute()
