@@ -6,7 +6,7 @@ namespace Vostok.Clusterclient.Core.Transport
     /// A set of extensions for <see cref="ITransport"/>.
     /// </summary>
     [PublicAPI]
-    public static class TransportExtensions
+    public static class ITransportExtensions
     {
         /// <summary>
         /// Check that <paramref name="transport"/> supports provided <paramref name="capabilities"/>.
