@@ -11,7 +11,7 @@ namespace Vostok.Clusterclient.Core
     /// Extension methods for IClusterClient interface.
     /// </summary>
     [PublicAPI]
-    public static class ClusterClientExtensions
+    public static class IClusterClientExtensions
     {
         /// <inheritdoc cref="IClusterClient.SendAsync"/>
         [NotNull]
