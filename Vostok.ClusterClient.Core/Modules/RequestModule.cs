@@ -10,7 +10,7 @@ using Vostok.Clusterclient.Core.Transport;
 namespace Vostok.Clusterclient.Core.Modules
 {
     /// <summary>
-    /// <para>Describes build-in request pipeline modules.</para>
+    /// <para>Describes built-in request pipeline modules.</para>
     /// </summary>
     [PublicAPI]
     public enum RequestModule
@@ -21,7 +21,7 @@ namespace Vostok.Clusterclient.Core.Modules
         LeakPrevention,
 
         /// <summary>
-        /// A module which handle and log errors.
+        /// A module which handles and logs exceptions.
         /// </summary>
         GlobalErrorCatching,
 
@@ -36,7 +36,7 @@ namespace Vostok.Clusterclient.Core.Modules
         AuxiliaryHeaders,
 
         /// <summary>
-        /// A module which log requests and responses.
+        /// A module which logs requests and responses.
         /// </summary>
         Logging,
 
@@ -46,7 +46,7 @@ namespace Vostok.Clusterclient.Core.Modules
         ResponseTransformation,
 
         /// <summary>
-        /// A module which handle and log errors.
+        /// A module which handles and logs exceptions.
         /// </summary>
         ErrorCatching,
 
@@ -67,7 +67,7 @@ namespace Vostok.Clusterclient.Core.Modules
         TimeoutValidation,
 
         /// <summary>
-        /// A module which send request in try loop with <see cref="IRetryPolicy"/> and <see cref="IRetryStrategy"/>.
+        /// A module which sends request in try loop with <see cref="IRetryPolicy"/> and <see cref="IRetryStrategy"/>.
         /// </summary>
         RequestRetry,
 
@@ -75,7 +75,7 @@ namespace Vostok.Clusterclient.Core.Modules
         AdaptiveThrottling,
 
         /// <summary>
-        /// A module which send requests with absolute urls (directly using <see cref="ITransport"/>).
+        /// A module which sends requests with absolute urls (directly using <see cref="ITransport"/>).
         /// </summary>
         AbsoluteUrlSender,
 
@@ -83,7 +83,7 @@ namespace Vostok.Clusterclient.Core.Modules
         ReplicaBudgeting,
 
         /// <summary>
-        /// A module which execute requests (<see cref="IClusterProvider"/> --> <see cref="IReplicaOrdering"/> --> <see cref="IRequestStrategy"/>)
+        /// A module which executes requests (<see cref="IClusterProvider"/> --> <see cref="IReplicaOrdering"/> --> <see cref="IRequestStrategy"/>)
         /// </summary>
         RequestExecution
     }
