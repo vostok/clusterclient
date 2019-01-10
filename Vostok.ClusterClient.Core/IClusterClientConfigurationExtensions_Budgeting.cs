@@ -21,7 +21,7 @@ namespace Vostok.Clusterclient.Core
         {
             var options = new ReplicaBudgetingOptions(storageKey, minutesToTrack, minimumRequests, criticalRatio);
 
-            configuration.AddRequestModule(new ReplicaBudgetingModule(options));
+            configuration.AddRequestModule(new ReplicaBudgetingModule(options), RequestModule.RequestExecution);
         }
 
         /// <summary>
