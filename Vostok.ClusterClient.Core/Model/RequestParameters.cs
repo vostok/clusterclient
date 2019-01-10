@@ -20,18 +20,20 @@ namespace Vostok.Clusterclient.Core.Model
         /// </summary>
         public static readonly RequestParameters Empty = new RequestParameters();
 
-        private readonly ImmutableArrayDictionary<string, object> properties = ImmutableArrayDictionary<string, object>.Empty;
+        private readonly ImmutableArrayDictionary<string, object> properties;
 
         /// <summary>
         /// Create a new instance of <see cref="RequestParameters"/> with specified <paramref name="strategy"/> and <paramref name="priority"/>.
         /// </summary>
         public RequestParameters([CanBeNull] IRequestStrategy strategy = null, [CanBeNull] RequestPriority? priority = null)
+            : this(strategy, priority, null, null)
         {
             Strategy = strategy;
             Priority = priority;
         }
 
         private RequestParameters()
+            : this(null, null, null, null)
         {
         }
 

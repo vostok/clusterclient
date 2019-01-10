@@ -5,7 +5,6 @@ using System.Text;
 using Vostok.Clusterclient.Core.Criteria;
 using Vostok.Clusterclient.Core.Misc;
 using Vostok.Clusterclient.Core.Model;
-using Vostok.Clusterclient.Core.Modules;
 using Vostok.Clusterclient.Core.Ordering;
 using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Clusterclient.Core.Retry;
@@ -23,12 +22,17 @@ namespace Vostok.Clusterclient.Core
         public ClusterClientConfiguration(ILog log)
         {
             Log = log;
+            Modules = new Dictionary<Type, RelatedModules>();
+
             RequestTransforms = new List<IRequestTransform>();
             ResponseTransforms = new List<IResponseTransform>();
             ResponseCriteria = new List<IResponseCriterion>();
-            Modules = new Dictionary<Type, RelatedModules>();
             ReplicaStorageScope = ClusterClientDefaults.ReplicaStorageScope;
+
             DefaultTimeout = ClusterClientDefaults.Timeout;
+            DefaultConnectionTimeout = ClusterClientDefaults.ConnectionTimeout;
+            DefaultPriority = ClusterClientDefaults.Priority;
+
             Logging = new LoggingOptions
             {
                 LogRequestDetails = ClusterClientDefaults.LogRequestDetails,
@@ -36,11 +40,12 @@ namespace Vostok.Clusterclient.Core
                 LogReplicaRequests = ClusterClientDefaults.LogReplicaRequests,
                 LogReplicaResults = ClusterClientDefaults.LogReplicaResults
             };
-            MaxReplicasUsedPerRequest = ClusterClientDefaults.MaxReplicasUsedPerRequest;
-            DeduplicateRequestUrl = ClusterClientDefaults.DeduplicateRequestUrl;
+
             ConnectionAttempts = ClusterClientDefaults.ConnectionAttempts;
             DefaultConnectionTimeout = ClusterClientDefaults.ConnectionTimeout;
-            ClientApplicationName = EnvironmentInfo.Application;
+            MaxReplicasUsedPerRequest = ClusterClientDefaults.MaxReplicasUsedPerRequest;
+
+            DeduplicateRequestUrl = ClusterClientDefaults.DeduplicateRequestUrl;
         }
 
         public ILog Log { get; }
@@ -61,7 +66,7 @@ namespace Vostok.Clusterclient.Core
 
         public List<IResponseCriterion> ResponseCriteria { get; set; }
 
-        public Dictionary<Type, RelatedModules> Modules { get; set; }
+        public IDictionary<Type, RelatedModules> Modules { get; set; }
 
         public IRetryPolicy RetryPolicy { get; set; }
 
@@ -73,7 +78,7 @@ namespace Vostok.Clusterclient.Core
 
         public TimeSpan DefaultTimeout { get; set; }
 
-        public TimeSpan DefaultConnectionTimeout { get; set; }
+        public TimeSpan? DefaultConnectionTimeout { get; set; }
 
         public RequestPriority? DefaultPriority { get; set; }
 
@@ -83,13 +88,9 @@ namespace Vostok.Clusterclient.Core
 
         public string ClientApplicationName { get; set; }
 
-        public AdaptiveThrottlingOptions AdaptiveThrottling { get; set; }
+        public string TargetServiceName { get; set; }
 
-        public ReplicaBudgetingOptions ReplicaBudgeting { get; set; }
-
-        public string ServiceName { get; set; }
-
-        public string Environment { get; set; }
+        public string TargetEnvironment { get; set; }
 
         public bool DeduplicateRequestUrl { get; set; }
 
@@ -127,8 +128,14 @@ namespace Vostok.Clusterclient.Core
             if (DefaultTimeout <= TimeSpan.Zero)
                 yield return $"Default timeout must be positive, but was '{DefaultTimeout}'";
 
+            if (DefaultConnectionTimeout.HasValue && DefaultConnectionTimeout <= TimeSpan.Zero)
+                yield return $"Default connection timeout must be positive, but was '{DefaultConnectionTimeout}'";
+
             if (MaxReplicasUsedPerRequest <= 0)
                 yield return $"Maximum replicas per request must be > 0, but was {MaxReplicasUsedPerRequest}";
+
+            if (ConnectionAttempts <= 0)
+                yield return $"Connection attempts per replica must be > 0, but was {ConnectionAttempts}";
         }
 
         public void ValidateOrDie()
@@ -169,6 +176,9 @@ namespace Vostok.Clusterclient.Core
 
             if (DefaultRequestStrategy == null)
                 DefaultRequestStrategy = ClusterClientDefaults.RequestStrategy;
+
+            if (ClientApplicationName == null)
+                ClientApplicationName = EnvironmentInfo.Application;
         }
     }
 }

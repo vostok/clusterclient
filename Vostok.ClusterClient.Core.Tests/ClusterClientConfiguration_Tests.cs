@@ -118,9 +118,21 @@ namespace Vostok.Clusterclient.Core.Tests
         }
 
         [Test]
-        public void Should_initially_have_null_default_request_timeout()
+        public void Should_initially_have_default_request_timeout()
         {
             configuration.DefaultTimeout.Should().Be(ClusterClientDefaults.Timeout);
+        }
+
+        [Test]
+        public void Should_initially_have_default_connection_timeout()
+        {
+            configuration.DefaultConnectionTimeout.Should().Be(ClusterClientDefaults.ConnectionTimeout);
+        }
+
+        [Test]
+        public void Should_initially_have_default_request_priority()
+        {
+            configuration.DefaultPriority.Should().Be(ClusterClientDefaults.Priority);
         }
 
         [Test]
@@ -136,24 +148,6 @@ namespace Vostok.Clusterclient.Core.Tests
         public void Should_initially_have_default_max_replicas_per_request()
         {
             configuration.MaxReplicasUsedPerRequest.Should().Be(ClusterClientDefaults.MaxReplicasUsedPerRequest);
-        }
-
-        [Test]
-        public void Should_initially_have_null_default_priority()
-        {
-            configuration.DefaultPriority.Should().BeNull();
-        }
-
-        [Test]
-        public void Should_initially_have_null_adaptive_throttling_options()
-        {
-            configuration.AdaptiveThrottling.Should().BeNull();
-        }
-
-        [Test]
-        public void Should_initially_have_null_replica_budgeting_options()
-        {
-            configuration.ReplicaBudgeting.Should().BeNull();
         }
 
         [Test]
@@ -275,6 +269,14 @@ namespace Vostok.Clusterclient.Core.Tests
         }
 
         [Test]
+        public void Validate_should_produce_an_error_if_default_connection_timeout_is_negative()
+        {
+            configuration.DefaultConnectionTimeout = -1.Seconds();
+
+            Console.Out.WriteLine(configuration.Validate().Should().ContainSingle().Which);
+        }
+
+        [Test]
         public void Validate_should_produce_an_error_if_default_timeout_is_zero()
         {
             configuration.DefaultTimeout = TimeSpan.Zero;
@@ -294,6 +296,14 @@ namespace Vostok.Clusterclient.Core.Tests
         public void Validate_should_produce_an_error_if_max_replicas_used_per_request_is_zero()
         {
             configuration.MaxReplicasUsedPerRequest = 0;
+
+            Console.Out.WriteLine(configuration.Validate().Should().ContainSingle().Which);
+        }
+
+        [Test]
+        public void Validate_should_produce_an_error_if_connection_attempts_count_is_negative()
+        {
+            configuration.ConnectionAttempts = -1;
 
             Console.Out.WriteLine(configuration.Validate().Should().ContainSingle().Which);
         }
@@ -537,9 +547,21 @@ namespace Vostok.Clusterclient.Core.Tests
         }
 
         [Test]
-        public void Default_client_application_name_should_be_not_empty()
+        public void AugmentWithDefaults_should_initialize_client_application_name_if_itsis_null()
         {
+            configuration.AugmentWithDefaults();
+
             string.IsNullOrWhiteSpace(configuration.ClientApplicationName).Should().BeFalse();
+        }
+
+        [Test]
+        public void AugmentWithDefaults_should_not_overwrite_existing_client_application_name()
+        {
+            configuration.ClientApplicationName = "123";
+
+            configuration.AugmentWithDefaults();
+
+            configuration.ClientApplicationName.Should().Be("123");
         }
     }
 }

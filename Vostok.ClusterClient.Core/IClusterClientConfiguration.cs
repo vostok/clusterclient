@@ -52,7 +52,7 @@ namespace Vostok.Clusterclient.Core
 
         /// <summary>
         /// <para>Gets or sets replica ordering implementation. See <see cref="IReplicaOrdering.Order"/> and <see cref="IReplicaOrdering.Learn"/> for more details.</para>
-        /// <para>The recommended implementation is <see cref="WeighedReplicaOrdering"/>. Use <see cref="ClusterClientConfigurationExtensions.SetupWeighedReplicaOrdering"/> extension to build it.</para>
+        /// <para>The recommended implementation is <see cref="WeighedReplicaOrdering"/>. Use <see cref="IClusterClientConfigurationExtensions.SetupWeighedReplicaOrdering"/> extension to build it.</para>
         /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.ReplicaOrdering"/>).</para>
         /// </summary>
         IReplicaOrdering ReplicaOrdering { get; set; }
@@ -65,21 +65,21 @@ namespace Vostok.Clusterclient.Core
 
         /// <summary>
         /// <para>A list of request transforms. See <see cref="IRequestTransform"/> for more details.</para>
-        /// <para>Use <see cref="ClusterClientConfigurationExtensions.AddRequestTransform(IClusterClientConfiguration, IRequestTransform)"/> to add transforms to this list.</para>
+        /// <para>Use <see cref="IClusterClientConfigurationExtensions.AddRequestTransform(IClusterClientConfiguration, IRequestTransform)"/> to add transforms to this list.</para>
         /// <para>This parameter is optional and has an empty default value.</para>
         /// </summary>
         List<IRequestTransform> RequestTransforms { get; set; }
 
         /// <summary>
         /// <para>A list of response transforms. See <see cref="IResponseTransform"/> for more details.</para>
-        /// <para>Use <see cref="ClusterClientConfigurationExtensions.AddResponseTransform(IClusterClientConfiguration, IResponseTransform)"/> to add transforms to this list.</para>
+        /// <para>Use <see cref="IClusterClientConfigurationExtensions.AddResponseTransform(IClusterClientConfiguration, IResponseTransform)"/> to add transforms to this list.</para>
         /// <para>This parameter is optional and has an empty default value.</para>
         /// </summary>
         List<IResponseTransform> ResponseTransforms { get; set; }
 
         /// <summary>
         /// <para>A list of response criteria. See <see cref="IResponseCriterion"/> and <see cref="ResponseVerdict"/> for more details.</para>
-        /// <para>Use <see cref="ClusterClientConfigurationExtensions.SetupResponseCriteria"/> to initialize this list.</para>
+        /// <para>Use <see cref="IClusterClientConfigurationExtensions.SetupResponseCriteria"/> to initialize this list.</para>
         /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.ResponseCriteria"/>).</para>
         /// </summary>
         List<IResponseCriterion> ResponseCriteria { get; set; }
@@ -90,24 +90,24 @@ namespace Vostok.Clusterclient.Core
         /// <para>See <see cref="IRequestModule"/> interface for more details about request modules.</para>
         /// <para>Final execution pipeline looks like this:</para>
         /// <list type="number">
-        /// <item><description><see cref="RequestModule.LeakPrevention"/>: Underlying response streams closing.</description></item>
-        /// <item><description><see cref="RequestModule.GlobalErrorCatching"/>: Exception logging and handling.</description></item>
-        /// <item><description><see cref="RequestModule.RequestTransformation"/>: Request transformation (application of <see cref="IRequestTransform"/> chain).</description></item>
-        /// <item><description><see cref="RequestModule.AuxiliaryHeaders"/>: Request priority application (adding a priority header to request).</description></item>
+        /// <item><description><see cref="RequestModule.LeakPrevention"/>: underlying response streams closing.</description></item>
+        /// <item><description><see cref="RequestModule.GlobalErrorCatching"/>: exception logging and handling.</description></item>
+        /// <item><description><see cref="RequestModule.RequestTransformation"/>: request transformation (application of <see cref="IRequestTransform"/> chain).</description></item>
+        /// <item><description><see cref="RequestModule.AuxiliaryHeaders"/>: request priority application (adding a priority header to request).</description></item>
         /// <item><description>User-defined modules.</description></item>
-        /// <item><description><see cref="RequestModule.Logging"/>: Request/result logging.</description></item>
-        /// <item><description><see cref="RequestModule.ResponseTransformation"/>: Response transformation (application of <see cref="IResponseTransform"/> chain).</description></item>
-        /// <item><description><see cref="RequestModule.ErrorCatching"/>: Exception logging and handling.</description></item>
-        /// <item><description><see cref="RequestModule.RequestValidation"/>: Request validation.</description></item>
-        /// <item><description><see cref="RequestModule.TimeoutValidation"/>: Timeout validation.</description></item>
+        /// <item><description><see cref="RequestModule.Logging"/>: request/result logging.</description></item>
+        /// <item><description><see cref="RequestModule.ResponseTransformation"/>: response transformation (application of <see cref="IResponseTransform"/> chain).</description></item>
+        /// <item><description><see cref="RequestModule.ErrorCatching"/>: exception logging and handling.</description></item>
+        /// <item><description><see cref="RequestModule.RequestValidation"/>: request validation.</description></item>
+        /// <item><description><see cref="RequestModule.TimeoutValidation"/>: timeout validation.</description></item>
         /// <item><description><see cref="RequestModule.RequestRetry"/>: try loop (application of <see cref="IRetryPolicy"/> and <see cref="IRetryStrategy"/>).</description></item>
-        /// <item><description><see cref="RequestModule.AbsoluteUrlSender"/>: Sending of requests with absolute urls (directly using <see cref="ITransport"/>).</description></item>
-        /// <item><description><see cref="RequestModule.RequestExecution"/>: Request execution (<see cref="IClusterProvider"/> --> <see cref="IReplicaOrdering"/> --> <see cref="IRequestStrategy"/>)</description></item>
+        /// <item><description><see cref="RequestModule.AbsoluteUrlSender"/>: sending of requests with absolute urls (directly using <see cref="ITransport"/>).</description></item>
+        /// <item><description><see cref="RequestModule.RequestExecution"/>: request execution (<see cref="IClusterProvider"/> --> <see cref="IReplicaOrdering"/> --> <see cref="IRequestStrategy"/>)</description></item>
         /// </list>
-        /// <para>Use <c>AddRequestModule</c> method from <see cref="ClusterClientConfigurationExtensions"/> to add modules to this collection.</para>
+        /// <para>Use <c>AddRequestModule</c> method from <see cref="IClusterClientConfigurationExtensions"/> to add modules to this collection.</para>
         /// <para>This parameter is optional and has an empty default value.</para>
         /// </summary>
-        Dictionary<Type, RelatedModules> Modules { get; set; }
+        IDictionary<Type, RelatedModules> Modules { get; set; }
 
         /// <summary>
         /// <para>Gets or sets retry policy. See <see cref="IRetryPolicy"/> for more details.</para>
@@ -144,8 +144,9 @@ namespace Vostok.Clusterclient.Core
         /// <summary>
         /// <para>Gets or sets the timeout to establish new TCP connection to replica in cluster.</para>
         /// <para>This parameter is optional and has default value <see cref="ClusterClientDefaults.ConnectionTimeout"/></para>
+        /// <para>If set to <c>null</c>, no connection timeout will be used.</para>
         /// </summary>
-        TimeSpan DefaultConnectionTimeout { get; set; }
+        TimeSpan? DefaultConnectionTimeout { get; set; }
 
         /// <summary>
         /// <para>Gets or sets a default request priority used for <see cref="ClusterClient"/> method overloads without priority parameter.</para>
@@ -167,7 +168,7 @@ namespace Vostok.Clusterclient.Core
 
         /// <summary>
         /// <para>Gets or sets the name of client application which use ClusterClient. </para>
-        /// <para>This parameter is optional and by default set to <see cref="Assembly.GetEntryAssembly"/> name.</para>
+        /// <para>This parameter is optional. By default it is set to <see cref="Assembly.GetEntryAssembly"/> name.</para>
         /// </summary>
         string ClientApplicationName { get; set; }
 
@@ -175,13 +176,13 @@ namespace Vostok.Clusterclient.Core
         /// <para>Gets or sets the name of service this <see cref="ClusterClient"/> will talk to.</para>
         /// <para>This parameter is optional and has no default value.</para>
         /// </summary>
-        string ServiceName { get; set; }
+        string TargetServiceName { get; set; }
 
         /// <summary>
         /// <para>Gets or sets the target service environment.</para>
         /// <para>This parameter is optional and has no default value.</para>
         /// </summary>
-        string Environment { get; set; }
+        string TargetEnvironment { get; set; }
 
         /// <summary>
         /// <para>Gets or sets whether to remove duplicate path segments from beginning of request url.</para>

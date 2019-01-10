@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Vostok.Clusterclient.Core.Criteria;
 using Vostok.Clusterclient.Core.Misc;
+using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Modules;
 using Vostok.Clusterclient.Core.Ordering;
 using Vostok.Clusterclient.Core.Ordering.Storage;
@@ -159,6 +160,11 @@ namespace Vostok.Clusterclient.Core
         /// The default value of <see cref="IClusterClientConfiguration.DefaultConnectionTimeout"/>
         /// </summary>
         public static readonly TimeSpan ConnectionTimeout = TimeSpan.FromMilliseconds(750);
+
+        /// <summary>
+        /// The default value of <see cref="IClusterClientConfiguration.DefaultPriority"/>.
+        /// </summary>
+        public static readonly RequestPriority Priority = RequestPriority.Ordinary;
 
         /// <returns>The default value of <see cref="IClusterClientConfiguration.ResponseCriteria"/>.</returns>
         public static List<IResponseCriterion> ResponseCriteria()

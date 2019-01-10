@@ -14,7 +14,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         {
             var configuration = new ClusterClientConfiguration(new SilentLog());
 
-            configuration.ServiceName = string.Empty;
+            configuration.TargetServiceName = string.Empty;
             
             configuration.SetupAdaptiveThrottling();
             configuration.SetupReplicaBudgeting();

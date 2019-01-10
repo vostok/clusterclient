@@ -40,6 +40,7 @@ namespace Vostok.Clusterclient.Core
 
         private readonly ClusterClientConfiguration configuration;
         private readonly Func<IRequestContext, Task<ClusterResult>> pipelineDelegate;
+        private readonly RequestParameters defaultParameters;
 
         /// <summary>
         /// Creates a <see cref="ClusterClient"/> instance using given <paramref name="log"/> and <paramref name="setup"/> delegate.
@@ -53,26 +54,28 @@ namespace Vostok.Clusterclient.Core
 
             configuration.ValidateOrDie();
             configuration.AugmentWithDefaults();
-
-            if (configuration.ReplicaTransform != null)
-                configuration.ClusterProvider = new TransformingClusterProvider(configuration.ClusterProvider, configuration.ReplicaTransform);
+            configuration.ApplyReplicaTransform();
+            configuration.SetupRequestTimeoutHeader();
 
             ReplicaStorageProvider = ReplicaStorageProviderFactory.Create(configuration.ReplicaStorageScope);
-
-            configuration.Transport = new TimeoutHeaderTransport(configuration.Transport);
 
             var modules = RequestModuleChainBuilder.BuildChain(configuration, ReplicaStorageProvider);
 
             pipelineDelegate = RequestModuleChainBuilder.BuildChainDelegate(modules);
+
+            defaultParameters = RequestParameters.Empty
+                .WithStrategy(configuration.DefaultRequestStrategy)
+                .WithPriority(configuration.DefaultPriority)
+                .WithConnectionTimeout(configuration.DefaultConnectionTimeout);
         }
 
         /// <summary>
-        /// A <see cref="IClusterProvider"/> implementation that used by this <see cref="ClusterClient"/> instance.
+        /// An <see cref="IClusterProvider"/> implementation that used by this <see cref="ClusterClient"/> instance.
         /// </summary>
         public IClusterProvider ClusterProvider => configuration.ClusterProvider;
 
         /// <summary>
-        /// A <see cref="IReplicaStorageProvider"/> implementation that used by this <see cref="ClusterClient"/> instance.
+        /// An <see cref="IReplicaStorageProvider"/> implementation that used by this <see cref="ClusterClient"/> instance.
         /// </summary>
         public IReplicaStorageProvider ReplicaStorageProvider { get; }
 
@@ -81,7 +84,7 @@ namespace Vostok.Clusterclient.Core
             Request request,
             RequestParameters parameters = null,
             TimeSpan? timeout = null,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             return pipelineDelegate(
                 new RequestContext(
@@ -98,12 +101,17 @@ namespace Vostok.Clusterclient.Core
         private RequestParameters CompleteParameters(RequestParameters parameters)
         {
             if (parameters == null)
-                return new RequestParameters(configuration.DefaultRequestStrategy);
+                return defaultParameters;
 
             if (parameters.Strategy == null)
                 parameters = parameters.WithStrategy(configuration.DefaultRequestStrategy);
+
+            if (parameters.Priority == null)
+                parameters = parameters.WithPriority(configuration.DefaultPriority);
+
             if (parameters.ConnectionTimeout == null)
                 parameters = parameters.WithConnectionTimeout(configuration.DefaultConnectionTimeout);
+
             return parameters;
         }
     }
