@@ -55,17 +55,6 @@ namespace Vostok.Clusterclient.Core
             configuration.ResponseCriteria = new List<IResponseCriterion>(criteria);
         }
 
-        /// <summary>
-        /// <para>Sets up a decorator over current <see cref="ITransport"/> that enriches all requests with given <paramref name="header"/> containing request timeout in seconds in the following format: <c>s.mmm</c>.</para>
-        /// </summary>
-        public static void SetupRequestTimeoutHeader(this IClusterClientConfiguration configuration, string header = HeaderNames.RequestTimeout)
-        {
-            if (configuration.Transport == null)
-                return;
-
-            configuration.Transport = new TimeoutHeaderTransport(configuration.Transport, header);
-        }
-
         private static string GenerateStorageKey(string environment, string serviceName)
         {
             return (environment ?? string.Empty, serviceName ?? string.Empty).ToString();
