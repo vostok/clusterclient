@@ -59,7 +59,7 @@ namespace Vostok.Clusterclient.Core
 
             ReplicaStorageProvider = ReplicaStorageProviderFactory.Create(configuration.ReplicaStorageScope);
 
-            configuration.Transport = new RequestTimeoutTransport(configuration.Transport);
+            configuration.Transport = new TimeoutHeaderTransport(configuration.Transport);
 
             var modules = RequestModuleChainBuilder.BuildChain(configuration, ReplicaStorageProvider);
 
