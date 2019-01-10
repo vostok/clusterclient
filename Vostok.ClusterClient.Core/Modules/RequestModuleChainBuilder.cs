@@ -27,7 +27,7 @@ namespace Vostok.Clusterclient.Core.Modules
             AddModule(new LeakPreventionModule());
             AddModule(new GlobalErrorCatchingModule());
             AddModule(new RequestTransformationModule(config.RequestTransforms));
-            AddModule(new AuxiliaryHeadersModule(config.DefaultPriority));
+            AddModule(new AuxiliaryHeadersModule());
 
             // -->> user-defined modules by default inserted here <<-- //
 

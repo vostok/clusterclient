@@ -20,7 +20,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             context.Request.Returns(Request.Get("foo/bar"));
             context.Parameters.Returns(RequestParameters.Empty);
 
-            module = new AuxiliaryHeadersModule(null);
+            module = new AuxiliaryHeadersModule();
         }
 
         [Test]
@@ -37,23 +37,6 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         public void Should_set_priority_to_headers(RequestPriority priority)
         {
             context.Parameters.Returns(new RequestParameters(priority: priority));
-
-            Request request = null;
-            context.When(x => x.Request = Arg.Any<Request>()).Do(x => request = x.Arg<Request>());
-            Execute();
-
-            context.Received(1).Request = Arg.Any<Request>();
-            request.Headers[HeaderNames.RequestPriority].Should().Be(priority.ToString());
-        }
-        
-        [TestCase(RequestPriority.Critical)]
-        [TestCase(RequestPriority.Ordinary)]
-        [TestCase(RequestPriority.Sheddable)]
-        public void Should_set_default_priority_to_headers(RequestPriority priority)
-        {
-            module = new AuxiliaryHeadersModule(priority);
-            
-            context.Parameters.Returns(RequestParameters.Empty);
 
             Request request = null;
             context.When(x => x.Request = Arg.Any<Request>()).Do(x => request = x.Arg<Request>());
