@@ -15,8 +15,8 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <Title>Vostok ClusterClient core library</Title>
-    <Description>ClusterClient core library for microservice toolkit http://vostok.tools/</Description>
+    <Title>Vostok.ClusterClient.Core</Title>
+    <Description>A library with interfaces and implementation of core ClusterClient components.</Description>
     <RootNamespace>Vostok.Clusterclient.Core</RootNamespace>
   </PropertyGroup>
   
