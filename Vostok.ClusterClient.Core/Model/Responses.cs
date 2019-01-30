@@ -34,6 +34,8 @@ namespace Vostok.Clusterclient.Core.Model
         public static readonly Response Throttled = new Response(ResponseCode.TooManyRequests);
         public static readonly Response UnknownFailure = new Response(ResponseCode.UnknownFailure);
         public static readonly Response ConnectFailure = new Response(ResponseCode.ConnectFailure);
+        public static readonly Response SendFailure = new Response(ResponseCode.SendFailure);
+        public static readonly Response ReceiveFailure = new Response(ResponseCode.ReceiveFailure);
         public static readonly Response Canceled = new Response(ResponseCode.Canceled);
         public static readonly Response StreamReuseFailure = new Response(ResponseCode.StreamReuseFailure);
         public static readonly Response StreamInputFailure = new Response(ResponseCode.StreamInputFailure);
