@@ -67,6 +67,9 @@ namespace Vostok.Clusterclient.Core.Modules
 
             void AddModule(IRequestModule module)
             {
+                if (config.ModulesToRemove.Contains(module.GetType()))
+                    return;
+
                 var moduleType = module.GetType();
 
                 var isNewModule = addedModules.Add(moduleType);

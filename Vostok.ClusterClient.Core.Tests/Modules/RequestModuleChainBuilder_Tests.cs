@@ -9,6 +9,7 @@ using Vostok.Clusterclient.Core.Misc;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Modules;
 using Vostok.Clusterclient.Core.Ordering.Storage;
+using Vostok.Logging.Abstractions;
 
 namespace Vostok.Clusterclient.Core.Tests.Modules
 {
@@ -276,6 +277,32 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             modules[12].Should().BeOfType<RequestRetryModule>();
             modules[13].Should().BeOfType<AbsoluteUrlSenderModule>();
             modules[14].Should().BeOfType<RequestExecutionModule>();
+        }
+
+        [Test]
+        public void Should_respect_removed_built_in_modules_when_building_a_chain()
+        {
+            var config = new ClusterClientConfiguration(new SilentLog());
+
+            config.RemoveRequestModule(RequestModule.AbsoluteUrlSender);
+
+            var chain = RequestModuleChainBuilder.BuildChain(config, Substitute.For<IReplicaStorageProvider>());
+
+            chain.Should().NotContain(module => module is AbsoluteUrlSenderModule);
+        }
+
+        [Test]
+        public void Should_respect_removed_custom_modules_when_building_a_chain()
+        {
+            var config = new ClusterClientConfiguration(new SilentLog());
+
+            config.SetupThreadPoolLimitsTuning();
+
+            config.RemoveRequestModule(RequestModule.ThreadPoolTuning);
+
+            var chain = RequestModuleChainBuilder.BuildChain(config, Substitute.For<IReplicaStorageProvider>());
+
+            chain.Should().NotContain(module => module is ThreadPoolTuningModule);
         }
     }
 }

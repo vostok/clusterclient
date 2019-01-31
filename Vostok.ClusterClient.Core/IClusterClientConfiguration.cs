@@ -111,6 +111,11 @@ namespace Vostok.Clusterclient.Core
         IDictionary<Type, RelatedModules> Modules { get; set; }
 
         /// <summary>
+        /// A set of built-in modules to be removed from standard pipeline.
+        /// </summary>
+        ISet<Type> ModulesToRemove { get; set; }
+
+        /// <summary>
         /// <para>Gets or sets retry policy. See <see cref="IRetryPolicy"/> for more details.</para>
         /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.RetryPolicy"/>).</para>
         /// </summary>

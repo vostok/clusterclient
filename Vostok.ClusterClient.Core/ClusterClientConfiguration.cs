@@ -23,6 +23,7 @@ namespace Vostok.Clusterclient.Core
         {
             Log = log;
             Modules = new Dictionary<Type, RelatedModules>();
+            ModulesToRemove = new HashSet<Type>();
 
             RequestTransforms = new List<IRequestTransform>();
             ResponseTransforms = new List<IResponseTransform>();
@@ -67,6 +68,8 @@ namespace Vostok.Clusterclient.Core
         public List<IResponseCriterion> ResponseCriteria { get; set; }
 
         public IDictionary<Type, RelatedModules> Modules { get; set; }
+
+        public ISet<Type> ModulesToRemove { get; set; }
 
         public IRetryPolicy RetryPolicy { get; set; }
 

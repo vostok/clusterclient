@@ -41,6 +41,18 @@ namespace Vostok.Clusterclient.Core
             configuration.AddRequestModule(module, RequestModulesMapping.GetModuleType(relatedModule), position);
         }
 
+        /// <summary>
+        /// Removes all modules of given <paramref name="moduleType"/> from standard module pipeline.
+        /// </summary>
+        public static void RemoveRequestModule(this IClusterClientConfiguration configuration, Type moduleType)
+            => configuration.ModulesToRemove.Add(moduleType);
+
+        /// <summary>
+        /// Removes all modules of given <paramref name="moduleType"/> from standard module pipeline.
+        /// </summary>
+        public static void RemoveRequestModule(this IClusterClientConfiguration configuration, RequestModule moduleType)
+            => configuration.ModulesToRemove.Add(RequestModulesMapping.GetModuleType(moduleType));
+
         private static RelatedModules ObtainModules(IClusterClientConfiguration configuration, Type type)
         {
             if (configuration.Modules == null)
