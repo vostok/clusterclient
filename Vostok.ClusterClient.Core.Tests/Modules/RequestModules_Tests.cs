@@ -19,6 +19,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             configuration.SetupAdaptiveThrottling();
             configuration.SetupReplicaBudgeting();
             configuration.SetupHttpMethodValidation();
+            configuration.SetupThreadPoolLimitsTuning();
 
             var chain = RequestModuleChainBuilder.BuildChain(configuration, new PerInstanceReplicaStorageProvider());
 

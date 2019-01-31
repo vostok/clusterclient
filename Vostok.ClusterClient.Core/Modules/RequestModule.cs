@@ -36,6 +36,11 @@ namespace Vostok.Clusterclient.Core.Modules
         AuxiliaryHeaders,
 
         /// <summary>
+        /// A module which fixes undertuned <see cref="System.Threading.ThreadPool"/> limits upon encountering request timeouts.
+        /// </summary>
+        ThreadPoolTuning,
+
+        /// <summary>
         /// A module which logs requests and responses.
         /// </summary>
         Logging,

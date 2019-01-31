@@ -16,6 +16,8 @@ namespace Vostok.Clusterclient.Core.Modules
                     return typeof(RequestTransformationModule);
                 case RequestModule.AuxiliaryHeaders:
                     return typeof(AuxiliaryHeadersModule);
+                case RequestModule.ThreadPoolTuning:
+                    return typeof(ThreadPoolTuningModule);
                 case RequestModule.Logging:
                     return typeof(LoggingModule);
                 case RequestModule.ResponseTransformation:

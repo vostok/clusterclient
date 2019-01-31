@@ -41,10 +41,17 @@ namespace Vostok.Clusterclient.Core
         /// <summary>
         /// Enables HTTP request method validation. Valid HTTP methods listed in <see cref="RequestMethods" /> class.
         /// </summary>
-        public static void SetupHttpMethodValidation(
-            this IClusterClientConfiguration configuration)
+        public static void SetupHttpMethodValidation(this IClusterClientConfiguration configuration)
         {
             configuration.AddRequestModule(new HttpMethodValidationModule(), typeof(RequestValidationModule), ModulePosition.After);
+        }
+
+        /// <summary>
+        /// Enables fixing of undertuned <see cref="System.Threading.ThreadPool"/> limits upon encountering request timeouts.
+        /// </summary>
+        public static void SetupThreadPoolLimitsTuning(this IClusterClientConfiguration configuration)
+        {
+            configuration.AddRequestModule(ThreadPoolTuningModule.Instance, typeof(LoggingModule));
         }
 
         /// <summary>

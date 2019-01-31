@@ -90,11 +90,12 @@ namespace Vostok.Clusterclient.Core
         /// <para>See <see cref="IRequestModule"/> interface for more details about request modules.</para>
         /// <para>Final execution pipeline looks like this:</para>
         /// <list type="number">
-        /// <item><description><see cref="RequestModule.LeakPrevention"/>: underlying response streams closing.</description></item>
+        /// <item><description><see cref="RequestModule.LeakPrevention"/>: underlying response streams cleanup.</description></item>
         /// <item><description><see cref="RequestModule.GlobalErrorCatching"/>: exception logging and handling.</description></item>
         /// <item><description><see cref="RequestModule.RequestTransformation"/>: request transformation (application of <see cref="IRequestTransform"/> chain).</description></item>
         /// <item><description><see cref="RequestModule.AuxiliaryHeaders"/>: request priority application (adding a priority header to request).</description></item>
         /// <item><description>User-defined modules.</description></item>
+        /// <item><description><see cref="RequestModule.ThreadPoolTuning"/>: <see cref="System.Threading.ThreadPool"/> limits tuning.</description></item>
         /// <item><description><see cref="RequestModule.Logging"/>: request/result logging.</description></item>
         /// <item><description><see cref="RequestModule.ResponseTransformation"/>: response transformation (application of <see cref="IResponseTransform"/> chain).</description></item>
         /// <item><description><see cref="RequestModule.ErrorCatching"/>: exception logging and handling.</description></item>

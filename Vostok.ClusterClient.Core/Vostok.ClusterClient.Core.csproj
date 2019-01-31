@@ -41,6 +41,12 @@
     <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\ThreadSafeRandom.cs">
       <Link>Commons\ThreadSafeRandom.cs</Link>
     </Compile>
+    <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\ThreadPoolState.cs">
+      <Link>Commons\ThreadPoolState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\ThreadPoolUtility.cs">
+      <Link>Commons\ThreadPoolUtility.cs</Link>
+    </Compile>
     <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\UnboundedObjectPool.cs">
       <Link>Commons\UnboundedObjectPool.cs</Link>
     </Compile>
