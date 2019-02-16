@@ -88,5 +88,15 @@ namespace Vostok.Clusterclient.Core.Model
         /// A custom header which contains application name.
         /// </summary>
         public const string ApplicationIdentity = "Application-Identity";
+
+        /// <summary>
+        /// A custom optional request header used for transmitting serialized distributed context properties.
+        /// </summary>
+        public const string VostokContextProperties = "Vostok-Context-Properties";
+
+        /// <summary>
+        /// A custom optional request header used for transmitting serialized distributed context globals.
+        /// </summary>
+        public const string VostokContextGlobals = "Vostok-Context-Globals";
     }
 }
