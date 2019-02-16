@@ -19,12 +19,12 @@ namespace Vostok.Clusterclient.Core.Transport
             this.transport = transport;
             this.header = header;
         }
-
+        
         public TransportCapabilities Capabilities => transport.Capabilities;
 
         public Task<Response> SendAsync(Request request, TimeSpan? connectionTimeout, TimeSpan timeout, CancellationToken cancellationToken)
             => transport.SendAsync(
-                request.WithHeader(header, timeout.TotalSeconds.ToString("0.###", NumberFormatInfo.InvariantInfo)),
+                request.WithHeader(header, timeout.TotalSeconds.ToString("0.###s", NumberFormatInfo.InvariantInfo)),
                 connectionTimeout,
                 timeout,
                 cancellationToken);
