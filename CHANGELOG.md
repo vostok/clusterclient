@@ -1,3 +1,7 @@
+## 0.1.3 (16-02-2019): 
+
+Enchancements in auxiliary headers modules.
+
 ## 0.1.2 (16-02-2019): 
 
 AddRequestModule() extension is now idempotent.
