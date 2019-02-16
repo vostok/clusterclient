@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Vostok.Clusterclient.Core.Misc;
 using Vostok.Clusterclient.Core.Modules;
 
@@ -21,7 +22,10 @@ namespace Vostok.Clusterclient.Core
             Type type,
             ModulePosition position = ModulePosition.Before)
         {
-            ObtainModules(configuration, type)[position].Add(module);
+            var modulesList = ObtainModules(configuration, type)[position];
+            
+            if (modulesList.All(m => m.GetType() != module.GetType()))
+                modulesList.Add(module);
         }
 
         /// <summary>

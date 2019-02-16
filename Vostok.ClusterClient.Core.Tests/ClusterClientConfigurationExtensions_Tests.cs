@@ -31,13 +31,24 @@ namespace Vostok.Clusterclient.Core.Tests
         }
 
         [Test]
-        public void AddRequestMoudle_should_not_fail_if_modules_list_is_null()
+        public void AddRequestModule_should_not_fail_if_modules_list_is_null()
         {
             configuration.Modules = null;
 
             configuration.AddRequestModule(Substitute.For<IRequestModule>());
 
             configuration.Modules.Should().HaveCount(1);
+        }
+
+        [Test]
+        public void AddRequestModule_should_be_idempotent()
+        {
+            configuration.AddRequestModule(new ThreadPoolTuningModule(), RequestModule.AuxiliaryHeaders);
+            configuration.AddRequestModule(new ThreadPoolTuningModule(), RequestModule.AuxiliaryHeaders);
+            configuration.AddRequestModule(new ThreadPoolTuningModule(), RequestModule.AuxiliaryHeaders);
+            configuration.AddRequestModule(new ThreadPoolTuningModule(), RequestModule.AuxiliaryHeaders);
+
+            configuration.Modules[typeof(AuxiliaryHeadersModule)].Before.Should().ContainSingle().Which.Should().BeOfType<ThreadPoolTuningModule>();
         }
 
         [Test]
