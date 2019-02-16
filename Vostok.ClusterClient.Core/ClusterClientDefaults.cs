@@ -161,11 +161,6 @@ namespace Vostok.Clusterclient.Core
         /// </summary>
         public static readonly TimeSpan ConnectionTimeout = TimeSpan.FromMilliseconds(750);
 
-        /// <summary>
-        /// The default value of <see cref="IClusterClientConfiguration.DefaultPriority"/>.
-        /// </summary>
-        public static readonly RequestPriority Priority = RequestPriority.Ordinary;
-
         /// <returns>The default value of <see cref="IClusterClientConfiguration.ResponseCriteria"/>.</returns>
         public static List<IResponseCriterion> ResponseCriteria()
         {

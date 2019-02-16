@@ -130,9 +130,9 @@ namespace Vostok.Clusterclient.Core.Tests
         }
 
         [Test]
-        public void Should_initially_have_default_request_priority()
+        public void Should_initially_have_null_request_priority()
         {
-            configuration.DefaultPriority.Should().Be(ClusterClientDefaults.Priority);
+            configuration.DefaultPriority.Should().BeNull();
         }
 
         [Test]

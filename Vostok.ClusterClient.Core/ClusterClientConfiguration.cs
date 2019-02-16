@@ -32,7 +32,6 @@ namespace Vostok.Clusterclient.Core
 
             DefaultTimeout = ClusterClientDefaults.Timeout;
             DefaultConnectionTimeout = ClusterClientDefaults.ConnectionTimeout;
-            DefaultPriority = ClusterClientDefaults.Priority;
 
             Logging = new LoggingOptions
             {
