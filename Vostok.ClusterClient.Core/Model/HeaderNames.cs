@@ -92,11 +92,11 @@ namespace Vostok.Clusterclient.Core.Model
         /// <summary>
         /// A custom optional request header used for transmitting serialized distributed context properties.
         /// </summary>
-        public const string VostokContextProperties = "Vostok-Context-Properties";
+        public const string ContextProperties = "Context-Properties";
 
         /// <summary>
         /// A custom optional request header used for transmitting serialized distributed context globals.
         /// </summary>
-        public const string VostokContextGlobals = "Vostok-Context-Globals";
+        public const string ContextGlobals = "Context-Globals";
     }
 }
