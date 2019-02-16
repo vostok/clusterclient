@@ -28,6 +28,7 @@ namespace Vostok.Clusterclient.Core.Modules
             Parameters = parameters;
             CancellationToken = cancellationToken;
             MaximumReplicasToUse = maximumReplicasToUse;
+            ClientApplicationName = clientApplicationName;
 
             ResetReplicaResults();
         }
