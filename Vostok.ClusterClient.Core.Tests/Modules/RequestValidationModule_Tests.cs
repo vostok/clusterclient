@@ -70,6 +70,16 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         }
 
         [Test]
+        public void Should_fail_if_request_has_composite_content_but_transport_does_not_support_it()
+        {
+            context.Request.Returns(Request.Post("foo/bar").WithContent(new [] {new byte[1], new byte[1]}));
+
+            context.Transport.Capabilities.Returns(TransportCapabilities.None);
+
+            ShouldFailChecks();
+        }
+
+        [Test]
         public void Should_fail_if_request_has_stream_content_with_parallel_strategy()
         {
             context.Request.Returns(Request.Post("foo/bar").WithContent(Stream.Null, 100));

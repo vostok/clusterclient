@@ -12,16 +12,23 @@ namespace Vostok.Clusterclient.Core.Transport
     public enum TransportCapabilities
     {
         /// <summary>
-        /// Empty TransportCapabilities
+        /// Transport has no special capabilites.
         /// </summary>
         None = 0,
+
         /// <summary>
-        /// Transport is capable to stream request content from <see cref="Request.StreamContent"/>.
+        /// Transport is capable of streaming request content from <see cref="Request.StreamContent"/>.
         /// </summary>
         RequestStreaming = 1 << 0,
+
         /// <summary>
-        /// Transport is capable to stream response content to <see cref="Response.Stream"/>
+        /// Transport is capable of streaming response content to <see cref="Response.Stream"/>
         /// </summary>
-        ResponseStreaming = 1 << 1
+        ResponseStreaming = 1 << 1,
+
+        /// <summary>
+        /// Transport is capable of sending <see cref="CompositeContent"/> as request body.
+        /// </summary>
+        RequestCompositeBody = 1 << 2
     }
 }

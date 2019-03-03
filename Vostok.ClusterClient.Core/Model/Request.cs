@@ -20,7 +20,7 @@ namespace Vostok.Clusterclient.Core.Model
             [NotNull] Uri url,
             [CanBeNull] Content content = null,
             [CanBeNull] Headers headers = null)
-            : this(method, url, null, content, headers)
+            : this(method, url, null, null, content, headers)
         {
         }
 
@@ -29,19 +29,30 @@ namespace Vostok.Clusterclient.Core.Model
             [NotNull] Uri url,
             [CanBeNull] IStreamContent content,
             [CanBeNull] Headers headers = default)
-            : this(method, url, content, null, headers)
+            : this(method, url, null, content, null, headers)
+        {
+        }
+
+        public Request(
+            [NotNull] string method,
+            [NotNull] Uri url,
+            [CanBeNull] CompositeContent content,
+            [CanBeNull] Headers headers = default)
+            : this(method, url, content, null, null, headers)
         {
         }
 
         private Request(
             [NotNull] string method,
             [NotNull] Uri url,
+            [CanBeNull] CompositeContent compositeContent,
             [CanBeNull] IStreamContent streamContent,
             [CanBeNull] Content content,
             [CanBeNull] Headers headers)
         {
             Method = method ?? throw new ArgumentNullException(nameof(method));
             Url = url ?? throw new ArgumentNullException(nameof(url));
+            CompositeContent = compositeContent;
             StreamContent = streamContent;
             Content = content;
             Headers = headers;
@@ -66,6 +77,12 @@ namespace Vostok.Clusterclient.Core.Model
         public Content Content { get; }
 
         /// <summary>
+        /// Returns request composite content or <c>null</c> if there is none.
+        /// </summary>
+        [CanBeNull]
+        public CompositeContent CompositeContent { get; }
+
+        /// <summary>
         /// Returns request stream content or <c>null</c> if there is none.
         /// </summary>
         [CanBeNull]
@@ -78,9 +95,9 @@ namespace Vostok.Clusterclient.Core.Model
         public Headers Headers { get; }
 
         /// <summary>
-        /// Returns true if current instance has either non-null <see cref="Content"/> or <see cref="StreamContent"/>.
+        /// Returns <c>true</c> if current instance has a non-null <see cref="Content"/>, <see cref="CompositeContent"/> or <see cref="StreamContent"/>.
         /// </summary>
-        public bool HasBody => Content != null || StreamContent != null;
+        public bool HasBody => Content != null || CompositeContent != null || StreamContent != null;
 
         /// <summary>
         /// Produces a new <see cref="Request"/> instance with given url. Current instance is not modified.
@@ -101,12 +118,12 @@ namespace Vostok.Clusterclient.Core.Model
         [NotNull]
         public Request WithUrl([NotNull] Uri url)
         {
-            return new Request(Method, url, StreamContent, Content, Headers);
+            return new Request(Method, url, CompositeContent, StreamContent, Content, Headers);
         }
 
         /// <summary>
         /// <para>Produces a new <see cref="Request"/> instance with given body content. Current instance is not modified.</para>
-        /// <para>If current instance contains a non-null <see cref="StreamContent"/> property, it will be discarded in new instance.</para>
+        /// <para>If current instance contains a non-null <see cref="StreamContent"/> or <see cref="CompositeContent"/> property, it will be discarded in new instance.</para>
         /// </summary>
         /// <returns>A new <see cref="Request"/> object with updated content.</returns>
         [Pure]
@@ -118,7 +135,7 @@ namespace Vostok.Clusterclient.Core.Model
 
         /// <summary>
         /// <para>Produces a new <see cref="Request"/> instance with given body stream content. Current instance is not modified.</para>
-        /// <para>If current instance contains a non-null <see cref="Content"/> property, it will be discarded in new instance.</para>
+        /// <para>If current instance contains a non-null <see cref="Content"/> or <see cref="CompositeContent"/> property, it will be discarded in new instance.</para>
         /// </summary>
         /// <returns>A new <see cref="Request"/> object with updated content.</returns>
         [Pure]
@@ -126,6 +143,18 @@ namespace Vostok.Clusterclient.Core.Model
         public Request WithContent([NotNull] IStreamContent content)
         {
             return new Request(Method, Url, content, content.Length.HasValue ? (Headers ?? Headers.Empty).Set(HeaderNames.ContentLength, content.Length.Value) : Headers);
+        }
+
+        /// <summary>
+        /// <para>Produces a new <see cref="Request"/> instance with given body content. Current instance is not modified.</para>
+        /// <para>If current instance contains a non-null <see cref="StreamContent"/> or <see cref="Content"/> property, it will be discarded in new instance.</para>
+        /// </summary>
+        /// <returns>A new <see cref="Request"/> object with updated content.</returns>
+        [Pure]
+        [NotNull]
+        public Request WithContent([NotNull] CompositeContent content)
+        {
+            return new Request(Method, Url, content, (Headers ?? Headers.Empty).Set(HeaderNames.ContentLength, content.Length));
         }
 
         /// <summary>
@@ -153,7 +182,7 @@ namespace Vostok.Clusterclient.Core.Model
         [NotNull]
         public Request WithHeader([NotNull] string name, [NotNull] string value)
         {
-            return new Request(Method, Url, StreamContent, Content, (Headers ?? Headers.Empty).Set(name, value));
+            return new Request(Method, Url, CompositeContent, StreamContent, Content, (Headers ?? Headers.Empty).Set(name, value));
         }
 
         /// <summary>
@@ -165,7 +194,7 @@ namespace Vostok.Clusterclient.Core.Model
         [NotNull]
         public Request WithHeaders([NotNull] Headers headers)
         {
-            return new Request(Method, Url, StreamContent, Content, headers);
+            return new Request(Method, Url, CompositeContent, StreamContent, Content, headers);
         }
 
         /// <inheritdoc />

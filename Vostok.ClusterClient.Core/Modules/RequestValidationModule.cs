@@ -20,6 +20,9 @@ namespace Vostok.Clusterclient.Core.Modules
             if (HasStreamUnsupportedByTransport(context))
                 return OnInvalidRequest(context, "Request has a body stream, which is not supported by transport implementation.");
 
+            if (HasCompositeContentUnsupportedByTransport(context))
+                return OnInvalidRequest(context, "Request has a composite body content, which is not supported by transport implementation.");
+
             if (HasStreamWithParallelStrategy(context))
                 return OnInvalidRequest(context, "Request has a body stream, which can't be used concurrently, and uses a parallel execution strategy.");
 
@@ -36,8 +39,11 @@ namespace Vostok.Clusterclient.Core.Modules
             return Task.FromResult(ClusterResult.IncorrectArguments(context.Request));
         }
 
-        private static bool HasStreamUnsupportedByTransport(IRequestContext context) =>
-            context.Request.StreamContent != null && !context.Transport.Supports(TransportCapabilities.RequestStreaming);
+        private static bool HasStreamUnsupportedByTransport(IRequestContext context) 
+            => context.Request.StreamContent != null && !context.Transport.Supports(TransportCapabilities.RequestStreaming);
+
+        private static bool HasCompositeContentUnsupportedByTransport(IRequestContext context)
+            => context.Request.CompositeContent != null && !context.Transport.Supports(TransportCapabilities.RequestCompositeBody);
 
         private static bool HasStreamWithParallelStrategy(IRequestContext context)
         {
