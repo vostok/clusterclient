@@ -19,6 +19,7 @@
     <PackageProjectUrl>https://github.com/vostok/clusterclient.core</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/vostok/clusterclient.core/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>vostok vostok.clusterclient</PackageTags>
+    <PackageReleaseNotes>https://github.com/vostok/clusterclient.core/blob/master/CHANGELOG.md</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/vostok/clusterclient.core</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
