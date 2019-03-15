@@ -1,3 +1,7 @@
+## 0.1.5 (15-03-2019)
+
+Fixed https://github.com/vostok/clusterclient.core/issues/3
+
 ## 0.1.4 (03-03-2019): 
 
 Introduced support for request bodies consisting of multiple buffer segments.
