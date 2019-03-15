@@ -1,42 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  
   <Import Project="..\..\vostok.devtools\library-common-props\Main-Project.props" />
   <Import Project="..\..\vostok.devtools\git-commit-to-assembly-title\Vostok.Tools.GitCommit2AssemblyTitle.props" />
-  
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Configurations>Debug;Release</Configurations>
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
-  
   <PropertyGroup>
-    <VersionPrefix>0.1.5</VersionPrefix>
+    <VersionPrefix>0.1.6</VersionPrefix>
   </PropertyGroup>
-  
   <PropertyGroup>
     <Title>Vostok.ClusterClient.Core</Title>
     <Description>A library with interfaces and implementation of core ClusterClient components.</Description>
     <RootNamespace>Vostok.Clusterclient.Core</RootNamespace>
   </PropertyGroup>
-  
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/vostok/clusterclient.core</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/vostok/clusterclient.core/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>vostok vostok.clusterclient</PackageTags>
     <RepositoryUrl>https://github.com/vostok/clusterclient.core</RepositoryUrl>
   </PropertyGroup>
-  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
-  
   <ItemGroup>
     <Reference Include="Vostok.Logging.Abstractions">
       <HintPath>..\..\vostok.logging.abstractions\Vostok.Logging.Abstractions\bin\Release\netstandard2.0\Vostok.Logging.Abstractions.dll</HintPath>
     </Reference>
   </ItemGroup>
-  
   <ItemGroup>
     <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\ThreadSafeRandom.cs">
       <Link>Commons\ThreadSafeRandom.cs</Link>
@@ -78,5 +70,4 @@
       <Link>Commons\EnvironmentInfo.cs</Link>
     </Compile>
   </ItemGroup>
-  
 </Project>
