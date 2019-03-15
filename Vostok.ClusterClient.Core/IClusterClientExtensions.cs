@@ -17,6 +17,16 @@ namespace Vostok.Clusterclient.Core
         [NotNull]
         public static ClusterResult Send(
             [NotNull] this IClusterClient client,
+            [NotNull] Request request)
+            => client
+                .SendAsync(request)
+                .GetAwaiter()
+                .GetResult();
+
+        /// <inheritdoc cref="IClusterClient.SendAsync"/>
+        [NotNull]
+        public static ClusterResult Send(
+            [NotNull] this IClusterClient client,
             [NotNull] Request request,
             [CanBeNull] RequestParameters parameters = null,
             [CanBeNull] TimeSpan? timeout = null,
