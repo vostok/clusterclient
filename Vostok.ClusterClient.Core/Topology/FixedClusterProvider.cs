@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace Vostok.Clusterclient.Core.Topology
@@ -22,6 +23,12 @@ namespace Vostok.Clusterclient.Core.Topology
         public FixedClusterProvider(params Uri[] replicas)
         {
             this.replicas = replicas;
+        }
+
+        /// <param name="replicas">A list of replica Uri <see cref="string"/> which this provider should return.</param>
+        public FixedClusterProvider(params string[] replicas)
+        {
+            this.replicas = replicas.Select(x => new Uri(x, UriKind.Absolute)).ToArray();
         }
 
         /// <inheritdoc />
