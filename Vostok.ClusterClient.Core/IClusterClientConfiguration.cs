@@ -68,7 +68,7 @@ namespace Vostok.Clusterclient.Core
         /// <para>Use <see cref="IClusterClientConfigurationExtensions.AddRequestTransform(IClusterClientConfiguration, IRequestTransform)"/> to add transforms to this list.</para>
         /// <para>This parameter is optional and has an empty default value.</para>
         /// </summary>
-        List<IRequestTransform> RequestTransforms { get; set; }
+        List<IRequestTransformMetadata> RequestTransforms { get; set; }
 
         /// <summary>
         /// <para>A list of response transforms. See <see cref="IResponseTransform"/> for more details.</para>

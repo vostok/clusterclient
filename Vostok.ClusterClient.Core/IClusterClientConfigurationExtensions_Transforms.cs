@@ -13,7 +13,7 @@ namespace Vostok.Clusterclient.Core
         /// </summary>
         public static void AddRequestTransform(this IClusterClientConfiguration configuration, IRequestTransform transform)
         {
-            (configuration.RequestTransforms ?? (configuration.RequestTransforms = new List<IRequestTransform>())).Add(transform);
+            (configuration.RequestTransforms ?? (configuration.RequestTransforms = new List<IRequestTransformMetadata>())).Add(transform);
         }
 
         /// <summary>
