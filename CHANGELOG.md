@@ -1,4 +1,8 @@
-## 0.1.5 (15-03-2019)
+## 0.1.6 (23.04.2019):
+
+Removed redundant trailing 's' from 'Request-Timeout' header value format.
+
+## 0.1.5 (15-03-2019):
 
 Fixed https://github.com/vostok/clusterclient.core/issues/3
 

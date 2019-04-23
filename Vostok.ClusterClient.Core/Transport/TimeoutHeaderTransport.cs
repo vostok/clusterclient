@@ -24,7 +24,7 @@ namespace Vostok.Clusterclient.Core.Transport
 
         public Task<Response> SendAsync(Request request, TimeSpan? connectionTimeout, TimeSpan timeout, CancellationToken cancellationToken)
             => transport.SendAsync(
-                request.WithHeader(header, timeout.TotalSeconds.ToString("0.###s", NumberFormatInfo.InvariantInfo)),
+                request.WithHeader(header, timeout.TotalSeconds.ToString("0.###", NumberFormatInfo.InvariantInfo)),
                 connectionTimeout,
                 timeout,
                 cancellationToken);

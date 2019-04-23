@@ -20,11 +20,11 @@ namespace Vostok.Clusterclient.Core.Tests.Transport
             timeoutTransport = new TimeoutHeaderTransport(baseTransport);
         }
 
-        [TestCase(0.111, "0.111s")]
-        [TestCase(1, "1s")]
-        [TestCase(2, "2s")]
-        [TestCase(2.5, "2.5s")]
-        [TestCase(2.5551, "2.555s", "custom-header")]
+        [TestCase(0.111, "0.111")]
+        [TestCase(1, "1")]
+        [TestCase(2, "2")]
+        [TestCase(2.5, "2.5")]
+        [TestCase(2.5551, "2.555", "custom-header")]
         public void Should_send_request_enriched_with_request_timeout_header_expressed_in_seconds(
             double seconds, string expected, string header = null)
         {
