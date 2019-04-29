@@ -25,7 +25,7 @@ namespace Vostok.Clusterclient.Core
             Modules = new Dictionary<Type, RelatedModules>();
             ModulesToRemove = new HashSet<Type>();
 
-            RequestTransforms = new List<IRequestTransform>();
+            RequestTransforms = new List<IRequestTransformMetadata>();
             ResponseTransforms = new List<IResponseTransform>();
             ResponseCriteria = new List<IResponseCriterion>();
             ReplicaStorageScope = ClusterClientDefaults.ReplicaStorageScope;
@@ -60,7 +60,7 @@ namespace Vostok.Clusterclient.Core
 
         public ReplicaStorageScope ReplicaStorageScope { get; set; }
 
-        public List<IRequestTransform> RequestTransforms { get; set; }
+        public List<IRequestTransformMetadata> RequestTransforms { get; set; }
 
         public List<IResponseTransform> ResponseTransforms { get; set; }
 

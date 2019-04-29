@@ -8,24 +8,37 @@ namespace Vostok.Clusterclient.Core.Modules
 {
     internal class RequestTransformationModule : IRequestModule
     {
-        private readonly IList<IRequestTransform> transforms;
+        private readonly IList<IRequestTransformMetadata> transforms;
 
-        public RequestTransformationModule(IList<IRequestTransform> transforms)
+        public RequestTransformationModule(IList<IRequestTransformMetadata> transforms)
         {
             this.transforms = transforms;
         }
 
-        public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
+        public async Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
             if (transforms != null && transforms.Count > 0)
             {
                 foreach (var transform in transforms)
-                    context.Request = transform.Transform(context.Request);
+                {
+                    switch (transform)
+                    {
+                        case IAsyncRequestTransform asyncRequestTransform:
+                            context.Request = await asyncRequestTransform
+                                .TransformAsync(context.Request)
+                                .ConfigureAwait(false);
+                            break;
+
+                        case IRequestTransform requestTransform:
+                            context.Request = requestTransform.Transform(context.Request);
+                            break;
+                    }
+                }
             }
 
             SubstituteStreamContent(context);
 
-            return next(context);
+            return await next(context).ConfigureAwait(false);
         }
 
         private static void SubstituteStreamContent(IRequestContext context)

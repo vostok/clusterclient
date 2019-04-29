@@ -64,11 +64,11 @@ namespace Vostok.Clusterclient.Core
         ReplicaStorageScope ReplicaStorageScope { get; set; }
 
         /// <summary>
-        /// <para>A list of request transforms. See <see cref="IRequestTransform"/> for more details.</para>
+        /// <para>A list of request transforms. See <see cref="IRequestTransform"/> and <see cref="IAsyncRequestTransform"/> for more details.</para>
         /// <para>Use <see cref="IClusterClientConfigurationExtensions.AddRequestTransform(IClusterClientConfiguration, IRequestTransform)"/> to add transforms to this list.</para>
         /// <para>This parameter is optional and has an empty default value.</para>
         /// </summary>
-        List<IRequestTransform> RequestTransforms { get; set; }
+        List<IRequestTransformMetadata> RequestTransforms { get; set; }
 
         /// <summary>
         /// <para>A list of response transforms. See <see cref="IResponseTransform"/> for more details.</para>

@@ -21,12 +21,17 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         private Request request1;
         private Request request2;
         private Request request3;
+        private Request request4;
+        private Request request5;
         private RequestContext context;
         private RequestTransformationModule module;
 
         private IRequestTransform transform1;
         private IRequestTransform transform2;
-        private List<IRequestTransform> transforms;
+        private IAsyncRequestTransform transform3;
+        private IAsyncRequestTransform transform4;
+
+        private List<IRequestTransformMetadata> transforms;
 
         [SetUp]
         public void TestSetup()
@@ -34,6 +39,8 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             request1 = Request.Get("/1");
             request2 = Request.Get("/2");
             request3 = Request.Get("/3");
+            request4 = Request.Get("/4");
+            request5 = Request.Get("/5");
 
             context = new RequestContext(request1, new RequestParameters(Strategy.SingleReplica), Budget.Infinite, new ConsoleLog(), null, int.MaxValue);
 
@@ -43,7 +50,13 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             transform2 = Substitute.For<IRequestTransform>();
             transform2.Transform(Arg.Any<Request>()).Returns(_ => request3);
 
-            transforms = new List<IRequestTransform> {transform1, transform2};
+            transform3 = Substitute.For<IAsyncRequestTransform>();
+            transform3.TransformAsync(Arg.Any<Request>()).Returns(_ => request4);
+
+            transform4 = Substitute.For<IAsyncRequestTransform>();
+            transform4.TransformAsync(Arg.Any<Request>()).Returns(_ => request5);
+
+            transforms = new List<IRequestTransformMetadata> {transform1, transform2, transform3, transform4};
 
             module = new RequestTransformationModule(transforms);
         }
@@ -73,20 +86,22 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         {
             Execute();
 
-            context.Request.Should().BeSameAs(request3);
+            context.Request.Should().BeSameAs(request5);
 
             Received.InOrder(
                 () =>
                 {
                     transform1.Transform(request1);
                     transform2.Transform(request2);
+                    transform3.TransformAsync(request3);
+                    transform4.TransformAsync(request4);
                 });
         }
 
         [Test]
         public void Should_substitute_request_content_stream_for_a_single_use_implementation()
         {
-            request3 = request3.WithContent(Stream.Null, 123L);
+            request5 = request5.WithContent(Stream.Null, 123L);
 
             Execute();
 
@@ -97,11 +112,11 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
 
         private void Execute()
         {
-            var taskSource = new TaskCompletionSource<ClusterResult>();
-
-            var task = taskSource.Task;
-
-            module.ExecuteAsync(context, _ => task).Should().BeSameAs(task);
+            module.ExecuteAsync(context, _ => Task.FromResult<ClusterResult>(null))
+                .GetAwaiter()
+                .GetResult()
+                .Should()
+                .BeSameAs(null);
         }
     }
 }

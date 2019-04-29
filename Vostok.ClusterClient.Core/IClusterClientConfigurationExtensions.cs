@@ -7,7 +7,6 @@ using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Modules;
 using Vostok.Clusterclient.Core.Ordering.Weighed;
 using Vostok.Clusterclient.Core.Topology;
-using Vostok.Clusterclient.Core.Transport;
 
 namespace Vostok.Clusterclient.Core
 {

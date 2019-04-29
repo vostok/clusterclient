@@ -5,7 +5,7 @@ using Vostok.Clusterclient.Core.Model;
 namespace Vostok.Clusterclient.Core.Transforms
 {
     /// <summary>
-    /// Represents a request transform which uses external delegate to modify requests.
+    /// Represents a request transform that uses an external delegate to modify requests.
     /// </summary>
     [PublicAPI]
     public class AdHocRequestTransform : IRequestTransform
