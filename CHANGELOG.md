@@ -1,3 +1,7 @@
+## 0.1.7 (29.04.2019):
+
+Added support for asynchronous request transforms.
+
 ## 0.1.6 (23.04.2019):
 
 Removed redundant trailing 's' from 'Request-Timeout' header value format.
