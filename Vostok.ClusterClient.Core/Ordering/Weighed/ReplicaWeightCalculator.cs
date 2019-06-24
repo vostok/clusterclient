@@ -6,7 +6,7 @@ using Vostok.Clusterclient.Core.Ordering.Storage;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed
 {
-    internal class ReplicaWeightCalculator : IReplicaWeightCalculator
+    public class ReplicaWeightCalculator : IReplicaWeightCalculator
     {
         private readonly IList<IReplicaWeightModifier> modifiers;
         private readonly double minimumWeight;
