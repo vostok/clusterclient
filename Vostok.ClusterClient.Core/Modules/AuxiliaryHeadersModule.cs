@@ -25,7 +25,7 @@ namespace Vostok.Clusterclient.Core.Modules
                 context.Request = context.Request.WithHeader(priorityHeader, priority.Value);
 
             var applicationName = context.ClientApplicationName;
-            if (!string.IsNullOrEmpty(applicationName))
+            if (!string.IsNullOrEmpty(applicationName) && context.Request.Headers?[identityHeader] == null)
                 context.Request = context.Request.WithHeader(identityHeader, applicationName);
 
             return next(context);

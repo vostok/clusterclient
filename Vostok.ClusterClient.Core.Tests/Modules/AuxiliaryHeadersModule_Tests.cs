@@ -20,8 +20,8 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         public void TestSetup()
         {
             context = new RequestContext(
-                Request.Get("foo/bar"), 
-                RequestParameters.Empty, 
+                Request.Get("foo/bar"),
+                RequestParameters.Empty,
                 default,
                 default,
                 default,
@@ -44,13 +44,25 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
 
             context.Request.Headers?[priorityHeader].Should().Be(priority.ToString());
         }
-        
+
         [Test]
         public void Should_set_client_application_name_to_headers()
         {
             Execute();
 
             context.Request.Headers?[identityHeader].Should().Be(context.ClientApplicationName);
+        }
+
+        [Test]
+        public void Should_not_override_per_request_client_application_name()
+        {
+            var clientName = Guid.NewGuid().ToString();
+
+            context.Request = context.Request.WithHeader(identityHeader, clientName);
+            
+            Execute();
+
+            context.Request.Headers?[identityHeader].Should().Be(clientName);
         }
 
         private void Execute()
