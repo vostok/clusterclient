@@ -31,7 +31,7 @@ namespace Vostok.Clusterclient.Core.Tests
         }
 
         [Test]
-        public void Should_use_cluser_provider_as_is_when_there_is_no_replicas_transform()
+        public void Should_use_cluster_provider_as_is_when_there_is_no_replicas_transform()
         {
             var clusterProvider = Substitute.For<IClusterProvider>();
 
@@ -47,7 +47,7 @@ namespace Vostok.Clusterclient.Core.Tests
         }
 
         [Test]
-        public void Should_wrap_cluser_provider_with_transforming_facade_if_there_is_a_replicas_transform()
+        public void Should_wrap_cluster_provider_with_transforming_facade_if_there_is_a_replicas_transform()
         {
             var clusterClient = new ClusterClient(
                 log,

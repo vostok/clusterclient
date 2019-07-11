@@ -205,7 +205,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Adaptive
         }
 
         [Test]
-        public void AreEqual_should_return_true_for_healthes_with_equal_values_and_decay_pivots()
+        public void AreEqual_should_return_true_for_healths_with_equal_values_and_decay_pivots()
         {
             var health1 = new HealthWithDecay(0.5, currentTime - 1.Minutes());
             var health2 = new HealthWithDecay(health1.Value, health1.DecayPivot);
@@ -214,7 +214,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Adaptive
         }
 
         [Test]
-        public void AreEqual_should_return_false_for_healthes_with_different_values()
+        public void AreEqual_should_return_false_for_healths_with_different_values()
         {
             var health1 = new HealthWithDecay(0.5, currentTime - 1.Minutes());
             var health2 = new HealthWithDecay(health1.Value + 0.0001, health1.DecayPivot);
@@ -223,7 +223,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Adaptive
         }
 
         [Test]
-        public void AreEqual_should_return_false_for_healthes_with_different_decay_pivots()
+        public void AreEqual_should_return_false_for_healths_with_different_decay_pivots()
         {
             var health1 = new HealthWithDecay(0.5, currentTime - 1.Minutes());
             var health2 = new HealthWithDecay(health1.Value, health1.DecayPivot - 1.Ticks());

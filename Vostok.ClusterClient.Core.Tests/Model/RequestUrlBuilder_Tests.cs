@@ -86,7 +86,7 @@ namespace Vostok.Clusterclient.Core.Tests.Model
         }
 
         [Test]
-        public void Should_produce_repetable_results()
+        public void Should_produce_repeatable_results()
         {
             for (var i = 0; i < 10; i++)
             {

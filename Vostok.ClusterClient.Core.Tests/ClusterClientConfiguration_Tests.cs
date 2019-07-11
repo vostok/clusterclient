@@ -547,7 +547,7 @@ namespace Vostok.Clusterclient.Core.Tests
         }
 
         [Test]
-        public void AugmentWithDefaults_should_initialize_client_application_name_if_itsis_null()
+        public void AugmentWithDefaults_should_initialize_client_application_name_if_it_is_null()
         {
             configuration.AugmentWithDefaults();
 
