@@ -65,7 +65,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed
             if (replicas.Count < 2)
                 return replicas;
 
-            var requiredCapacity = replicas.Count * 2;
+            var requiredCapacity = replicas.Count * 2 - 1;
             if (requiredCapacity > PooledArraySize)
                 return OrderInternal(replicas, storageProvider, request, parameters, new TreeNode[requiredCapacity]);
 
@@ -252,11 +252,30 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed
             ref List<Uri> replicasWithInfiniteWeight,
             ref List<Uri> replicasWithZeroWeight)
         {
-            for (var i = 0; i < replicas.Count; i++)
-            {
-                var replica = replicas[i];
-                var weight = weightCalculator.GetWeight(replica, replicas, storageProvider, request, parameters);
+            var firstLeafIndex = FillLeaves(tree, replicas, storageProvider, request, parameters, 
+                ref replicasWithInfiniteWeight, ref replicasWithZeroWeight);
 
+            GetWeight(tree, 0, firstLeafIndex);
+        }
+
+        /// <summary>
+        /// Returns first leaf index.
+        /// </summary>
+        private int FillLeaves(
+            TreeNode[] tree,
+            IList<Uri> replicas,
+            IReplicaStorageProvider storageProvider,
+            Request request,
+            RequestParameters parameters,
+            ref List<Uri> replicasWithInfiniteWeight,
+            ref List<Uri> replicasWithZeroWeight)
+        {
+            var firstLeafIndex = replicas.Count - 1;
+            var currentLeafIndex = firstLeafIndex;
+
+            foreach (var replica in replicas)
+            {
+                var weight = weightCalculator.GetWeight(replica, replicas, storageProvider, request, parameters);
                 if (weight < 0.0)
                     throw new BugcheckException($"A negative weight has been calculated for replica '{replica}': {weight}.");
 
@@ -274,25 +293,31 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed
                     continue;
                 }
 
-                var index = replicas.Count + i;
-
                 // (iloktionov): Заполняем листовую ноду дерева:
-                tree[index] = new TreeNode
+                tree[currentLeafIndex++] = new TreeNode
                 {
                     Exists = true,
                     Weight = weight,
                     Replica = replica
                 };
-
-                // (iloktionov): И обновляем частичные суммы в промежуточных нодах вплоть до корня:
-                while (index > 0)
-                {
-                    index = GetParentIndex(index);
-
-                    tree[index].Exists = true;
-                    tree[index].Weight += weight;
-                }
             }
+
+            return firstLeafIndex;
+        }
+
+        private static double GetWeight(TreeNode[] tree, int index, int firstLeafIndex)
+        {
+            if (index >= firstLeafIndex)
+                return tree[index].Exists ? tree[index].Weight : 0;
+
+            var weight =
+                GetWeight(tree, GetLeftChildIndex(index), firstLeafIndex) +
+                GetWeight(tree, GetRightChildIndex(index), firstLeafIndex);
+
+            tree[index].Exists = true;
+            tree[index].Weight = weight;
+
+            return weight;
         }
 
         private struct TreeNode
