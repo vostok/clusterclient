@@ -1,3 +1,7 @@
+## 0.1.8 (17.07.2019)
+
+WeighedReplicaOrdering now builds its internal segment tree in O(N) time instead of O(N * log(N)).
+
 ## 0.1.7 (29.04.2019):
 
 Added support for asynchronous request transforms.
