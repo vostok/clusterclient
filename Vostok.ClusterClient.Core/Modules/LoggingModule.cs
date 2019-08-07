@@ -57,6 +57,7 @@ namespace Vostok.Clusterclient.Core.Modules
             {
                 result.Status,
                 ResponseCode = result.Response.Code,
+                ElapsedTime = context.Budget.Elapsed.ToPrettyString()
             };
 
             if (result.Status == ClusterResultStatus.Canceled)
