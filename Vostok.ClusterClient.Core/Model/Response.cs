@@ -57,7 +57,7 @@ namespace Vostok.Clusterclient.Core.Model
         /// <summary>
         /// Returns true if this response has buffered content, or false otherwise.
         /// </summary>
-        public bool HasContent => content != null;
+        public bool HasContent => content != null && content.Length > 0;
 
         /// <summary>
         /// Returns true if this response has any headers, or false otherwise.

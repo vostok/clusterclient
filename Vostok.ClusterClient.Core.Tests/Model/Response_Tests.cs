@@ -134,6 +134,12 @@ namespace Vostok.Clusterclient.Core.Tests.Model
         }
 
         [Test]
+        public void HasContent_should_return_false_when_there_is_an_empty_content()
+        {
+            Responses.Ok.WithContent(Content.Empty).HasContent.Should().BeFalse();
+        }
+
+        [Test]
         public void HasHeaders_should_return_false_when_there_are_no_headers()
         {
             Responses.Ok.HasHeaders.Should().BeFalse();
