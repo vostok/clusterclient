@@ -72,6 +72,18 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         }
 
         [Test]
+        public void Should_delegate_to_next_module_when_request_url_is_an_absolute_file_url()
+        {
+            request = Request.Get("/foo/bar/baz");
+
+            var result = new ClusterResult(ClusterResultStatus.Success, new List<ReplicaResult>(), response, request);
+
+            Execute(result).Should().BeSameAs(result);
+
+            transport.ReceivedCalls().Should().BeEmpty();
+        }
+
+        [Test]
         public void Should_send_request_using_transport_directly_if_url_is_absolute()
         {
             Execute();

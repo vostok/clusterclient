@@ -25,7 +25,7 @@ namespace Vostok.Clusterclient.Core.Modules
 
         public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
-            if (!context.Request.Url.IsAbsoluteUri)
+            if (!context.Request.Url.IsAbsoluteUri || context.Request.Url.IsFile)
                 return next(context);
 
             return SendAsync(context);
