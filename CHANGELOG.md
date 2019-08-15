@@ -1,3 +1,7 @@
+## 0.1.9 (15.08.2019)
+
+Potential fix for https://github.com/vostok/clusterclient.core/issues/6
+
 ## 0.1.8 (17.07.2019)
 
 WeighedReplicaOrdering now builds its internal segment tree in O(N) time instead of O(N * log(N)).
