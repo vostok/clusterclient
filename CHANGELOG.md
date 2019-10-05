@@ -1,3 +1,7 @@
+## 0.1.10 (05.10.2019)
+
+ForkingRequestStrategy now adds a `Concurrency-Level` header with current parallelism value to detect forked retries on server side.
+
 ## 0.1.9 (15.08.2019)
 
 Potential fix for https://github.com/vostok/clusterclient.core/issues/6

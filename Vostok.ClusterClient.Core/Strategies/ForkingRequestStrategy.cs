@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -125,6 +126,8 @@ namespace Vostok.Clusterclient.Core.Strategies
         {
             if (!replicasEnumerator.MoveNext())
                 throw new InvalidOperationException("Replicas enumerator ended prematurely. This is definitely a bug in code.");
+
+            request = request.WithHeader(HeaderNames.ConcurrencyLevel, currentTasks.Count(task => task is Task<ReplicaResult>) + 1);
 
             currentTasks.Add(sender.SendToReplicaAsync(replicasEnumerator.Current, request, connectionTimeout, budget.Remaining, cancellationToken));
         }

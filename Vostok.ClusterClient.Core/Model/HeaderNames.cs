@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using Vostok.Clusterclient.Core.Strategies;
 
 namespace Vostok.Clusterclient.Core.Model
 {
@@ -98,5 +99,10 @@ namespace Vostok.Clusterclient.Core.Model
         /// A custom optional request header used for transmitting serialized distributed context globals.
         /// </summary>
         public const string ContextGlobals = "Context-Globals";
+
+        /// <summary>
+        /// A custom header utilized by <see cref="ForkingRequestStrategy"/> to denote its current parallelism level.
+        /// </summary>
+        public const string ConcurrencyLevel = "Concurrency-Level";
     }
 }

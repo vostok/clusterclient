@@ -23,6 +23,7 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
     {
         private Uri[] replicas;
         private Request request;
+        private List<Request> sentRequests;
         private RequestParameters parameters;
         private IRequestSender sender;
         private IForkingDelaysProvider delaysProvider;
@@ -42,11 +43,16 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
             replicas = Enumerable.Range(0, 10).Select(i => new Uri($"http://replica-{i}/")).ToArray();
             resultSources = replicas.ToDictionary(r => r, _ => new TaskCompletionSource<ReplicaResult>());
             parameters = RequestParameters.Empty.WithConnectionTimeout(1.Seconds());
+            sentRequests = new List<Request>();
 
             sender = Substitute.For<IRequestSender>();
             sender
                 .SendToReplicaAsync(Arg.Any<Uri>(), Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
-                .Returns(info => resultSources[info.Arg<Uri>()].Task);
+                .Returns(info =>
+                {
+                    sentRequests.Add(info.Arg<Request>());
+                    return resultSources[info.Arg<Uri>()].Task;
+                });
 
             delaySources = replicas.Select(_ => new TaskCompletionSource<bool>()).ToList();
             delaySourcesEnumerator = delaySources.GetEnumerator();
@@ -99,7 +105,7 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
         {
             strategy.SendAsync(request, parameters, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
 
-            sender.Received(1).SendToReplicaAsync(replicas[0], request, parameters.ConnectionTimeout, 5.Seconds(), Arg.Any<CancellationToken>());
+            sender.Received(1).SendToReplicaAsync(replicas[0], Arg.Any<Request>(), parameters.ConnectionTimeout, 5.Seconds(), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -199,8 +205,8 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
             CompleteForkingDelay();
             CompleteForkingDelay();
 
-            sender.Received(1).SendToReplicaAsync(replicas[1], request, parameters.ConnectionTimeout, 5.Seconds(), Arg.Any<CancellationToken>());
-            sender.Received(1).SendToReplicaAsync(replicas[2], request, parameters.ConnectionTimeout, 5.Seconds(), Arg.Any<CancellationToken>());
+            sender.Received(1).SendToReplicaAsync(replicas[1], Arg.Any<Request>(), parameters.ConnectionTimeout, 5.Seconds(), Arg.Any<CancellationToken>());
+            sender.Received(1).SendToReplicaAsync(replicas[2], Arg.Any<Request>(), parameters.ConnectionTimeout, 5.Seconds(), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -216,9 +222,9 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
                 CompleteForkingDelay();
 
             for (var i = 0; i < replicas.Length - 1; ++i)
-                sender.Received(1).SendToReplicaAsync(replicas[i], request, parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+                sender.Received(1).SendToReplicaAsync(replicas[i], Arg.Any<Request>(), parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
             
-            sender.Received(1).SendToReplicaAsync(replicas.Last(), request, null, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+            sender.Received(1).SendToReplicaAsync(replicas.Last(), Arg.Any<Request>(), null, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
         }
 
         [TestCase(0)]
@@ -246,7 +252,7 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
 
             task.IsCompleted.Should().BeFalse();
 
-            sender.Received(1).SendToReplicaAsync(replicas[3], request, parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+            sender.Received(1).SendToReplicaAsync(replicas[3], Arg.Any<Request>(), parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -342,6 +348,45 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
             {
                 t.IsCancellationRequested.Should().BeTrue();
             }
+        }
+
+        [Test]
+        public void Should_add_concurrency_level_header_with_value_one_for_sequential_retries()
+        {
+            var sendTask = strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
+
+            CompleteRequest(replicas[0], ResponseVerdict.Reject);
+            CompleteRequest(replicas[1], ResponseVerdict.Reject);
+            CompleteRequest(replicas[2], ResponseVerdict.Accept);
+
+            sendTask.GetAwaiter().GetResult();
+
+            sentRequests.Should().HaveCount(3);
+            sentRequests[0].Headers?[HeaderNames.ConcurrencyLevel].Should().Be("1");
+            sentRequests[1].Headers?[HeaderNames.ConcurrencyLevel].Should().Be("1");
+            sentRequests[2].Headers?[HeaderNames.ConcurrencyLevel].Should().Be("1");
+        }
+
+        [Test]
+        public void Should_add_concurrency_level_header_with_correct_value_for_forked_retries()
+        {
+            var sendTask = strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
+
+            CompleteForkingDelay();
+            CompleteForkingDelay();
+
+            CompleteRequest(replicas[1], ResponseVerdict.Reject);
+            CompleteRequest(replicas[2], ResponseVerdict.Reject);
+            CompleteRequest(replicas[3], ResponseVerdict.Accept);
+
+            sendTask.GetAwaiter().GetResult();
+
+            sentRequests.Should().HaveCount(5);
+            sentRequests[0].Headers?[HeaderNames.ConcurrencyLevel].Should().Be("1");
+            sentRequests[1].Headers?[HeaderNames.ConcurrencyLevel].Should().Be("2");
+            sentRequests[2].Headers?[HeaderNames.ConcurrencyLevel].Should().Be("3");
+            sentRequests[3].Headers?[HeaderNames.ConcurrencyLevel].Should().Be("3");
+            sentRequests[4].Headers?[HeaderNames.ConcurrencyLevel].Should().Be("3");
         }
 
         private void SetupDelaysPlanner()

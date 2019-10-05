@@ -8,3 +8,4 @@
 | `Request-Priority`     | Request  | `Ordinary`                 | Request priority. May have one of three values: `Sheddable`, `Ordinary`, `Critical`. |
 | `Context-Properties`   | Request  | `BAAAAHByb3ADAAAAMTIz`     | Serialized ambient context properties in Base64. Opaque to non-Vostok applications. |
 | `Context-Globals`      | Request  | `BgAAAGdsb2JhbAMAAAAxMjM=` | Serialized ambient context globals in Base64. Opaque to non-Vostok applications. |
+| `Concurrency-Level`    | Request  | `1` 						| Current parallelism level when using forking strategy. Has values > 1 for forked retries. |
