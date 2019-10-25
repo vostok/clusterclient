@@ -47,7 +47,8 @@ namespace Vostok.Clusterclient.Core.Modules
                 new
                 {
                     ResponseCode = result.Response.Code,
-                    ElapsedTime = context.Budget.Elapsed.ToPrettyString()
+                    ElapsedTime = context.Budget.Elapsed.ToPrettyString(),
+                    ElapsedTimeMs = context.Budget.Elapsed.TotalMilliseconds
                 });
 
         private static void LogFailedResult(IRequestContext context, ClusterResult result)
@@ -57,7 +58,8 @@ namespace Vostok.Clusterclient.Core.Modules
             {
                 result.Status,
                 ResponseCode = result.Response.Code,
-                ElapsedTime = context.Budget.Elapsed.ToPrettyString()
+                ElapsedTime = context.Budget.Elapsed.ToPrettyString(),
+                ElapsedTimeMs = context.Budget.Elapsed.TotalMilliseconds
             };
 
             if (result.Status == ClusterResultStatus.Canceled)

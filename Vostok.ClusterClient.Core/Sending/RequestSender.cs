@@ -112,7 +112,8 @@ namespace Vostok.Clusterclient.Core.Sending
                 Replica = result.Replica,
                 ResponseCode = result.Response.Code,
                 Verdict = result.Verdict,
-                ElapsedTime = result.Time.ToPrettyString()
+                ElapsedTime = result.Time.ToPrettyString(),
+                ElapsedTimeMs = result.Time.TotalMilliseconds
             });
 
         private void LogStreamReuseFailure() =>
