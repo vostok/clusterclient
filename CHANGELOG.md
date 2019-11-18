@@ -1,3 +1,7 @@
+## 0.1.11 (18.11.2019)
+
+Added `ElapsedTimeMs` log property.
+
 ## 0.1.10 (05.10.2019)
 
 ForkingRequestStrategy now adds a `Concurrency-Level` header with current parallelism value to detect forked retries on server side.
