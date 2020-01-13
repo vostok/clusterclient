@@ -52,6 +52,7 @@ namespace Vostok.Clusterclient.Core.Modules
                     config.ResponseSelector,
                     storageProvider,
                     requestSender,
+                    config.RequestSenderCustomization,
                     resultStatusSelector));
 
             return modules;

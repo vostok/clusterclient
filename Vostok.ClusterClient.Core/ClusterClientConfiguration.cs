@@ -8,6 +8,7 @@ using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Ordering;
 using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Clusterclient.Core.Retry;
+using Vostok.Clusterclient.Core.Sending;
 using Vostok.Clusterclient.Core.Strategies;
 using Vostok.Clusterclient.Core.Topology;
 using Vostok.Clusterclient.Core.Transforms;
@@ -77,6 +78,8 @@ namespace Vostok.Clusterclient.Core
         public IResponseSelector ResponseSelector { get; set; }
 
         public IRequestStrategy DefaultRequestStrategy { get; set; }
+
+        public Func<IRequestSender, IRequestSender> RequestSenderCustomization { get; set; }
 
         public TimeSpan DefaultTimeout { get; set; }
 

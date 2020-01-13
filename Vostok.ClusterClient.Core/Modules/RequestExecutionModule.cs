@@ -18,6 +18,7 @@ namespace Vostok.Clusterclient.Core.Modules
         private readonly IResponseSelector responseSelector;
         private readonly IReplicaStorageProvider storageProvider;
         private readonly IRequestSenderInternal requestSender;
+        private readonly Func<IRequestSender, IRequestSender> requestSenderCustomization;
         private readonly IClusterResultStatusSelector resultStatusSelector;
 
         public RequestExecutionModule(
@@ -26,6 +27,7 @@ namespace Vostok.Clusterclient.Core.Modules
             IResponseSelector responseSelector,
             IReplicaStorageProvider storageProvider,
             IRequestSenderInternal requestSender,
+            Func<IRequestSender, IRequestSender> requestSenderCustomization,
             IClusterResultStatusSelector resultStatusSelector)
         {
             this.clusterProvider = clusterProvider;
@@ -33,6 +35,7 @@ namespace Vostok.Clusterclient.Core.Modules
             this.responseSelector = responseSelector;
             this.storageProvider = storageProvider;
             this.requestSender = requestSender;
+            this.requestSenderCustomization = requestSenderCustomization;
             this.resultStatusSelector = resultStatusSelector;
         }
 
@@ -46,7 +49,9 @@ namespace Vostok.Clusterclient.Core.Modules
             }
 
             var contextImpl = (RequestContext) context;
-            var contextualSender = new ContextualRequestSender(requestSender, contextImpl);
+            IRequestSender sender = new ContextualRequestSender(requestSender, contextImpl);
+            if (requestSenderCustomization != null)
+                sender = requestSenderCustomization(sender);
 
             var maxReplicasToUse = context.MaximumReplicasToUse;
             var orderedReplicas = replicaOrdering.Order(replicas, storageProvider, contextImpl.Request, contextImpl.Parameters);
@@ -55,7 +60,7 @@ namespace Vostok.Clusterclient.Core.Modules
             await contextImpl.Parameters.Strategy.SendAsync(
                     contextImpl.Request,
                     contextImpl.Parameters,
-                    contextualSender,
+                    sender,
                     contextImpl.Budget,
                     limitedReplicas,
                     Math.Min(replicas.Count, maxReplicasToUse),

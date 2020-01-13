@@ -92,6 +92,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
                 responseSelector,
                 storageProvider,
                 requestSender,
+                null,
                 resultStatusSelector);
         }
 

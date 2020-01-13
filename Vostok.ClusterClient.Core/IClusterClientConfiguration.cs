@@ -11,6 +11,7 @@ using Vostok.Clusterclient.Core.Ordering;
 using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Clusterclient.Core.Ordering.Weighed;
 using Vostok.Clusterclient.Core.Retry;
+using Vostok.Clusterclient.Core.Sending;
 using Vostok.Clusterclient.Core.Strategies;
 using Vostok.Clusterclient.Core.Topology;
 using Vostok.Clusterclient.Core.Transforms;
@@ -140,6 +141,11 @@ namespace Vostok.Clusterclient.Core
         /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.RequestStrategy"/>).</para>
         /// </summary>
         IRequestStrategy DefaultRequestStrategy { get; set; }
+
+        /// <summary>
+        /// <para>Gets or sets an additional request sender transformation for <see cref="IRequestSender"/>.</para>
+        /// </summary>
+        Func<IRequestSender, IRequestSender> RequestSenderCustomization { get; set; }
 
         /// <summary>
         /// <para>Gets or sets a default request timeout used for <see cref="ClusterClient"/> method overloads without timeout parameter.</para>
