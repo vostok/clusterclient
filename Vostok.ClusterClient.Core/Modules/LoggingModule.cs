@@ -53,9 +53,10 @@ namespace Vostok.Clusterclient.Core.Modules
 
         private static void LogFailedResult(IRequestContext context, ClusterResult result)
         {
-            var message = "Failed with status '{Status}'. Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.";
+            var message = "Request '{Request}' has failed with status '{Status}'. Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.";
             var properties = new
             {
+                Request = context.Request.ToString(false, false),
                 result.Status,
                 ResponseCode = result.Response.Code,
                 ElapsedTime = context.Budget.Elapsed.ToPrettyString(),

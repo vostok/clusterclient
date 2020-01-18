@@ -76,7 +76,7 @@ namespace Vostok.Clusterclient.Core.Modules
         #region Logging
 
         private void LogReplicasNotFound(IRequestContext context) =>
-            context.Log.Error("No replicas were resolved: can't send request anywhere.");
+            context.Log.Warn("No replicas were resolved: can't send request anywhere.");
 
         #endregion
     }

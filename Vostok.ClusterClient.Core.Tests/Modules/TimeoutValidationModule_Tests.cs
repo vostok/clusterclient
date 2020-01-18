@@ -60,7 +60,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         }
 
         [Test]
-        public void Should_log_an_error_message_if_time_budget_is_already_expired()
+        public void Should_log_a_warn_message_if_time_budget_is_already_expired()
         {
             var budget = Budget.WithRemaining(0.Seconds());
 
@@ -68,7 +68,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
 
             module.ExecuteAsync(context, _ => null).GetAwaiter().GetResult();
 
-            log.Received(1, LogLevel.Error);
+            log.Received(1, LogLevel.Warn);
         }
 
         [Test]

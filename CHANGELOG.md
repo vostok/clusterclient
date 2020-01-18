@@ -1,3 +1,7 @@
+## 0.1.12 (18.01.2020)
+
+Slight improvements in error logging.
+
 ## 0.1.11 (18.11.2019)
 
 Added `ElapsedTimeMs` log property.
