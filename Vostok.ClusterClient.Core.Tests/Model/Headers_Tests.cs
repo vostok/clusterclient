@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
@@ -358,6 +359,23 @@ namespace Vostok.Clusterclient.Core.Tests.Model
             property.Should().NotBeNull();
             property.GetValue(headersWith).Should().Be("value");
             property.GetValue(headersWithout).Should().BeNull();
+        }
+
+        [Test]
+        public void Mutating_methods_should_play_well_with_copy_constructor()
+        {
+            var headers = new Headers(new Dictionary<string, string>
+            {
+                ["A"] = "1",
+                ["B"] = "2"
+            });
+
+            headers = headers.Set("C", "3");
+            headers = headers.Set("B", "10");
+            headers = headers.Remove("A");
+
+            headers.Names.Should().Equal("B", "C");
+            headers.Values.Should().Equal("10", "3");
         }
     }
 }

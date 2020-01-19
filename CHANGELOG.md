@@ -1,3 +1,7 @@
+## 0.1.13 (19.01.2020)
+
+`Headers`: added a public copy constructor.
+
 ## 0.1.12 (18.01.2020)
 
 Slight improvements in error logging.
