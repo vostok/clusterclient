@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using JetBrains.Annotations;
 using Vostok.Commons.Collections;
@@ -21,8 +20,7 @@ namespace Vostok.Clusterclient.Core.Model
         /// </summary>
         public static readonly Headers Empty = new Headers(0);
 
-        [NotNull]
-        private readonly IReadOnlyDictionary<string, string> headers;
+        private readonly ImmutableArrayDictionary<string, string> headers;
 
         /// <param name="capacity">Initial capacity of headers collection.</param>
         public Headers(int capacity)
@@ -30,8 +28,10 @@ namespace Vostok.Clusterclient.Core.Model
         {
         }
 
-        public Headers([CanBeNull] IReadOnlyDictionary<string, string> headers)
-            => this.headers = headers ?? ImmutableArrayDictionary<string, string>.Empty;
+        private Headers(ImmutableArrayDictionary<string, string> headers)
+        {
+            this.headers = headers;
+        }
 
         /// <summary>
         /// Returns the count of headers in this <see cref="Headers"/> object.
@@ -79,7 +79,7 @@ namespace Vostok.Clusterclient.Core.Model
         [NotNull]
         public Headers Set([NotNull] string name, [NotNull] string value)
         {
-            var newHeaders = PrepareForMutation().Set(name, value);
+            var newHeaders = headers.Set(name, value);
 
             return ReferenceEquals(headers, newHeaders)
                 ? this
@@ -97,7 +97,7 @@ namespace Vostok.Clusterclient.Core.Model
         [NotNull]
         public Headers Remove([NotNull] string name)
         {
-            var newHeaders = PrepareForMutation().Remove(name);
+            var newHeaders = headers.Remove(name);
 
             return ReferenceEquals(headers, newHeaders)
                 ? this
@@ -155,10 +155,6 @@ namespace Vostok.Clusterclient.Core.Model
         {
             return GetEnumerator();
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ImmutableArrayDictionary<string, string> PrepareForMutation()
-            => headers as ImmutableArrayDictionary<string, string> ?? new ImmutableArrayDictionary<string, string>(headers);
 
         #region Specific header getters
 
