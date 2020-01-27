@@ -1,4 +1,4 @@
-## 0.1.13 (27.01.2020)
+## 0.1.14 (27.01.2020)
 
 Added configurable `ClusterClientDefaults.ClientApplicationName` property.
 
