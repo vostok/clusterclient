@@ -12,7 +12,6 @@ using Vostok.Clusterclient.Core.Strategies;
 using Vostok.Clusterclient.Core.Topology;
 using Vostok.Clusterclient.Core.Transforms;
 using Vostok.Clusterclient.Core.Transport;
-using Vostok.Commons.Environment;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.Clusterclient.Core
@@ -180,7 +179,7 @@ namespace Vostok.Clusterclient.Core
                 DefaultRequestStrategy = ClusterClientDefaults.RequestStrategy;
 
             if (ClientApplicationName == null)
-                ClientApplicationName = EnvironmentInfo.Application;
+                ClientApplicationName = ClusterClientDefaults.ClientApplicationName;
         }
     }
 }

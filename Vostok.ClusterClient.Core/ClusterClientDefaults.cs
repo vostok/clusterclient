@@ -10,6 +10,7 @@ using Vostok.Clusterclient.Core.Ordering.Weighed;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive;
 using Vostok.Clusterclient.Core.Retry;
 using Vostok.Clusterclient.Core.Strategies;
+using Vostok.Commons.Environment;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.Clusterclient.Core
@@ -159,6 +160,11 @@ namespace Vostok.Clusterclient.Core
         /// The default value of <see cref="IClusterClientConfiguration.DefaultConnectionTimeout"/>
         /// </summary>
         public static readonly TimeSpan ConnectionTimeout = TimeSpan.FromMilliseconds(750);
+
+        /// <summary>
+        /// The default value of <see cref="IClusterClientConfiguration.ClientApplicationName"/>
+        /// </summary>
+        public static string ClientApplicationName { get; set; } = EnvironmentInfo.Application;
 
         /// <returns>The default value of <see cref="IClusterClientConfiguration.ResponseCriteria"/>.</returns>
         public static List<IResponseCriterion> ResponseCriteria()
