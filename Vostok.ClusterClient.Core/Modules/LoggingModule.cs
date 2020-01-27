@@ -10,11 +10,13 @@ namespace Vostok.Clusterclient.Core.Modules
     {
         private readonly bool logRequests;
         private readonly bool logResults;
+        private readonly string targetService;
 
-        public LoggingModule(bool logRequests, bool logResults)
+        public LoggingModule(bool logRequests, bool logResults, string targetService)
         {
             this.logRequests = logRequests;
             this.logResults = logResults;
+            this.targetService = targetService;
         }
 
         public async Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
@@ -37,11 +39,18 @@ namespace Vostok.Clusterclient.Core.Modules
 
         #region Logging
 
-        private static void LogRequestDetails(IRequestContext context) =>
-            context.Log.Info("Sending request '{Request}'. Timeout = {Timeout}. Strategy = '{Strategy}'.",
-                context.Request.ToString(false, false), context.Budget.Total.ToPrettyString(), context.Parameters.Strategy?.ToString());
+        private void LogRequestDetails(IRequestContext context) =>
+            context.Log.Info("Sending request '{Request}' to '{TargetService}'. Timeout = {Timeout}. Strategy = '{Strategy}'.",
+                new
+                {
+                    Request = context.Request.ToString(false, false),
+                    TargetService = targetService ?? "somewhere",
+                    Timeout = context.Budget.Total.ToPrettyString(),
+                    TimeoutMs = context.Budget.Total.TotalMilliseconds,
+                    Strategy = context.Parameters.Strategy?.ToString()
+                });
 
-        private static void LogSuccessfulResult(IRequestContext context, ClusterResult result) =>
+        private void LogSuccessfulResult(IRequestContext context, ClusterResult result) =>
             context.Log.Info(
                 "Success. Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.",
                 new
@@ -51,12 +60,13 @@ namespace Vostok.Clusterclient.Core.Modules
                     ElapsedTimeMs = context.Budget.Elapsed.TotalMilliseconds
                 });
 
-        private static void LogFailedResult(IRequestContext context, ClusterResult result)
+        private void LogFailedResult(IRequestContext context, ClusterResult result)
         {
-            var message = "Request '{Request}' has failed with status '{Status}'. Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.";
+            var message = "Request '{Request}' to '{TargetService}' has failed with status '{Status}'. Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.";
             var properties = new
             {
                 Request = context.Request.ToString(false, false),
+                TargetService = targetService ?? "somewhere",
                 result.Status,
                 ResponseCode = result.Response.Code,
                 ElapsedTime = context.Budget.Elapsed.ToPrettyString(),

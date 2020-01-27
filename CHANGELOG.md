@@ -1,3 +1,7 @@
+## 0.1.15 (27.01.2020)
+
+Implemented https://github.com/vostok/clusterclient.core/issues/9
+
 ## 0.1.14 (27.01.2020)
 
 Added configurable `ClusterClientDefaults.ClientApplicationName` property.
