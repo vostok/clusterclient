@@ -1,3 +1,7 @@
+## 0.1.13 (27.01.2020)
+
+Added configurable `ClusterClientDefaults.ClientApplicationName` property.
+
 ## 0.1.12 (18.01.2020)
 
 Slight improvements in error logging.
