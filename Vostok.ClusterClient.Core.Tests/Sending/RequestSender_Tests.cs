@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using FluentAssertions;
 using FluentAssertions.Extensions;
@@ -231,19 +230,6 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
                 .ThrowsForAnyArgs(_ => new StreamAlreadyUsedException("No luck here!"));
 
             Send().Response.Code.Should().Be(ResponseCode.StreamReuseFailure);
-        }
-
-        [Test]
-        public void Should_retry_connection_timeout()
-        {
-            configuration.ConnectionAttempts.Returns(2);
-            
-            transport
-                .SendAsync(null, null, TimeSpan.Zero, CancellationToken.None)
-                .ReturnsForAnyArgs(new Response(ResponseCode.ConnectFailure), new Response(ResponseCode.Ok));
-
-            Send().Response.Code.Should().Be(ResponseCode.Ok);
-            transport.ReceivedWithAnyArgs(2).SendAsync(null, null, TimeSpan.Zero, CancellationToken.None);
         }
 
         [Test]
