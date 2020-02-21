@@ -39,7 +39,8 @@ namespace Vostok.Clusterclient.Core.Sending
 
             var absoluteRequest = requestConverter.TryConvertToAbsolute(request, replica);
 
-            var response = await SendRequestAsync(transport, absoluteRequest, timeBudget, connectionTimeout, cancellationToken).ConfigureAwait(false);
+            var connectionAttemptsTransport = new ConnectionAttemptsTransport(transport, configuration.ConnectionAttempts);
+            var response = await SendRequestAsync(connectionAttemptsTransport, absoluteRequest, timeBudget, connectionTimeout, cancellationToken).ConfigureAwait(false);
 
             var responseVerdict = responseClassifier.Decide(response, configuration.ResponseCriteria);
 
@@ -65,11 +66,7 @@ namespace Vostok.Clusterclient.Core.Sending
 
             try
             {
-                var connectionAttemptTimeout = connectionTimeout == null || timeBudget.Remaining < connectionTimeout
-                    ? (TimeSpan?)null
-                    : connectionTimeout.Value;
-
-                var response = await transport.SendAsync(request, connectionAttemptTimeout, timeBudget.Remaining, cancellationToken).ConfigureAwait(false);
+                var response = await transport.SendAsync(request, connectionTimeout, timeBudget.Remaining, cancellationToken).ConfigureAwait(false);
 
                 if (response.Code == ResponseCode.Canceled)
                     throw new OperationCanceledException();

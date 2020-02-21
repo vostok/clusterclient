@@ -55,7 +55,6 @@ namespace Vostok.Clusterclient.Core
             configuration.ValidateOrDie();
             configuration.AugmentWithDefaults();
             configuration.ApplyReplicaTransform();
-            configuration.SetupConnectionAttempts();
             configuration.SetupRequestTimeoutHeader();
 
             ReplicaStorageProvider = ReplicaStorageProviderFactory.Create(configuration.ReplicaStorageScope);
