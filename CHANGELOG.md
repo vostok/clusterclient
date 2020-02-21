@@ -1,3 +1,7 @@
+## 0.1.16 (21.02.2020)
+
+Added `ConnectionAttemptsTransport` - a transport decorator responsible for retrying connection failures.
+
 ## 0.1.15 (27.01.2020)
 
 Implemented https://github.com/vostok/clusterclient.core/issues/9
