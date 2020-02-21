@@ -30,7 +30,11 @@ namespace Vostok.Clusterclient.Core.Transport
 
             for (var attempt = 1; attempt <= connectionAttempts; ++attempt)
             {
-                var response = await transport.SendAsync(request, connectionTimeout, timeBudget.Remaining, cancellationToken).ConfigureAwait(false);
+                var connectionAttemptTimeout = connectionTimeout == null || timeBudget.Remaining < connectionTimeout
+                    ? (TimeSpan?)null
+                    : connectionTimeout.Value;
+
+                var response = await transport.SendAsync(request, connectionAttemptTimeout, timeBudget.Remaining, cancellationToken).ConfigureAwait(false);
 
                 if (response.Code == ResponseCode.ConnectFailure)
                     continue;
