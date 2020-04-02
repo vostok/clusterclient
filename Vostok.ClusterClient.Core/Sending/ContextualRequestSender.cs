@@ -19,7 +19,7 @@ namespace Vostok.Clusterclient.Core.Sending
 
         public async Task<ReplicaResult> SendToReplicaAsync(Uri replica, Request request, TimeSpan? connectionTimeout, TimeSpan timeout, CancellationToken cancellationToken)
         {
-            context.SetReplicaResult(CreateUnknownResult(replica));
+            context.SetUnknownResult(replica);
 
             try
             {
@@ -33,9 +33,6 @@ namespace Vostok.Clusterclient.Core.Sending
                 throw;
             }
         }
-
-        private static ReplicaResult CreateUnknownResult(Uri replica) =>
-            new ReplicaResult(replica, Responses.Unknown, ResponseVerdict.DontKnow, TimeSpan.Zero);
 
         private static ReplicaResult CreateCanceledResult(Uri replica) =>
             new ReplicaResult(replica, Responses.Canceled, ResponseVerdict.DontKnow, TimeSpan.Zero);

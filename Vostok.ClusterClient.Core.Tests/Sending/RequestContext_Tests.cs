@@ -41,21 +41,42 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
         }
 
         [Test]
-        public void SetReplicaResult_should_overwrite_existing_result_with_equal_replica()
+        public void SetReplicaResult_should_overwrite_existing_result_with_equal_replica_when_previous_code_is_unknown()
         {
             var result1 = CreateResult("replica1");
-            var result2 = CreateResult("replica2");
-            var result3 = CreateResult("replica3");
-            var result4 = CreateResult("replica2");
-            var result5 = CreateResult("replica1");
+            var result2 = CreateResult("replica1");
+            var result3 = CreateResult("replica1");
+            var replicaUri = new Uri("http://replica1");
+
+            context.SetUnknownResult(replicaUri);
+            context.SetUnknownResult(replicaUri);
+            context.SetUnknownResult(replicaUri);
 
             context.SetReplicaResult(result1);
             context.SetReplicaResult(result2);
             context.SetReplicaResult(result3);
-            context.SetReplicaResult(result4);
-            context.SetReplicaResult(result5);
 
-            context.FreezeReplicaResults().Should().Equal(result5, result4, result3);
+            context.FreezeReplicaResults().Should().Equal(result1, result2, result3);
+        }
+
+        [Test]
+        public void SetReplicaResult_should_not_overwrite_existing_result_with_equal_replica_when_previous_code_is_known()
+        {
+            var result1 = CreateResult("replica1");
+            var result2 = CreateResult("replica1");
+            var result3 = CreateResult("replica1");
+            var replicaUri = new Uri("http://replica1");
+
+            context.SetUnknownResult(replicaUri);
+            context.SetReplicaResult(result1);
+
+            context.SetUnknownResult(replicaUri);
+            context.SetReplicaResult(result2);
+
+            context.SetUnknownResult(replicaUri);
+            context.SetReplicaResult(result3);
+
+            context.FreezeReplicaResults().Should().Equal(result1, result2, result3);
         }
 
         [Test]
