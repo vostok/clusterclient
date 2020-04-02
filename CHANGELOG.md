@@ -1,3 +1,7 @@
+## 0.1.17 (02.04.2020):
+
+Added `SetupExternalUrl` to simplify configuration of clients to external APIs.
+
 ## 0.1.16 (21.02.2020)
 
 Added `ConnectionAttemptsTransport` - a transport decorator responsible for retrying connection failures.
