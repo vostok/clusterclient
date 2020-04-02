@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Vostok.Clusterclient.Core.Model;
@@ -49,6 +50,17 @@ namespace Vostok.Clusterclient.Core.Modules
 
         public RequestParameters Parameters { get; set; }
 
+        public void SetUnknownResult(Uri replica)
+        {
+            lock (resultsLock)
+            {
+                if (results == null)
+                    return;
+
+                results.Add(CreateUnknownResult(replica));
+            }
+        }
+
         public void SetReplicaResult(ReplicaResult result)
         {
             lock (resultsLock)
@@ -57,7 +69,7 @@ namespace Vostok.Clusterclient.Core.Modules
                     return;
 
                 for (var i = 0; i < results.Count; i++)
-                    if (results[i].Replica.Equals(result.Replica))
+                    if (results[i].Replica.Equals(result.Replica) && IsUnknownResult(results[i]))
                     {
                         results[i] = result;
                         return;
@@ -82,5 +94,11 @@ namespace Vostok.Clusterclient.Core.Modules
             lock (resultsLock)
                 results = new List<ReplicaResult>(2);
         }
+
+        private static bool IsUnknownResult(ReplicaResult result)
+            => ReferenceEquals(result.Response, Responses.Unknown) && result.Verdict == ResponseVerdict.DontKnow;
+
+        private static ReplicaResult CreateUnknownResult(Uri replica) =>
+            new ReplicaResult(replica, Responses.Unknown, ResponseVerdict.DontKnow, TimeSpan.Zero);
     }
 }
