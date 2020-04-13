@@ -148,5 +148,25 @@ namespace Vostok.Clusterclient.Core.Tests.Model
 
             url2.Should().BeSameAs(url1);
         }
+
+        [Test]
+        public void Should_not_add_empty_query_values_by_default()
+        {
+            var builder = new RequestUrlBuilder("http://foo");
+
+            builder.AppendToQuery("key", string.Empty);
+
+            builder.Build().Query.Should().BeEmpty();
+        }
+
+        [Test]
+        public void Should_add_empty_query_values_if_requested_to()
+        {
+            var builder = new RequestUrlBuilder("http://foo");
+
+            builder.AppendToQuery("key", string.Empty, true);
+
+            builder.Build().Query.Should().Be("?key=");
+        }
     }
 }

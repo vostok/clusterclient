@@ -125,26 +125,34 @@ namespace Vostok.Clusterclient.Core.Model
             return this;
         }
 
+        /// <inheritdoc cref="AppendToQuery{T}(string,T,bool)"/>
+        [NotNull]
+        public RequestUrlBuilder AppendToQuery<T>([CanBeNull] string key, [CanBeNull] T value)
+            => AppendToQuery(key, FormatValue(value), false);
+
         /// <summary>
         /// <para>Appends a new query parameter with given <paramref name="key"/> and <paramref name="value"/>. <see cref="object.ToString"/> is called on <paramref name="value"/>.</para>
         /// <para><paramref name="key"/> and <paramref name="value"/> are encoded using percent-encoding.</para>
         /// </summary>
         [NotNull]
-        public RequestUrlBuilder AppendToQuery<T>([CanBeNull] string key, [CanBeNull] T value)
-        {
-            return AppendToQuery(key, FormatValue(value));
-        }
+        public RequestUrlBuilder AppendToQuery<T>([CanBeNull] string key, [CanBeNull] T value, bool allowEmptyValue)
+            => AppendToQuery(key, FormatValue(value), allowEmptyValue);
+
+        /// <inheritdoc cref="AppendToQuery(string,string,bool)"/>
+        [NotNull]
+        public RequestUrlBuilder AppendToQuery([CanBeNull] string key, [CanBeNull] string value)
+            => AppendToQuery(key, value, false);
 
         /// <summary>
         /// <para>Appends a new query parameter with given <paramref name="key"/> and <paramref name="value"/>.</para>
         /// <para><paramref name="key"/> and <paramref name="value"/> are encoded using percent-encoding.</para>
         /// </summary>
         [NotNull]
-        public RequestUrlBuilder AppendToQuery([CanBeNull] string key, [CanBeNull] string value)
+        public RequestUrlBuilder AppendToQuery([CanBeNull] string key, [CanBeNull] string value, bool allowEmptyValue)
         {
             EnsureNotDisposed();
 
-            if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(key) || value == null || !allowEmptyValue && string.IsNullOrEmpty(value))
                 return this;
 
             if (hasQueryParameters)
@@ -181,7 +189,7 @@ namespace Vostok.Clusterclient.Core.Model
         }
 
         /// <summary>
-        /// Same as <see cref="AppendToQuery"/>. Needed for collection initializer syntax.
+        /// Same as <see cref="AppendToQuery(string,string)"/>. Needed for collection initializer syntax.
         /// </summary>
         public void Add([CanBeNull] string key, [CanBeNull] string value)
         {
@@ -189,7 +197,7 @@ namespace Vostok.Clusterclient.Core.Model
         }
 
         /// <summary>
-        /// Same as <see cref="AppendToQuery{T}"/>. Needed for collection initializer syntax.
+        /// Same as <see cref="AppendToQuery{T}(string,T)"/>. Needed for collection initializer syntax.
         /// </summary>
         public void Add<T>([CanBeNull] string key, [CanBeNull] T value)
         {

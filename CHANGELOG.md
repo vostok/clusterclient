@@ -1,3 +1,7 @@
+## 0.1.18 (13.04.2020):
+
+Methods and extensions that add query parameters have received an optional overload to support empty values.
+
 ## 0.1.17 (02.04.2020):
 
 Added `SetupExternalUrl` to simplify configuration of clients to external APIs.
