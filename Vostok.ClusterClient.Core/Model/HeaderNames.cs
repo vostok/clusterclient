@@ -76,7 +76,7 @@ namespace Vostok.Clusterclient.Core.Model
         /// <summary>
         /// A custom response header which indicates that client must reject response from server.
         /// </summary>
-        public const string AlwaysReject = "Always-Reject";
+        public const string DontAccept = "Dont-Accept";
 
         /// <summary>
         /// <para>A custom request header which contains client request timeout.</para>

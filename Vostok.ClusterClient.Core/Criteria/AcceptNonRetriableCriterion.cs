@@ -7,17 +7,11 @@ namespace Vostok.Clusterclient.Core.Criteria
     /// Represents a criterion which accepts any response with <see cref="HeaderNames.DontRetry" /> header.
     /// </summary>
     [PublicAPI]
-    public class AcceptNonRetriableCriterion : IResponseCriterion
+    public class AcceptNonRetriableCriterion : AcceptHeaderCriterion
     {
-        private readonly string headerName;
-
-        public AcceptNonRetriableCriterion(string headerName = HeaderNames.DontRetry)
+        public AcceptNonRetriableCriterion([NotNull] string headerName = HeaderNames.DontRetry)
+            : base(headerName)
         {
-            this.headerName = headerName;
         }
-
-        /// <inheritdoc />
-        public ResponseVerdict Decide(Response response) =>
-            response.Headers[headerName] != null ? ResponseVerdict.Accept : ResponseVerdict.DontKnow;
     }
 }

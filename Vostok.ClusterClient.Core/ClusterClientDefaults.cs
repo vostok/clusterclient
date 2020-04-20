@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Vostok.Clusterclient.Core.Criteria;
 using Vostok.Clusterclient.Core.Misc;
-using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Modules;
 using Vostok.Clusterclient.Core.Ordering;
 using Vostok.Clusterclient.Core.Ordering.Storage;
@@ -172,8 +171,8 @@ namespace Vostok.Clusterclient.Core
         {
             return new List<IResponseCriterion>
             {
-                new RejectHeaderCriterion(HeaderNames.AlwaysReject),
                 new AcceptNonRetriableCriterion(),
+                new RejectNonAcceptableCriterion(),
                 new RejectNetworkErrorsCriterion(),
                 new RejectServerErrorsCriterion(),
                 new RejectThrottlingErrorsCriterion(),
