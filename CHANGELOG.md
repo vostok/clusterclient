@@ -1,3 +1,7 @@
+## 0.1.19 (20.04.2020):
+
+Added `Dont-Accept` header and a corresponding rejecting response criterion (used by default).
+
 ## 0.1.18 (13.04.2020):
 
 Methods and extensions that add query parameters have received an optional overload to support empty values.
