@@ -74,6 +74,11 @@ namespace Vostok.Clusterclient.Core.Model
         public const string DontRetry = "Dont-Retry";
 
         /// <summary>
+        /// A custom response header which indicates that client must reject response from server.
+        /// </summary>
+        public const string AlwaysReject = "Always-Reject";
+
+        /// <summary>
         /// <para>A custom request header which contains client request timeout.</para>
         /// <para>A value specified in seconds with up to 3 decimal digits.</para>
         /// </summary>
