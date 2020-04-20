@@ -172,6 +172,7 @@ namespace Vostok.Clusterclient.Core
             return new List<IResponseCriterion>
             {
                 new AcceptNonRetriableCriterion(),
+                new RejectNonAcceptableCriterion(),
                 new RejectNetworkErrorsCriterion(),
                 new RejectServerErrorsCriterion(),
                 new RejectThrottlingErrorsCriterion(),
