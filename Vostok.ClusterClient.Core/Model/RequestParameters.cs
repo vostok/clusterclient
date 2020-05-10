@@ -63,6 +63,11 @@ namespace Vostok.Clusterclient.Core.Model
         public RequestPriority? Priority { get; }
 
         /// <summary>
+        /// A timeout to establish a TCP connection.
+        /// </summary>
+        public TimeSpan? ConnectionTimeout { get; }
+
+        /// <summary>
         /// A set of additional arbitrary request properties.
         /// </summary>
         [NotNull]
@@ -88,8 +93,6 @@ namespace Vostok.Clusterclient.Core.Model
                 ? this
                 : new RequestParameters(Strategy, Priority, newProperties, ConnectionTimeout);
         }
-
-        internal TimeSpan? ConnectionTimeout { get; }
 
         /// <returns>New instance of <see cref="RequestParameters"/> with specified <paramref name="connectionTimeout"/>.</returns>
         internal RequestParameters WithConnectionTimeout(TimeSpan? connectionTimeout)
