@@ -1,3 +1,7 @@
+## 0.1.20 (10.05.2020):
+
+Fixed https://github.com/vostok/clusterclient.core/issues/14
+
 ## 0.1.19 (20.04.2020):
 
 Added `Dont-Accept` header and a corresponding rejecting response criterion (used by default).
