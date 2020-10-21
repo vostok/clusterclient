@@ -232,5 +232,23 @@ namespace Vostok.Clusterclient.Core.Model
         {
             return request.WithHeader(HeaderNames.UserAgent, value);
         }
+
+        /// <summary>
+        /// <para>Returns a new <see cref="Request"/> instance with the header specified in <paramref name="name"/>, updated with specified <paramref name="value"/> and <paramref name="quality"/>.</para>
+        /// <para>If header doesn't exist, it will be created.</para>
+        /// <para>See <see cref="Request.WithHeader"/> for more details.</para>
+        /// </summary>
+        [Pure]
+        [NotNull]
+        public static Request AppendToHeaderWithQuality([NotNull] this Request request, [NotNull] string name, [NotNull] string value, decimal quality = 1)
+        {
+            var currentValue = request.Headers?[name];
+            if (string.IsNullOrEmpty(currentValue))
+                return request.WithHeader(name, new HeaderValueWithQuality(value, quality));
+
+            var valueCollection = HeaderValuesWithQualityCollection.Parse(currentValue);
+            valueCollection.Add(value, quality);
+            return request.WithHeader(name, valueCollection.ToString());
+        }
     }
 }

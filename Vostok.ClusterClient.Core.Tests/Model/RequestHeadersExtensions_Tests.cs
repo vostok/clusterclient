@@ -182,5 +182,16 @@ namespace Vostok.Clusterclient.Core.Tests.Model
 
             request.Headers.UserAgent.Should().Be("CERN-LineMode/2.15 libwww/2.17b3");
         }
+
+        [Test]
+        [SetCulture("ru-RU")]
+        public void AppendToHeaderWithQuality_should_produce_correct_header_value()
+        {
+            request = request
+                .AppendToHeaderWithQuality(HeaderNames.Accept, "foo", 0.4m)
+                .AppendToHeaderWithQuality(HeaderNames.Accept, "bar", 0.5m);
+
+            request.Headers[HeaderNames.Accept].Should().Be("bar;q=0.5,foo;q=0.4");
+        }
     }
 }
