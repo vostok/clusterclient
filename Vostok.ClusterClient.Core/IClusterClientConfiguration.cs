@@ -10,6 +10,7 @@ using Vostok.Clusterclient.Core.Modules;
 using Vostok.Clusterclient.Core.Ordering;
 using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Clusterclient.Core.Ordering.Weighed;
+using Vostok.Clusterclient.Core.ReplicaFilter;
 using Vostok.Clusterclient.Core.Retry;
 using Vostok.Clusterclient.Core.Strategies;
 using Vostok.Clusterclient.Core.Topology;
@@ -44,6 +45,13 @@ namespace Vostok.Clusterclient.Core
         /// </summary>
         IClusterProvider ClusterProvider { get; set; }
 
+        /// <summary>
+        /// <para>A list of replica filters. See <see cref="IReplicaFilter"/> for more details.</para>
+        /// <para>Use <see cref="IClusterClientConfigurationExtensions.AddReplicaFilter(IClusterClientConfiguration, IReplicaFilter)"/> to add filters to this list.</para>
+        /// <para>This parameter is optional and has an empty default value.</para>
+        /// </summary>
+        List<IReplicaFilter> ReplicaFilters { get; set; }
+        
         /// <summary>
         /// <para>Gets or sets replica addresses transform. See <see cref="IReplicaTransform"/> for more details.</para>
         /// <para>This parameter is optional.</para>

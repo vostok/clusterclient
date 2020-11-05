@@ -6,6 +6,7 @@ using Vostok.Clusterclient.Core.Misc;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Modules;
 using Vostok.Clusterclient.Core.Ordering.Weighed;
+using Vostok.Clusterclient.Core.ReplicaFilter;
 using Vostok.Clusterclient.Core.Topology;
 
 namespace Vostok.Clusterclient.Core
@@ -59,6 +60,14 @@ namespace Vostok.Clusterclient.Core
         public static void SetupResponseCriteria(this IClusterClientConfiguration configuration, params IResponseCriterion[] criteria)
         {
             configuration.ResponseCriteria = new List<IResponseCriterion>(criteria);
+        }
+        
+        /// <summary>
+        /// Adds given <paramref name="filter"/> to configuration's <see cref="IClusterClientConfiguration.ReplicaFilters"/> list.
+        /// </summary>
+        public static void AddReplicaFilter(this IClusterClientConfiguration configuration, IReplicaFilter filter)
+        {
+            (configuration.ReplicaFilters ?? (configuration.ReplicaFilters = new List<IReplicaFilter>())).Add(filter);
         }
 
         private static string GenerateStorageKey(string environment, string serviceName)
