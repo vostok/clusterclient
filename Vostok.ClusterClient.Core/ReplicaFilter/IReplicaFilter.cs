@@ -12,8 +12,7 @@ namespace Vostok.Clusterclient.Core.ReplicaFilter
     public interface IReplicaFilter
     {
         [Pure]
-        [CanBeNull]
         [ItemNotNull]
-        IList<Uri> Filter(IList<Uri> replicas, IRequestContext requestContext);
+        IEnumerable<Uri> Filter([ItemNotNull] IEnumerable<Uri> replicas, [NotNull] IRequestContext requestContext);
     }
 }

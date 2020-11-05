@@ -166,7 +166,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         }
 
         [Test]
-        public void Should_not_call_second_filter_when_first_replica_filter_returns_an_empty_list()
+        public void Should_call_second_filter_when_first_replica_filter_returns_an_empty_list()
         {
             var mockFilter1 = Substitute.For<IReplicaFilter>();
             var mockFilter2 = Substitute.For<IReplicaFilter>();
@@ -174,9 +174,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             mockFilter1.Filter(new List<Uri> {replica1, replica2}, context).Returns(new List<Uri>());
 
             Execute().Status.Should().Be(ClusterResultStatus.ReplicasNotFound);
-            mockFilter2
-                .DidNotReceiveWithAnyArgs()
-                .Filter(Arg.Any<IList<Uri>>(), Arg.Any<IRequestContext>());
+            mockFilter2.Received(1).Filter(Arg.Any<IEnumerable<Uri>>(), context);
         }
 
         [Test]
