@@ -41,11 +41,14 @@ namespace Vostok.Clusterclient.Core.Modules
                 return ClusterResult.ReplicasNotFound(context.Request);
             }
 
-            replicas = FilterReplicas(replicas, context).ToList();
-            if (replicas.Count == 0)
+            if (replicaFilters.Count > 0)
             {
-                LogReplicasNotFound(context);
-                return ClusterResult.ReplicasNotFound(context.Request);
+                replicas = FilterReplicas(replicas, context).ToList();
+                if (replicas.Count == 0)
+                {
+                    LogReplicasNotFound(context);
+                    return ClusterResult.ReplicasNotFound(context.Request);
+                }
             }
 
             var contextImpl = (RequestContext) context;
