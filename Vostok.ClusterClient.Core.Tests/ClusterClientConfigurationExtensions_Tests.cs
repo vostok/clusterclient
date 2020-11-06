@@ -3,7 +3,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Vostok.Clusterclient.Core.Criteria;
 using Vostok.Clusterclient.Core.Modules;
-using Vostok.Clusterclient.Core.ReplicaFilter;
+using Vostok.Clusterclient.Core.Topology;
 using Vostok.Clusterclient.Core.Transforms;
 using Vostok.Logging.Console;
 

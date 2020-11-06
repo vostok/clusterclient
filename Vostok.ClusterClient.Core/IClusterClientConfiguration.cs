@@ -10,7 +10,6 @@ using Vostok.Clusterclient.Core.Modules;
 using Vostok.Clusterclient.Core.Ordering;
 using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Clusterclient.Core.Ordering.Weighed;
-using Vostok.Clusterclient.Core.ReplicaFilter;
 using Vostok.Clusterclient.Core.Retry;
 using Vostok.Clusterclient.Core.Strategies;
 using Vostok.Clusterclient.Core.Topology;
