@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
@@ -31,6 +32,16 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         public void Should_return_incorrect_arguments_result_if_timeout_is_negative()
         {
             var budget = Budget.WithRemaining(-1.Seconds());
+
+            context.Budget.Returns(budget);
+
+            module.ExecuteAsync(context, _ => null).Result.Status.Should().Be(ClusterResultStatus.IncorrectArguments);
+        }
+
+        [Test]
+        public void Should_return_incorrect_arguments_result_if_timeout_is_greater_than_intMaxValue()
+        {
+            var budget = Budget.WithRemaining(TimeSpan.FromMilliseconds((long)int.MaxValue + 1));
 
             context.Budget.Returns(budget);
 
