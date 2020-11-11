@@ -46,10 +46,10 @@ namespace Vostok.Clusterclient.Core
 
         /// <summary>
         /// <para>A list of replica filters. See <see cref="IReplicaFilter"/> for more details.</para>
-        /// <para>Use <see cref="IClusterClientConfigurationExtensions.AddReplicaFilter(IClusterClientConfiguration, IReplicaFilter)"/> to add filters to this list.</para>
+        /// <para>Use <see cref="IClusterClientConfigurationExtensions.AddReplicasFilter"/> to add filters to this list.</para>
         /// <para>This parameter is optional and has an empty default value.</para>
         /// </summary>
-        List<IReplicaFilter> ReplicaFilters { get; set; }
+        List<IReplicaFilter> ReplicasFilters { get; set; }
         
         /// <summary>
         /// <para>Gets or sets replica addresses transform. See <see cref="IReplicaTransform"/> for more details.</para>

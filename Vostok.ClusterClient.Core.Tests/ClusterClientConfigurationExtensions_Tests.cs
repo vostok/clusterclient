@@ -65,11 +65,11 @@ namespace Vostok.Clusterclient.Core.Tests
         [Test]
         public void AddReplicaFilter_should_not_fail_if_filters_list_is_null()
         {
-            configuration.ReplicaFilters = null;
+            configuration.ReplicasFilters = null;
 
-            configuration.AddReplicaFilter(Substitute.For<IReplicaFilter>());
+            configuration.AddReplicasFilter(Substitute.For<IReplicaFilter>());
 
-            configuration.ReplicaFilters.Should().HaveCount(1);
+            configuration.ReplicasFilters.Should().HaveCount(1);
         }
 
         [Test]

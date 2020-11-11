@@ -53,7 +53,7 @@ namespace Vostok.Clusterclient.Core.Modules
                     storageProvider,
                     requestSender,
                     resultStatusSelector,
-                    config.ReplicaFilters));
+                    config.ReplicasFilters));
 
             return modules;
 
