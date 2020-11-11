@@ -16,7 +16,7 @@ namespace Vostok.Clusterclient.Core.Modules
                 return Task.FromResult(ClusterResult.IncorrectArguments(context.Request));
             }
 
-            if(context.Budget.Total.TotalMilliseconds > int.MaxValue)
+            if (context.Budget.Total.TotalMilliseconds > int.MaxValue)
             {
                 LogTooBigTimeout(context);
                 return Task.FromResult(ClusterResult.IncorrectArguments(context.Request));
@@ -37,8 +37,7 @@ namespace Vostok.Clusterclient.Core.Modules
             context.Log.Error("Request timeout has incorrect negative value: '{Timeout}'.", context.Budget.Total);
 
         private void LogTooBigTimeout(IRequestContext context) =>
-            context.Log.Error("Request timeout has incorrect big value: '{Timeout}' > '{maxValue}'.", context.Budget.Total.Milliseconds, int.MaxValue);
-
+            context.Log.Error("Request timeout has incorrect big value: '{Timeout}' > '{MaxValue}'.", context.Budget.Total.Milliseconds, int.MaxValue);
 
         private void LogExpiredTimeout(IRequestContext context) =>
             context.Log.Warn("Request timeout expired prematurely or just was too small. Total budget = '{Timeout}'.", context.Budget.Total.ToPrettyString());
