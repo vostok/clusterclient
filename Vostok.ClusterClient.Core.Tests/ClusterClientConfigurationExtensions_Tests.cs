@@ -67,7 +67,7 @@ namespace Vostok.Clusterclient.Core.Tests
         {
             configuration.ReplicasFilters = null;
 
-            configuration.AddReplicasFilter(Substitute.For<IReplicaFilter>());
+            configuration.AddReplicasFilter(Substitute.For<IReplicasFilter>());
 
             configuration.ReplicasFilters.Should().HaveCount(1);
         }

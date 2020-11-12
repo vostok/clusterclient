@@ -24,7 +24,7 @@ namespace Vostok.Clusterclient.Core
             Modules = new Dictionary<Type, RelatedModules>();
             ModulesToRemove = new HashSet<Type>();
             
-            ReplicasFilters = new List<IReplicaFilter>();
+            ReplicasFilters = new List<IReplicasFilter>();
             RequestTransforms = new List<IRequestTransformMetadata>();
             ResponseTransforms = new List<IResponseTransform>();
             ResponseCriteria = new List<IResponseCriterion>();
@@ -54,7 +54,7 @@ namespace Vostok.Clusterclient.Core
 
         public IClusterProvider ClusterProvider { get; set; }
         
-        public List<IReplicaFilter> ReplicasFilters { get; set; }
+        public List<IReplicasFilter> ReplicasFilters { get; set; }
 
         public IReplicaTransform ReplicaTransform { get; set; }
 

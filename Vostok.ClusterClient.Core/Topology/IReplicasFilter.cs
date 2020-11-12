@@ -9,7 +9,7 @@ namespace Vostok.Clusterclient.Core.Topology
     /// Represents a replica filter which will be used to configure replica filter rules based on given request parameters.
     /// </summary>
     [PublicAPI]
-    public interface IReplicaFilter
+    public interface IReplicasFilter
     {
         /// <summary>
         /// <para>Returns filtered <paramref name="replicas"/> based on the given <paramref name="requestContext"/> rules.</para>

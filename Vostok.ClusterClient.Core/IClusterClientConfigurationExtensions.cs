@@ -64,9 +64,9 @@ namespace Vostok.Clusterclient.Core
         /// <summary>
         /// Adds given <paramref name="filter"/> to configuration's <see cref="IClusterClientConfiguration.ReplicasFilters"/> list.
         /// </summary>
-        public static void AddReplicasFilter(this IClusterClientConfiguration configuration, IReplicaFilter filter)
+        public static void AddReplicasFilter(this IClusterClientConfiguration configuration, IReplicasFilter filter)
         {
-            (configuration.ReplicasFilters ?? (configuration.ReplicasFilters = new List<IReplicaFilter>())).Add(filter);
+            (configuration.ReplicasFilters ?? (configuration.ReplicasFilters = new List<IReplicasFilter>())).Add(filter);
         }
 
         private static string GenerateStorageKey(string environment, string serviceName)

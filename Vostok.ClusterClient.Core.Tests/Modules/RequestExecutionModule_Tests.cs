@@ -31,7 +31,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         private ReplicaResult result2;
 
         private IClusterProvider clusterProvider;
-        private List<IReplicaFilter> replicaFilters;
+        private List<IReplicasFilter> replicaFilters;
         private IReplicaOrdering replicaOrdering;
         private IResponseSelector responseSelector;
         private IReplicaStorageProvider storageProvider;
@@ -115,7 +115,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             resultStatusSelector = Substitute.For<IClusterResultStatusSelector>();
             resultStatusSelector.Select(null, null).ReturnsForAnyArgs(ClusterResultStatus.Success);
             
-            replicaFilters = new List<IReplicaFilter>();
+            replicaFilters = new List<IReplicasFilter>();
 
             storageProvider = Substitute.For<IReplicaStorageProvider>();
             module = new RequestExecutionModule(
@@ -145,7 +145,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         [Test]
         public void Should_return_no_replicas_result_when_single_replica_filter_returns_an_empty_list()
         {
-            var mockFilter = Substitute.For<IReplicaFilter>();
+            var mockFilter = Substitute.For<IReplicasFilter>();
             replicaFilters.Add(mockFilter);
             mockFilter.Filter(new List<Uri> {replica1, replica2}, context).Returns(new List<Uri>());
 
@@ -155,8 +155,8 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         [Test]
         public void Should_return_no_replicas_result_when_second_replica_filter_returns_an_empty_list()
         {
-            var mockFilter1 = Substitute.For<IReplicaFilter>();
-            var mockFilter2 = Substitute.For<IReplicaFilter>();
+            var mockFilter1 = Substitute.For<IReplicasFilter>();
+            var mockFilter2 = Substitute.For<IReplicasFilter>();
             replicaFilters.AddRange(new []{mockFilter1, mockFilter2});
             mockFilter1.Filter(new List<Uri> {replica1, replica2}, context).Returns(new List<Uri>{replica1});
             mockFilter2.Filter(new List<Uri> {replica1}, context).Returns(new List<Uri>());
@@ -167,8 +167,8 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         [Test]
         public void Should_call_second_filter_when_first_replica_filter_returns_an_empty_list()
         {
-            var mockFilter1 = Substitute.For<IReplicaFilter>();
-            var mockFilter2 = Substitute.For<IReplicaFilter>();
+            var mockFilter1 = Substitute.For<IReplicasFilter>();
+            var mockFilter2 = Substitute.For<IReplicasFilter>();
             replicaFilters.AddRange(new []{mockFilter1, mockFilter2});
             mockFilter1.Filter(new List<Uri> {replica1, replica2}, context).Returns(new List<Uri>());
 
