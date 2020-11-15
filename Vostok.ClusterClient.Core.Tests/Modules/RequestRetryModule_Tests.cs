@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Modules;
@@ -35,7 +36,8 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             nextModuleCalls = 0;
 
             context = Substitute.For<IRequestContext>();
-            context.Budget.Returns(Budget.Infinite);
+            var infinityBudget = Budget.Infinite;
+            context.Budget.Returns(infinityBudget);
             context.Log.Returns(new ConsoleLog());
             context.Request.Returns(request);
 
@@ -168,6 +170,26 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             action.Should().Throw<OperationCanceledException>();
 
             nextModuleCalls.Should().Be(2);
+        }
+
+
+        [TestCase(ClusterResultStatus.ReplicasExhausted)]
+        [TestCase(ClusterResultStatus.ReplicasNotFound)]
+        public void Should_call_extended_method_if_Strategy_type_is_IRetryStrategyEx_on_all_available_attempts(ClusterResultStatus status)
+        {
+            var retryStrategyEx = Substitute.For<IRetryStrategyEx>();
+            retryStrategyEx.AttemptsCount.Returns(MaxAttempts);
+            retryStrategyEx.GetRetryDelay(Arg.Any<int>()).Throws(new Exception());
+            retryStrategyEx.GetRetryDelay(Arg.Any<IRequestContext>(), Arg.Any<ClusterResult>(), Arg.Any<int>()).Returns(TimeSpan.Zero);
+            retryStrategy = retryStrategyEx;
+            module = new RequestRetryModule(retryPolicy, retryStrategy);
+
+            result = new ClusterResult(status, result.ReplicaResults, result.Response, request);
+
+            Execute().Should().BeSameAs(result);
+
+            nextModuleCalls.Should().Be(MaxAttempts);
+            retryStrategyEx.Received(MaxAttempts - 1).GetRetryDelay(Arg.Any<IRequestContext>(), Arg.Any<ClusterResult>(), Arg.Any<int>());
         }
 
         private ClusterResult Execute()
