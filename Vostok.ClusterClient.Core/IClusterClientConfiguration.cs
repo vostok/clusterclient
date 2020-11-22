@@ -122,10 +122,18 @@ namespace Vostok.Clusterclient.Core
         IRetryPolicy RetryPolicy { get; set; }
 
         /// <summary>
+        /// <para>This module type is deprecated. Use more general <see cref="IClusterClientConfiguration.RetryStrategyEx"/>.</para>
         /// <para>Gets or sets retry strategy. See <see cref="IRetryStrategy"/> for more details.</para>
-        /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.RetryStrategy"/>).</para>
+        /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.RetryStrategyEx"/>).</para>
+        /// <para>All <see cref="IRetryStrategy"/> will be converted to a <see cref="IRetryStrategyEx"/> internally.</para>
         /// </summary>
         IRetryStrategy RetryStrategy { get; set; }
+
+        /// <summary>
+        /// <para>Gets or sets retry strategy. See <see cref="IRetryStrategyEx"/> for more details.</para>
+        /// <para>This parameter is optional and has a default value (see <see cref="Core.ClusterClientDefaults.RetryStrategyEx"/>).</para>
+        /// </summary>
+        IRetryStrategyEx RetryStrategyEx { get; set; }
 
         /// <summary>
         /// <para>Gets or sets the response selector. See <see cref="IResponseSelector.Select"/> for more details.</para>

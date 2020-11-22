@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 namespace Vostok.Clusterclient.Core.Retry
 {
     /// <summary>
+    /// <para>This module is deprecated. See <see cref="IRetryStrategyEx"/>.</para>
     /// <para>Represents a strategy which determines cluster communication attempts count and delays between attempts.</para>
     /// <para>Note that this retry mechanism applies to whole cluster communication attempts (it only gets used when all replicas have failed to produce an <see cref="Model.ResponseVerdict.Accept"/>ed response).</para>
     /// <para>Such a retry mechanism is suitable for small clusters which can be fully temporarily unavailable during normal operation (such as leadership ensembles).</para>
