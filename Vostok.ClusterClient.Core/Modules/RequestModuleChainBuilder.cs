@@ -37,7 +37,7 @@ namespace Vostok.Clusterclient.Core.Modules
             AddModule(new RequestValidationModule());
 
             AddModule(new TimeoutValidationModule());
-            AddModule(new RequestRetryModule(config.RetryPolicy, config.RetryStrategy));
+            AddModule(new RequestRetryModule(config.RetryPolicy, config.RetryStrategyEx));
 
             // -->> adaptive throttling module <<-- //
 

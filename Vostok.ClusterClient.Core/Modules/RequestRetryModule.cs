@@ -10,9 +10,9 @@ namespace Vostok.Clusterclient.Core.Modules
     internal class RequestRetryModule : IRequestModule
     {
         private readonly IRetryPolicy retryPolicy;
-        private readonly IRetryStrategy retryStrategy;
+        private readonly IRetryStrategyEx retryStrategy;
 
-        public RequestRetryModule(IRetryPolicy retryPolicy, IRetryStrategy retryStrategy)
+        public RequestRetryModule(IRetryPolicy retryPolicy, IRetryStrategyEx retryStrategy)
         {
             this.retryPolicy = retryPolicy;
             this.retryStrategy = retryStrategy;
@@ -37,20 +37,18 @@ namespace Vostok.Clusterclient.Core.Modules
                 if (context.Request.ContainsAlreadyUsedStream())
                     return result;
 
-                if (++attemptsUsed >= retryStrategy.AttemptsCount)
-                    return result;
-
                 if (!retryPolicy.NeedToRetry(context.Request, context.Parameters, result.ReplicaResults))
                     return result;
 
-                var retryDelay = retryStrategy.GetRetryDelay(attemptsUsed);
-                if (retryDelay >= context.Budget.Remaining)
+                attemptsUsed++;
+                var retryDelay = retryStrategy.GetRetryDelay(context, result, attemptsUsed);
+                if (!retryDelay.HasValue || retryDelay.Value >= context.Budget.Remaining)
                     return result;
 
-                context.Log.Info("Could not obtain an acceptable response from cluster. Will retry after {RetryDelay}. Attempts used: {AttemptsUsed}/{AttemptsCount}.", retryDelay.ToPrettyString(), attemptsUsed, retryStrategy.AttemptsCount);
+                context.Log.Info("Could not obtain an acceptable response from cluster. Will retry after {RetryDelay}. Attempts used: {AttemptsUsed}.", retryDelay.Value.ToPrettyString(), attemptsUsed);
 
                 if (retryDelay > TimeSpan.Zero)
-                    await Task.Delay(retryDelay, context.CancellationToken).ConfigureAwait(false);
+                    await Task.Delay(retryDelay.Value, context.CancellationToken).ConfigureAwait(false);
 
                 (context as RequestContext)?.ResetReplicaResults();
             }

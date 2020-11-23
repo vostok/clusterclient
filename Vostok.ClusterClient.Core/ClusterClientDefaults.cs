@@ -142,6 +142,11 @@ namespace Vostok.Clusterclient.Core
         public static readonly IRetryStrategy RetryStrategy = new ConstantDelayRetryStrategy(1, TimeSpan.Zero);
 
         /// <summary>
+        /// The default value of <see cref="IClusterClientConfiguration.RetryStrategyEx"/>.
+        /// </summary>
+        public static readonly IRetryStrategyEx RetryStrategyEx = new RetryStrategyAdapter(new ConstantDelayRetryStrategy(1, TimeSpan.Zero));
+
+        /// <summary>
         /// The default value of <see cref="IClusterClientConfiguration.ResponseSelector"/>.
         /// </summary>
         public static readonly IResponseSelector ResponseSelector = new LastAcceptedResponseSelector();

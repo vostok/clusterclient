@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Modules;
@@ -23,7 +24,8 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         private ClusterResult result;
         private IRequestContext context;
         private IRetryPolicy retryPolicy;
-        private IRetryStrategy retryStrategy;
+        private IRetryStrategy internalDeprecatedRetryStrategy;
+        private IRetryStrategyEx retryStrategyEx;
         private RequestRetryModule module;
         private Request request;
 
@@ -35,18 +37,20 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             nextModuleCalls = 0;
 
             context = Substitute.For<IRequestContext>();
-            context.Budget.Returns(Budget.Infinite);
+            var infinityBudget = Budget.Infinite;
+            context.Budget.Returns(infinityBudget);
             context.Log.Returns(new ConsoleLog());
             context.Request.Returns(request);
 
             retryPolicy = Substitute.For<IRetryPolicy>();
             retryPolicy.NeedToRetry(Arg.Any<Request>(), Arg.Any<RequestParameters>(), Arg.Any<IList<ReplicaResult>>()).Returns(true);
 
-            retryStrategy = Substitute.For<IRetryStrategy>();
-            retryStrategy.AttemptsCount.Returns(MaxAttempts);
-            retryStrategy.GetRetryDelay(Arg.Any<int>()).Returns(TimeSpan.Zero);
+            internalDeprecatedRetryStrategy = Substitute.For<IRetryStrategy>();
+            internalDeprecatedRetryStrategy.AttemptsCount.Returns(MaxAttempts);
+            internalDeprecatedRetryStrategy.GetRetryDelay(Arg.Any<int>()).Returns(TimeSpan.Zero);
+            retryStrategyEx = new RetryStrategyAdapter(internalDeprecatedRetryStrategy);
 
-            module = new RequestRetryModule(retryPolicy, retryStrategy);
+            module = new RequestRetryModule(retryPolicy, retryStrategyEx);
         }
 
         [TestCase(ClusterResultStatus.ReplicasExhausted)]
@@ -61,11 +65,11 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         }
 
         [Test]
-        public void Should_query_retry_possibility_before_each_additional_attempt()
+        public void Should_query_retry_possibility_before_each_additional_attempt_including_last_excess_one()
         {
             Execute();
 
-            retryPolicy.Received(4).NeedToRetry(Arg.Any<Request>(), Arg.Any<RequestParameters>(), result.ReplicaResults);
+            retryPolicy.Received(5).NeedToRetry(Arg.Any<Request>(), Arg.Any<RequestParameters>(), result.ReplicaResults);
         }
 
         [Test]
@@ -73,12 +77,12 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         {
             Execute();
 
-            retryStrategy.Received(4).GetRetryDelay(Arg.Any<int>());
+            internalDeprecatedRetryStrategy.Received(4).GetRetryDelay(Arg.Any<int>());
 
-            retryStrategy.Received().GetRetryDelay(1);
-            retryStrategy.Received().GetRetryDelay(2);
-            retryStrategy.Received().GetRetryDelay(3);
-            retryStrategy.Received().GetRetryDelay(4);
+            internalDeprecatedRetryStrategy.Received().GetRetryDelay(1);
+            internalDeprecatedRetryStrategy.Received().GetRetryDelay(2);
+            internalDeprecatedRetryStrategy.Received().GetRetryDelay(3);
+            internalDeprecatedRetryStrategy.Received().GetRetryDelay(4);
         }
 
         [TestCase(ClusterResultStatus.Success)]
@@ -121,7 +125,10 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         [Test]
         public void Should_not_retry_if_retry_strategy_attempts_count_is_insufficient()
         {
+            var retryStrategy = Substitute.For<IRetryStrategy>();
             retryStrategy.AttemptsCount.Returns(1);
+            retryStrategyEx = new RetryStrategyAdapter(retryStrategy);
+            module = new RequestRetryModule(retryPolicy, retryStrategyEx);
 
             Execute().Should().BeSameAs(result);
 
@@ -168,6 +175,32 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             action.Should().Throw<OperationCanceledException>();
 
             nextModuleCalls.Should().Be(2);
+        }
+
+
+        [TestCase(ClusterResultStatus.ReplicasExhausted)]
+        [TestCase(ClusterResultStatus.ReplicasNotFound)]
+        public void Should_call_extended_method_if_Strategy_type_is_IRetryStrategyEx_on_all_available_attempts(ClusterResultStatus status)
+        {
+            var retryStrategyEx = Substitute.For<IRetryStrategyEx>();
+            retryStrategyEx.GetRetryDelay(Arg.Any<IRequestContext>(), Arg.Any<ClusterResult>(), Arg.Any<int>())
+                .Returns(
+                    info =>
+                    {
+                        var attempts = (int)info[2];
+                        return attempts < MaxAttempts 
+                            ? (TimeSpan?)TimeSpan.Zero 
+                            : null;
+                    });
+            this.retryStrategyEx = retryStrategyEx;
+            module = new RequestRetryModule(retryPolicy, retryStrategyEx);
+
+            result = new ClusterResult(status, result.ReplicaResults, result.Response, request);
+
+            Execute().Should().BeSameAs(result);
+
+            nextModuleCalls.Should().Be(MaxAttempts);
+            retryStrategyEx.Received(MaxAttempts).GetRetryDelay(Arg.Any<IRequestContext>(), Arg.Any<ClusterResult>(), Arg.Any<int>());
         }
 
         private ClusterResult Execute()
