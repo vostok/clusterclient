@@ -1,3 +1,7 @@
+## 0.1.22 (23.11.2020):
+
+Added `IRetryStrategyEx` - an extended interface similar to the old IRetryStrategy but with IRequestContext and last seen ClusterResult.
+
 ## 0.1.21 (21.10.2020):
 
 Added AppendToHeaderWithQuality extension to RequestHeadersExtensions.
