@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using JetBrains.Annotations;
 using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering;
+using Vostok.Clusterclient.Core.Topology;
 using Vostok.Clusterclient.Core.Transport;
 using Vostok.Logging.Abstractions;
 
@@ -37,6 +39,18 @@ namespace Vostok.Clusterclient.Core.Modules
         ILog Log { get; }
 
         /// <summary>
+        /// Gets or sets ClusterProvider instance used to send request.
+        /// </summary>
+        [NotNull]
+        IClusterProvider ClusterProvider { get; set; }
+
+        /// <summary>
+        /// Gets or sets ReplicaOrdering instance used to send request.
+        /// </summary>
+        [NotNull]
+        IReplicaOrdering ReplicaOrdering { get; set; }
+
+        /// <summary>
         /// Gets or sets the transport instance used to send requests to replicas.
         /// </summary>
         [NotNull]
@@ -53,8 +67,18 @@ namespace Vostok.Clusterclient.Core.Modules
         int MaximumReplicasToUse { get; set; }
 
         /// <summary>
+        /// Gets or sets the number of connection attempts to each replica.
+        /// </summary>
+        int ConnectionAttempts { get; set; }
+
+        /// <summary>
         /// Gets the client application name.
         /// </summary>
         string ClientApplicationName { get; }
+
+        /// <summary>
+        /// Clear replica results info.
+        /// </summary>
+        void ResetReplicaResults();
     }
 }

@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Modules;
@@ -148,7 +147,16 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
         [Test]
         public void Should_reset_replica_results_in_native_context_implementation()
         {
-            var contextImpl = new RequestContext(context.Request, null, context.Budget, new ConsoleLog(), null, int.MaxValue);
+            var contextImpl = new RequestContext(
+                context.Request,
+                parameters: null,
+                context.Budget,
+                new ConsoleLog(),
+                clusterProvider: default,
+                replicaOrdering: default,
+                transport: default,
+                maximumReplicasToUse: int.MaxValue,
+                connectionAttempts: default);
 
             contextImpl.SetReplicaResult(new ReplicaResult(new Uri("http://replica1"), Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero));
             contextImpl.SetReplicaResult(new ReplicaResult(new Uri("http://replica2"), Responses.Timeout, ResponseVerdict.Reject, TimeSpan.Zero));
@@ -177,7 +185,6 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             nextModuleCalls.Should().Be(2);
         }
 
-
         [TestCase(ClusterResultStatus.ReplicasExhausted)]
         [TestCase(ClusterResultStatus.ReplicasNotFound)]
         public void Should_call_extended_method_if_Strategy_type_is_IRetryStrategyEx_on_all_available_attempts(ClusterResultStatus status)
@@ -188,8 +195,8 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
                     info =>
                     {
                         var attempts = (int)info[2];
-                        return attempts < MaxAttempts 
-                            ? (TimeSpan?)TimeSpan.Zero 
+                        return attempts < MaxAttempts
+                            ? (TimeSpan?)TimeSpan.Zero
                             : null;
                     });
             this.retryStrategyEx = retryStrategyEx;

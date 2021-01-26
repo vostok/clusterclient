@@ -50,7 +50,7 @@ namespace Vostok.Clusterclient.Core.Modules
                 if (retryDelay > TimeSpan.Zero)
                     await Task.Delay(retryDelay.Value, context.CancellationToken).ConfigureAwait(false);
 
-                (context as RequestContext)?.ResetReplicaResults();
+                context.ResetReplicaResults();
             }
         }
     }

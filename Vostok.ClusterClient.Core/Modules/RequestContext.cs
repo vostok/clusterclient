@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering;
+using Vostok.Clusterclient.Core.Topology;
 using Vostok.Clusterclient.Core.Transport;
 using Vostok.Logging.Abstractions;
 
@@ -17,18 +19,24 @@ namespace Vostok.Clusterclient.Core.Modules
             RequestParameters parameters,
             IRequestTimeBudget budget,
             ILog log,
+            IClusterProvider clusterProvider,
+            IReplicaOrdering replicaOrdering,
             ITransport transport,
             int maximumReplicasToUse,
+            int connectionAttempts,
             string clientApplicationName = null,
             CancellationToken cancellationToken = default)
         {
             Request = request;
             Budget = budget;
             Log = log;
+            ClusterProvider = clusterProvider;
+            ReplicaOrdering = replicaOrdering;
             Transport = transport;
             Parameters = parameters;
             CancellationToken = cancellationToken;
             MaximumReplicasToUse = maximumReplicasToUse;
+            ConnectionAttempts = connectionAttempts;
             ClientApplicationName = clientApplicationName;
 
             ResetReplicaResults();
@@ -40,11 +48,17 @@ namespace Vostok.Clusterclient.Core.Modules
 
         public ILog Log { get; }
 
+        public IClusterProvider ClusterProvider { get; set; }
+
+        public IReplicaOrdering ReplicaOrdering { get; set; }
+
         public ITransport Transport { get; set; }
 
         public CancellationToken CancellationToken { get; }
 
         public int MaximumReplicasToUse { get; set; }
+
+        public int ConnectionAttempts { get; set; }
 
         public string ClientApplicationName { get; }
 

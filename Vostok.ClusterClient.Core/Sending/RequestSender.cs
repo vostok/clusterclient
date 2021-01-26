@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Vostok.Clusterclient.Core.Criteria;
 using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering;
 using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Clusterclient.Core.Transport;
 using Vostok.Commons.Time;
@@ -30,7 +31,15 @@ namespace Vostok.Clusterclient.Core.Sending
             this.requestConverter = requestConverter;
         }
 
-        public async Task<ReplicaResult> SendToReplicaAsync(ITransport transport, Uri replica, Request request, TimeSpan? connectionTimeout, TimeSpan timeout, CancellationToken cancellationToken)
+        public async Task<ReplicaResult> SendToReplicaAsync(
+            ITransport transport,
+            IReplicaOrdering replicaOrdering,
+            Uri replica,
+            Request request,
+            int connectionAttempts,
+            TimeSpan? connectionTimeout,
+            TimeSpan timeout,
+            CancellationToken cancellationToken)
         {
             if (configuration.Logging.LogReplicaRequests)
                 LogRequest(replica, timeout);
@@ -39,7 +48,7 @@ namespace Vostok.Clusterclient.Core.Sending
 
             var absoluteRequest = requestConverter.TryConvertToAbsolute(request, replica);
 
-            var response = await SendRequestAsync(transport, absoluteRequest, timeBudget, connectionTimeout, cancellationToken).ConfigureAwait(false);
+            var response = await SendRequestAsync(transport, absoluteRequest, timeBudget, connectionAttempts, connectionTimeout, cancellationToken).ConfigureAwait(false);
 
             var responseVerdict = responseClassifier.Decide(response, configuration.ResponseCriteria);
 
@@ -48,7 +57,7 @@ namespace Vostok.Clusterclient.Core.Sending
             if (configuration.Logging.LogReplicaResults)
                 LogResult(result);
 
-            configuration.ReplicaOrdering.Learn(result, storageProvider);
+            replicaOrdering.Learn(result, storageProvider);
 
             return result;
         }
@@ -57,13 +66,14 @@ namespace Vostok.Clusterclient.Core.Sending
             ITransport transport,
             [CanBeNull] Request request,
             TimeBudget timeBudget,
+            int connectionAttempts,
             TimeSpan? connectionTimeout,
             CancellationToken cancellationToken)
         {
             if (request == null)
                 return Responses.Unknown;
 
-            transport = new ConnectionAttemptsTransport(transport, configuration.ConnectionAttempts);
+            transport = new ConnectionAttemptsTransport(transport, connectionAttempts);
 
             try
             {

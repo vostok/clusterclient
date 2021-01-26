@@ -1,8 +1,8 @@
 namespace Vostok.Clusterclient.Core.Model
 {
-    internal static class RequestMiscExtensions
+    public static class RequestMiscExtensions
     {
-        internal static bool ContainsAlreadyUsedStream(this Request request)
+        public static bool ContainsAlreadyUsedStream(this Request request)
         {
             return request.StreamContent is SingleUseStreamContent streamContent && streamContent.WasUsed;
         }

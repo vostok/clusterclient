@@ -22,11 +22,14 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             context = new RequestContext(
                 Request.Get("foo/bar"),
                 RequestParameters.Empty,
-                default,
-                default,
-                default,
-                default,
-                Guid.NewGuid().ToString());
+                budget: default,
+                log: default,
+                clusterProvider: default,
+                replicaOrdering: default,
+                transport: default,
+                maximumReplicasToUse: default,
+                connectionAttempts: default,
+                clientApplicationName: Guid.NewGuid().ToString());
 
             module = new AuxiliaryHeadersModule(
                 priorityHeader = Guid.NewGuid().ToString(),

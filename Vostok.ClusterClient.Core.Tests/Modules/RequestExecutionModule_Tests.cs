@@ -55,7 +55,22 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             var parameters = RequestParameters.Empty
                 .WithStrategy(Substitute.For<IRequestStrategy>());
 
-            context = new RequestContext(Request.Get("foo/bar"), parameters, Budget.Infinite, new SilentLog(), null, int.MaxValue);
+            clusterProvider = Substitute.For<IClusterProvider>();
+            clusterProvider.GetCluster().Returns(new[] {replica1, replica2});
+
+            replicaOrdering = Substitute.For<IReplicaOrdering>();
+            replicaOrdering.Order(null, null, null, null).ReturnsForAnyArgs(info => info.Arg<IList<Uri>>().Reverse());
+
+            context = new RequestContext(
+                Request.Get("foo/bar"),
+                parameters,
+                Budget.Infinite,
+                new SilentLog(),
+                clusterProvider,
+                replicaOrdering,
+                transport: default,
+                maximumReplicasToUse: int.MaxValue,
+                connectionAttempts: default);
             context.Parameters.Strategy.SendAsync(null, null, null, null, null, 0, default)
                 .ReturnsForAnyArgs(
                     async info =>
@@ -69,15 +84,29 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
                         }
                     });
 
-            clusterProvider = Substitute.For<IClusterProvider>();
-            clusterProvider.GetCluster().Returns(new[] {replica1, replica2});
-
             requestSender = Substitute.For<IRequestSenderInternal>();
-            requestSender.SendToReplicaAsync(Arg.Any<ITransport>(), replica1, Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).ReturnsTask(_ => result1);
-            requestSender.SendToReplicaAsync(Arg.Any<ITransport>(), replica2, Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).ReturnsTask(_ => result2);
-
-            replicaOrdering = Substitute.For<IReplicaOrdering>();
-            replicaOrdering.Order(null, null, null, null).ReturnsForAnyArgs(info => info.Arg<IList<Uri>>().Reverse());
+            requestSender.SendToReplicaAsync(
+                    Arg.Any<ITransport>(),
+                    replicaOrdering,
+                    replica1,
+                    Arg.Any<Request>(),
+                    connectionAttempts: Arg.Any<int>(),
+                    connectionTimeout: Arg.Any<TimeSpan?>(),
+                    timeout: Arg.Any<TimeSpan>(),
+                    Arg.Any<CancellationToken>()
+                )
+                .ReturnsTask(_ => result1);
+            requestSender.SendToReplicaAsync(
+                    Arg.Any<ITransport>(),
+                    replicaOrdering,
+                    replica2,
+                    Arg.Any<Request>(),
+                    connectionAttempts: Arg.Any<int>(),
+                    connectionTimeout: Arg.Any<TimeSpan?>(),
+                    timeout: Arg.Any<TimeSpan>(),
+                    Arg.Any<CancellationToken>()
+                )
+                .ReturnsTask(_ => result2);
 
             responseSelector = Substitute.For<IResponseSelector>();
             responseSelector.Select(null, null, null).ReturnsForAnyArgs(_ => selectedResponse);
@@ -87,8 +116,6 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
 
             storageProvider = Substitute.For<IReplicaStorageProvider>();
             module = new RequestExecutionModule(
-                clusterProvider,
-                replicaOrdering,
                 responseSelector,
                 storageProvider,
                 requestSender,
@@ -144,7 +171,17 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
 
             tokenSource.Cancel();
 
-            context = new RequestContext(context.Request, context.Parameters, context.Budget, context.Log, null, int.MaxValue, cancellationToken: tokenSource.Token);
+            context = new RequestContext(
+                context.Request,
+                context.Parameters,
+                context.Budget,
+                context.Log,
+                clusterProvider,
+                replicaOrdering,
+                transport: default,
+                maximumReplicasToUse: int.MaxValue,
+                connectionAttempts: default,
+                cancellationToken: tokenSource.Token);
 
             Action action = () => Execute();
 

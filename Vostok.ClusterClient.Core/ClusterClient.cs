@@ -92,8 +92,11 @@ namespace Vostok.Clusterclient.Core
                     CompleteParameters(parameters),
                     RequestTimeBudget.StartNew(timeout ?? configuration.DefaultTimeout, BudgetPrecision),
                     configuration.Log,
+                    configuration.ClusterProvider,
+                    configuration.ReplicaOrdering,
                     configuration.Transport,
                     configuration.MaxReplicasUsedPerRequest,
+                    configuration.ConnectionAttempts,
                     configuration.ClientApplicationName,
                     cancellationToken));
         }

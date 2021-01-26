@@ -45,10 +45,10 @@ namespace Vostok.Clusterclient.Core.Modules
 
             // -->> replica budgeting module <<-- //
 
+            // -->> service-mesh module is injected before RequestExecutionModule <<-- //
+
             AddModule(
                 new RequestExecutionModule(
-                    config.ClusterProvider,
-                    config.ReplicaOrdering,
                     config.ResponseSelector,
                     storageProvider,
                     requestSender,
