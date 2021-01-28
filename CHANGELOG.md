@@ -1,3 +1,7 @@
+## 0.1.23 (28.01.2021):
+
+Extended `IRequestContext` interface with `ClusterProvider`, `ReplicaOrdering`, and `ConnectionAttempts` properties to enable their customization in request module.
+
 ## 0.1.22 (23.11.2020):
 
 Added `IRetryStrategyEx` - an extended interface similar to the old IRetryStrategy but with IRequestContext and last seen ClusterResult.
