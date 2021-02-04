@@ -1,3 +1,7 @@
+## 0.1.24 (04.02.2021):
+
+ClusterClient should not prohibit GET or HEAD requests with message body.
+
 ## 0.1.23 (28.01.2021):
 
 Extended `IRequestContext` interface with `ClusterProvider`, `ReplicaOrdering`, and `ConnectionAttempts` properties to enable their customization in request module.
