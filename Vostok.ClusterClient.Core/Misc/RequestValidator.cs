@@ -18,9 +18,6 @@ namespace Vostok.Clusterclient.Core.Misc
                 if (scheme != Uri.UriSchemeHttp && scheme != Uri.UriSchemeHttps)
                     yield return $"Request url has unsupported scheme '{scheme}'. Only http and https schemes are allowed.";
             }
-
-            if (request.HasBody && (request.Method == RequestMethods.Get || request.Method == RequestMethods.Head))
-                yield return $"Sending a body is not allowed with {request.Method} requests.";
         }
 
         /// <summary>

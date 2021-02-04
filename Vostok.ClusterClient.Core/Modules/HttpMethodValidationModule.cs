@@ -8,7 +8,7 @@ namespace Vostok.Clusterclient.Core.Modules
 {
     internal class HttpMethodValidationModule : IRequestModule
     {
-        private static readonly HashSet<string> All = new HashSet<string>
+        internal static readonly HashSet<string> All = new HashSet<string>
         {
             RequestMethods.Get,
             RequestMethods.Post,

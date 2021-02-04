@@ -1,10 +1,11 @@
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Vostok.Clusterclient.Core.Misc;
 using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Modules;
 
 namespace Vostok.Clusterclient.Core.Tests.Misc
 {
@@ -46,34 +47,17 @@ namespace Vostok.Clusterclient.Core.Tests.Misc
             Console.Out.WriteLine(RequestValidator.Validate(request).Single());
         }
 
-        [Test]
-        public void Validation_should_fail_when_supplying_request_body_buffer_with_get_method()
+        [TestCaseSource(nameof(GetAllMethods))]
+        public void Validation_should_not_fail_when_supplying_request_body_with_any_method(string method)
         {
-            request = Request.Get(request.Url).WithContent(new Content(new byte[16]));
+            request = new Request(method, request.Url).WithContent(new Content(new byte[16]));
 
-            RequestValidator.IsValid(request).Should().BeFalse();
-
-            Console.Out.WriteLine(RequestValidator.Validate(request).Single());
+            RequestValidator.IsValid(request).Should().BeTrue();
         }
 
-        [Test]
-        public void Validation_should_fail_when_supplying_request_body_stream_with_get_method()
+        private static IEnumerable<object[]> GetAllMethods()
         {
-            request = Request.Get(request.Url).WithContent(new StreamContent(Stream.Null, 123));
-
-            RequestValidator.IsValid(request).Should().BeFalse();
-
-            Console.Out.WriteLine(RequestValidator.Validate(request).Single());
-        }
-
-        [Test]
-        public void Validation_should_fail_when_supplying_request_body_with_head_method()
-        {
-            request = Request.Head(request.Url).WithContent(new Content(new byte[16]));
-
-            RequestValidator.IsValid(request).Should().BeFalse();
-
-            Console.Out.WriteLine(RequestValidator.Validate(request).Single());
+            return HttpMethodValidationModule.All.Select(method => new object[] {method});
         }
     }
 }
