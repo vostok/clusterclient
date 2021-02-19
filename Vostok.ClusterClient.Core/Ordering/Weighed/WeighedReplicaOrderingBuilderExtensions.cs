@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Gray;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Leadership;
+using Vostok.Clusterclient.Core.Ordering.Weighed.Relative;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed
 {
@@ -87,6 +88,14 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed
             double downMultiplier = ClusterClientDefaults.AdaptiveHealthDownMultiplier,
             double minimumHealthValue = ClusterClientDefaults.AdaptiveHealthMinimumValue) =>
             builder.AddModifier(new AdaptiveHealthModifier<HealthWithDecay>(new AdaptiveHealthWithLinearDecay(() => DateTime.UtcNow, decayDuration, upMultiplier, downMultiplier, minimumHealthValue), tuningPolicy, builder.Log));
+
+        /// <summary>
+        /// Adds an <see cref="RelativeWeightModifier"/> with given <see cref="RelativeWeightSettings"/> to the chain.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="settings">A relative weight settings</param>
+        public static void AddRelativeWeightModifier(this IWeighedReplicaOrderingBuilder builder, RelativeWeightSettings settings) =>
+            builder.AddModifier(new RelativeWeightModifier(builder.ServiceName, builder.Environment, settings));
 
         /// <summary>
         /// Adds a <see cref="LeadershipWeightModifier"/> with given <paramref name="leaderResultDetector"/> to the chain.
