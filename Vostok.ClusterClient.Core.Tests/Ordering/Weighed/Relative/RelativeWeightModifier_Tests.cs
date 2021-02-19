@@ -59,11 +59,11 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         {
             var replica = new Uri("http://r1");
 
-            clusterState.ActiveStatistic.ObserveCluster(DateTime.UtcNow, 10, null).IsEmpty().Should().BeTrue();
+            clusterState.ActiveStatistic.ObserveCluster(DateTime.UtcNow, 10, null).IsZero().Should().BeTrue();
 
             relativeWeightModifier.Learn(Accepted(replica.OriginalString, 500), replicaStorageProvider);
 
-            clusterState.ActiveStatistic.ObserveCluster(DateTime.UtcNow, 10, null).IsEmpty().Should().BeFalse();
+            clusterState.ActiveStatistic.ObserveCluster(DateTime.UtcNow, 10, null).IsZero().Should().BeFalse();
         }
 
         [Test]

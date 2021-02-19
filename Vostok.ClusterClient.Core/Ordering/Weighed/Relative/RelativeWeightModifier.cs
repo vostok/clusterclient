@@ -77,17 +77,17 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             clusterState.Weights.Update(newWeights);
         }
 
-        private Weight CalculateWeight(in Statistic clusterStatistic, in Statistic replicaStatic, in Weight previousWeight)
+        private Weight CalculateWeight(in Statistic clusterStatistic, in Statistic replicaStatistic, in Weight previousWeight)
         {
             var rowWeight = weighingHelper
-                .ComputeWeight(replicaStatic.Mean, replicaStatic.StdDev, clusterStatistic.Mean, clusterStatistic.StdDev);
+                .ComputeWeight(replicaStatistic.Mean, replicaStatistic.StdDev, clusterStatistic.Mean, clusterStatistic.StdDev);
             var newWeight = Math.Max(settings.MinWeight, rowWeight);
             var smc = newWeight > previousWeight.Value 
                 ? settings.WeightsRaiseSmoothingConstant 
                 : settings.WeightsDownSmoothingConstant;
             var smoothedWeight = SmoothingHelper
                 .SmoothValue(newWeight, previousWeight.Value, clusterStatistic.Timestamp, previousWeight.Timestamp, smc);
-            return new Weight(smoothedWeight, replicaStatic.Timestamp);
+            return new Weight(smoothedWeight, replicaStatistic.Timestamp);
         }
 
         private bool NeedUpdateWeights(DateTime currentTimestamp, DateTime previousTimestamp) =>

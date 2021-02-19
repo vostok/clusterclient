@@ -47,12 +47,12 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         }
 
         public IEnumerable<(Uri Replica, Statistic Statistic)> ObserveReplicas(
-            DateTime currentTime, double penalty, Func<Uri, Statistic?> statisticProvider)
+            DateTime currentTime, double penalty, Func<Uri, Statistic?> previousStatisticProvider)
         {
             return from replicaStatistic in replicasStatistic 
                    let smoothed = replicaStatistic.Value
                        .Penalize(penalty)
-                       .ObserveSmoothed(currentTime, smoothingConstant, statisticProvider(replicaStatistic.Key)) 
+                       .ObserveSmoothed(currentTime, smoothingConstant, previousStatisticProvider(replicaStatistic.Key)) 
                    select (replicaStatistic.Key, smoothed);
         }
     }

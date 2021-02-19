@@ -89,7 +89,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             var prevStdDev = previousStat.Value.StdDev;
             var prevTime = previousStat.Value.Timestamp;
 
-            if (rowStatistic.IsEmpty())
+            if (rowStatistic.IsZero())
                 return new Statistic(prevStdDev, prevMean, current);
 
             var mean = SmoothingHelper.SmoothValue(rowStatistic.Mean, prevMean, current, prevTime, smoothingConstant);

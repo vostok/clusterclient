@@ -14,7 +14,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             Timestamp = timestamp;
         }
 
-        public bool IsEmpty() =>
+        public bool IsZero() =>
             StdDev < double.Epsilon && Mean < double.Epsilon;
     }
 }
