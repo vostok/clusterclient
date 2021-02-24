@@ -95,7 +95,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed
         /// <param name="builder"></param>
         /// <param name="settings">A relative weight settings</param>
         public static void AddRelativeWeightModifier(this IWeighedReplicaOrderingBuilder builder, RelativeWeightSettings settings) =>
-            builder.AddModifier(new RelativeWeightModifier(builder.ServiceName, builder.Environment, settings));
+            builder.AddModifier(new RelativeWeightModifier(builder.ServiceName, builder.Environment, settings, builder.Log));
 
         /// <summary>
         /// Adds a <see cref="LeadershipWeightModifier"/> with given <paramref name="leaderResultDetector"/> to the chain.

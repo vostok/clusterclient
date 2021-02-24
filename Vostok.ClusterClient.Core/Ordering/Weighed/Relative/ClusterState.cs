@@ -1,31 +1,42 @@
 ﻿using System;
+using System.Linq;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
     internal class ClusterState
     {
         private readonly RelativeWeightSettings settings;
+        private readonly StatisticsHistory previousStatistic;
 
-        public DateTime LastUpdateTimestamp = DateTime.UtcNow;
-        public readonly Weights Weights;
-        public readonly StatisticsHistory StatisticsHistory;
-        
-        public ActiveStatistic ActiveStatistic { get; private set; }
-
+        public DateTime LastUpdateTimestamp { get; private set; } = DateTime.UtcNow;
+        public ActiveStatistic CurrentStatistic { get; private set; }
+        public Weights Weights { get; }
         public ClusterState(RelativeWeightSettings settings)
         {
             this.settings = settings;
+            previousStatistic = new StatisticsHistory();
 
-            ActiveStatistic = new ActiveStatistic(settings.StatisticSmoothingConstant, settings.PenaltyMultiplier);
             Weights = new Weights();
-            StatisticsHistory = new StatisticsHistory();
+            CurrentStatistic = new ActiveStatistic(
+                settings.StatisticSmoothingConstant, 
+                settings.PenaltyMultiplier);
         }
 
-        public ActiveStatistic ExchangeActiveStat()
+        public StatisticSnapshot ExchangeStatistic(DateTime currentTimestamp)
         {
-            var current = ActiveStatistic;
-            ActiveStatistic = new ActiveStatistic(settings.StatisticSmoothingConstant, settings.PenaltyMultiplier);
-            return current;
+            LastUpdateTimestamp = currentTimestamp;
+
+            var current = CurrentStatistic;
+            CurrentStatistic = new ActiveStatistic(settings.StatisticSmoothingConstant, settings.PenaltyMultiplier);
+
+            var penalty = current.CalculatePenalty();
+            var clusterStatistic = current
+                .ObserveCluster(currentTimestamp, penalty, previousStatistic.GetForCluster());
+            var replicasStatistic = current
+                .ObserveReplicas(currentTimestamp, penalty, uri => previousStatistic.GetForReplica(uri))
+                .ToDictionary(t => t.Replica, t => t.Statistic);
+
+            return new StatisticSnapshot(clusterStatistic, replicasStatistic);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
@@ -7,27 +6,25 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
     internal class StatisticsHistory
     {
         private Statistic? clusterStatistic;
-        private readonly ConcurrentDictionary<Uri, Statistic> replicasHistoryStatistics 
-            = new ConcurrentDictionary<Uri, Statistic>();
+        private readonly Dictionary<Uri, Statistic> replicasHistoryStatistics 
+            = new Dictionary<Uri, Statistic>();
 
-
-        public Statistic? Get(Uri replica)
+        public Statistic? GetForReplica(Uri replica)
         {
             return replicasHistoryStatistics.TryGetValue(replica, out var statistic) 
                 ? statistic 
                 : default(Statistic?);
         }
 
-        public Statistic? GetCluster() =>
+        public Statistic? GetForCluster() =>
             clusterStatistic;
 
-        public void Update(Statistic cluster, IReadOnlyDictionary<Uri, Statistic> newHistory)
+        public void Update(StatisticSnapshot snapshot)
         {
-            clusterStatistic = cluster;
-
-            foreach (var historyStat in newHistory)
-                replicasHistoryStatistics
-                    .AddOrUpdate(historyStat.Key, historyStat.Value, (uri, statistic) => historyStat.Value);
+            clusterStatistic = snapshot.Cluster;
+            
+            foreach (var replicaSnapshot in snapshot.Replicas)
+                replicasHistoryStatistics[replicaSnapshot.Key] = replicaSnapshot.Value;
         }
     }
 }

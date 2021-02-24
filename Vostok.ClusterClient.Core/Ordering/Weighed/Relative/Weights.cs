@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
+using Vostok.Clusterclient.Core.Misc;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
@@ -18,8 +19,16 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         public void Update(IReadOnlyDictionary<Uri, Weight> newWeights)
         {
-            foreach (var newWeight in newWeights)
-                weights[newWeight.Key] = newWeight.Value;
+            foreach (var (replica, weight) in newWeights)
+                weights[replica] = weight;
+        }
+
+        public override string ToString()
+        {
+            var stringBuilder = new StringBuilder();
+            foreach (var (replica, weight) in weights)
+                stringBuilder.AppendLine($"{replica}: {weight}");
+            return stringBuilder.ToString();
         }
     }
 }

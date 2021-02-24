@@ -22,7 +22,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         {
             var replica = new Uri("http://notexist");
 
-            var statistic = statisticsHistory.Get(replica);
+            var statistic = statisticsHistory.GetForReplica(replica);
 
             statistic.HasValue.Should().BeFalse();
         }
@@ -30,7 +30,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         [Test]
         public void Should_return_null_global_statistic()
         {
-            statisticsHistory.GetCluster().HasValue.Should().BeFalse();
+            statisticsHistory.GetForCluster().HasValue.Should().BeFalse();
         }
 
         [Test]
@@ -44,11 +44,11 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
                 [new Uri("http://r3")] = new Statistic(0.5, 0.35, DateTime.UtcNow),
             };
 
-            statisticsHistory.Update(clusterStatistic, replicasStatistic);
+            statisticsHistory.Update(new StatisticSnapshot(clusterStatistic, replicasStatistic));
 
-            statisticsHistory.GetCluster().Should().Be(clusterStatistic);
+            statisticsHistory.GetForCluster().Should().Be(clusterStatistic);
             foreach (var statistic in replicasStatistic)
-                statisticsHistory.Get(statistic.Key).Should().Be(statistic.Value);
+                statisticsHistory.GetForReplica(statistic.Key).Should().Be(statistic.Value);
         }
 
         [Test]
@@ -65,11 +65,11 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
                 [r3] = new Statistic(0.5, 0.35, DateTime.UtcNow),
             };
 
-            statisticsHistory.Update(clusterStatistic, replicasStatistic);
+            statisticsHistory.Update(new StatisticSnapshot(clusterStatistic, replicasStatistic));
 
-            statisticsHistory.GetCluster().Should().Be(clusterStatistic);
+            statisticsHistory.GetForCluster().Should().Be(clusterStatistic);
             foreach (var statistic in replicasStatistic)
-                statisticsHistory.Get(statistic.Key).Should().Be(statistic.Value);
+                statisticsHistory.GetForReplica(statistic.Key).Should().Be(statistic.Value);
 
             var newCluster = new Statistic(1, 1, DateTime.UtcNow);
             var newReplicas = new Dictionary<Uri, Statistic>()
@@ -77,12 +77,12 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
                 [new Uri("http://r3")] = new Statistic(9.5, 1.35, DateTime.UtcNow),
             };
 
-            statisticsHistory.Update(newCluster, newReplicas);
+            statisticsHistory.Update(new StatisticSnapshot(newCluster, newReplicas));
 
-            statisticsHistory.GetCluster().Should().Be(newCluster);
-            statisticsHistory.Get(r1).Should().Be(replicasStatistic[r1]);
-            statisticsHistory.Get(r2).Should().Be(replicasStatistic[r2]);
-            statisticsHistory.Get(r3).Should().Be(newReplicas[r3]);
+            statisticsHistory.GetForCluster().Should().Be(newCluster);
+            statisticsHistory.GetForReplica(r1).Should().Be(replicasStatistic[r1]);
+            statisticsHistory.GetForReplica(r2).Should().Be(replicasStatistic[r2]);
+            statisticsHistory.GetForReplica(r3).Should().Be(newReplicas[r3]);
         }
     }
 }

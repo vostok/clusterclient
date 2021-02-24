@@ -9,6 +9,7 @@ using NUnit.Framework;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Relative;
+using Vostok.Clusterclient.Core.Tests.Helpers;
 
 namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
 {
@@ -39,7 +40,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             replicaStorageProvider = Substitute.For<IReplicaStorageProvider>();
             replicaStorageProvider.ObtainGlobalValue(Arg.Any<string>(), Arg.Any<Func<ClusterState>>())
                 .Returns(info => clusterState);
-            relativeWeightModifier = new RelativeWeightModifier("srv", "env", settings);
+            relativeWeightModifier = new RelativeWeightModifier("srv", "env", settings, null);
         }
 
         [Test]
@@ -47,11 +48,11 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         {
             var replica = new Uri("http://r1");
 
-            clusterState.ActiveStatistic.ObserveReplicas(DateTime.UtcNow, 10, uri => null).Should().BeEmpty();
+            clusterState.CurrentStatistic.ObserveReplicas(DateTime.UtcNow, 10, uri => null).Should().BeEmpty();
 
             relativeWeightModifier.Learn(Accepted(replica.OriginalString, 500), replicaStorageProvider);
 
-            clusterState.ActiveStatistic.ObserveReplicas(DateTime.UtcNow, 10, uri => null).Should().NotBeEmpty();
+            clusterState.CurrentStatistic.ObserveReplicas(DateTime.UtcNow, 10, uri => null).Should().NotBeEmpty();
         }
 
         [Test]
@@ -59,27 +60,30 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         {
             var replica = new Uri("http://r1");
 
-            clusterState.ActiveStatistic.ObserveCluster(DateTime.UtcNow, 10, null).IsZero().Should().BeTrue();
+            clusterState.CurrentStatistic.ObserveCluster(DateTime.UtcNow, 10, null).IsZero().Should().BeTrue();
 
             relativeWeightModifier.Learn(Accepted(replica.OriginalString, 500), replicaStorageProvider);
 
-            clusterState.ActiveStatistic.ObserveCluster(DateTime.UtcNow, 10, null).IsZero().Should().BeFalse();
+            clusterState.CurrentStatistic.ObserveCluster(DateTime.UtcNow, 10, null).IsZero().Should().BeFalse();
         }
 
         [Test]
-        public void Modify_should_save_statistic_history()
+        public void Modify_should_update_weights_after_time_period()
         {
             var replica = new Uri("http://r1");
-            var weight = 1d;
-            clusterState.StatisticsHistory.Get(replica).Should().BeNull();
-            clusterState.StatisticsHistory.GetCluster().Should().BeNull();
-            relativeWeightModifier.Learn(Accepted(replica.OriginalString, 500), replicaStorageProvider);
+            settings.WeightUpdatePeriod = 100.Milliseconds();
+            relativeWeightModifier.Learn(Accepted(replica.OriginalString, 100), replicaStorageProvider);
             
-            Thread.Sleep(settings.WeightUpdatePeriod);
-            relativeWeightModifier.Modify(replica, new List<Uri>(){ replica}, replicaStorageProvider, Request.Get(replica), RequestParameters.Empty, ref weight);
+            clusterState.CurrentStatistic.ObserveCluster(DateTime.UtcNow, 10, null).IsZero().Should().BeFalse();
+            var lastUpdateTime = clusterState.LastUpdateTimestamp;
 
-            clusterState.StatisticsHistory.Get(replica).Should().NotBeNull();
-            clusterState.StatisticsHistory.GetCluster().Should().NotBeNull();
+            Action assertion = () =>
+            {
+                var w = 0d;
+                relativeWeightModifier.Modify(replica, new List<Uri>(), replicaStorageProvider, Request.Get(""), RequestParameters.Empty, ref w);
+                clusterState.LastUpdateTimestamp.Should().BeAfter(lastUpdateTime);
+            };
+            assertion.ShouldPassIn(settings.WeightUpdatePeriod, 10.Milliseconds());
         }
 
         [TestCaseSource(nameof(TestCaseSource))]
@@ -112,9 +116,11 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
                     Accepted("http://r1", 150),
                     Accepted("http://r1", 250),
                     Accepted("http://r1", 135),
+
                     Accepted("http://r2", 50),
                     Rejected("http://r2", 25),
                     Accepted("http://r2", 100),
+
                     Rejected("http://r3", 5),
                     Rejected("http://r3", 10),
                     Rejected("http://r3", 15),

@@ -1,7 +1,9 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
+    [PublicAPI]
     public class RelativeWeightSettings
     {
         public int PenaltyMultiplier = 100;

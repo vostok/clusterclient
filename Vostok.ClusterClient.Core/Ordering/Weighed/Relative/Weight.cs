@@ -12,5 +12,8 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             Value = value;
             Timestamp = timestamp;
         }
+
+        public override string ToString() =>
+            $"{Value:F3}, {Timestamp:G}";
     }
 }
