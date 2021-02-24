@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
+using Vostok.Clusterclient.Core.Misc;
 using Vostok.Clusterclient.Core.Model;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
@@ -49,11 +49,13 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         public IEnumerable<(Uri Replica, Statistic Statistic)> ObserveReplicas(
             DateTime currentTime, double penalty, Func<Uri, Statistic?> previousStatisticProvider)
         {
-            return from replicaStatistic in replicasStatistic 
-                   let smoothed = replicaStatistic.Value
-                       .Penalize(penalty)
-                       .ObserveSmoothed(currentTime, smoothingConstant, previousStatisticProvider(replicaStatistic.Key)) 
-                   select (replicaStatistic.Key, smoothed);
+            foreach (var (replica, statisticBucket) in replicasStatistic)
+            {
+                var smoothed = statisticBucket
+                    .Penalize(penalty)
+                    .ObserveSmoothed(currentTime, smoothingConstant, previousStatisticProvider(replica));
+                yield return (replica, smoothed);
+            }
         }
     }
 }

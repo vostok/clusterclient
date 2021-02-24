@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Vostok.Clusterclient.Core.Misc;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
@@ -21,14 +20,6 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         {
             foreach (var (replica, weight) in newWeights)
                 weights[replica] = weight;
-        }
-
-        public override string ToString()
-        {
-            var stringBuilder = new StringBuilder();
-            foreach (var (replica, weight) in weights)
-                stringBuilder.AppendLine($"{replica}: {weight}");
-            return stringBuilder.ToString();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using JetBrains.Annotations;
 using Vostok.Clusterclient.Core.Misc;
 using Vostok.Clusterclient.Core.Model;
@@ -9,9 +10,9 @@ using Vostok.Logging.Abstractions;
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
     /// <summary>
-    /// <para>Represents a weight modifier that calculates each <seealso cref="RelativeWeightSettings.WeightUpdatePeriod"/> the weight of a replica, which characterizes its quality relative to others in the cluster.</para>
+    /// <para>Represents a weight modifier that periodically calculates the weight of a replica, which characterizes its quality relative to others in the cluster.</para>
     /// <para>Replica weight is the probability that a replica will respond in a time less than or equal to the average response time across the cluster.</para>
-    /// <para>For replicas whose responses are <seealso cref="ResponseVerdict.Reject"/> or <seealso cref="ResponseVerdict.DontKnow"/> a <seealso cref="RelativeWeightSettings.PenaltyMultiplier"/> will be applied.</para>
+    /// <para>For replicas whose responses are <see cref="ResponseVerdict.Reject"/> or <see cref="ResponseVerdict.DontKnow"/> a <see cref="RelativeWeightSettings.PenaltyMultiplier"/> will be applied.</para>
     /// </summary>
     [PublicAPI]
     public class RelativeWeightModifier : IReplicaWeightModifier
@@ -75,8 +76,8 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
                 newWeights.Add(replica, newReplicaWeight);
             }
             clusterState.Weights.Update(newWeights);
-            
-            log.Info(clusterState.Weights.ToString());
+
+            LogWeights(newWeights);
         }
 
         private Weight CalculateWeight(in Statistic clusterStatistic, in Statistic replicaStatistic, in Weight previousWeight)
@@ -99,5 +100,15 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         private ClusterState CreateClusterState() =>
             new ClusterState(settings);
+
+        private void LogWeights(IReadOnlyDictionary<Uri, Weight> weights)
+        {
+            if (!log.IsEnabledForInfo()) return;
+
+            var newWeightsLog = new StringBuilder($"New weights:{Environment.NewLine}");
+            foreach (var (replica, weight) in weights)
+                newWeightsLog.AppendLine($"{replica}: {weight}");
+            log.Info(newWeightsLog.ToString());
+        }
     }
 }

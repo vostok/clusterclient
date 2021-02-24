@@ -23,16 +23,14 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         [Test]
         public void Should_correct_calculate_penalty()
         {
-            var timestamp = DateTime.UtcNow;
             var replica = new Uri("http://replica");
             activeStatistic.Report(Accepted(replica, 125));
             activeStatistic.Report(Accepted(replica, 1325));
             activeStatistic.Report(Accepted(replica, 525));
-            var statistic = activeStatistic.ObserveCluster(timestamp, 12, null);
-
+            
             var penalty = activeStatistic.CalculatePenalty();
 
-            penalty.Should().Be(statistic.Mean + statistic.StdDev * PenaltyMultiplier);
+            penalty.Should().BeApproximately(25602.715, 0.001);
         }
 
         [Test]

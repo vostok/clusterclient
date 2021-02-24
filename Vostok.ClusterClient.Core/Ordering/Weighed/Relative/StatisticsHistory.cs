@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vostok.Clusterclient.Core.Misc;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
@@ -23,8 +24,8 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         {
             clusterStatistic = snapshot.Cluster;
             
-            foreach (var replicaSnapshot in snapshot.Replicas)
-                replicasHistoryStatistics[replicaSnapshot.Key] = replicaSnapshot.Value;
+            foreach (var (replica, statistic) in snapshot.Replicas)
+                replicasHistoryStatistics[replica] = statistic;
         }
     }
 }
