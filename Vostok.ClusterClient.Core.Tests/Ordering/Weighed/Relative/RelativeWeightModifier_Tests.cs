@@ -86,6 +86,63 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             assertion.ShouldPassIn(settings.WeightUpdatePeriod, 10.Milliseconds());
         }
 
+        [Test]
+        public void Modify_should_return_previous_weight()
+        {
+            settings.WeightUpdatePeriod = 50.Milliseconds();
+            var replica1 = new Uri("http://r1");
+            var replica2 = new Uri("http://r2");
+
+            relativeWeightModifier.Learn(Accepted(replica1.OriginalString, 100), replicaStorageProvider);
+            relativeWeightModifier.Learn(Rejected(replica1.OriginalString, 20), replicaStorageProvider);
+            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 70), replicaStorageProvider);
+            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 170), replicaStorageProvider);
+
+            Thread.Sleep(settings.WeightUpdatePeriod);
+
+            var previousWeight = 1.0d;
+            relativeWeightModifier.Modify(replica1, new List<Uri>(), replicaStorageProvider, Request.Get(""), RequestParameters.Empty, ref previousWeight);
+
+            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 70), replicaStorageProvider);
+            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 170), replicaStorageProvider);
+
+            Thread.Sleep(settings.WeightUpdatePeriod);
+            var currentWeight = 1.0d;
+            relativeWeightModifier.Modify(replica1, new List<Uri>(), replicaStorageProvider, Request.Get(""), RequestParameters.Empty, ref currentWeight);
+
+            currentWeight.Should().Be(previousWeight);
+        }
+
+        [Test]
+        public void Modify_should_return_initial_weight_when_ttl_expired()
+        {
+            settings.WeightUpdatePeriod = 50.Milliseconds();
+            settings.WeightsTTL = 30.Milliseconds();
+            settings.InitialWeight = 100;
+            var replica1 = new Uri("http://r1");
+            var replica2 = new Uri("http://r2");
+
+            relativeWeightModifier.Learn(Accepted(replica1.OriginalString, 100), replicaStorageProvider);
+            relativeWeightModifier.Learn(Rejected(replica1.OriginalString, 20), replicaStorageProvider);
+            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 70), replicaStorageProvider);
+            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 170), replicaStorageProvider);
+
+            Thread.Sleep(settings.WeightUpdatePeriod);
+
+            var previousWeight = 1.0d;
+            relativeWeightModifier.Modify(replica1, new List<Uri>(), replicaStorageProvider, Request.Get(""), RequestParameters.Empty, ref previousWeight);
+
+            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 70), replicaStorageProvider);
+            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 170), replicaStorageProvider);
+            previousWeight.Should().NotBe(1.0d);
+
+            Thread.Sleep(settings.WeightUpdatePeriod);
+            var currentWeight = 1.0d;
+            relativeWeightModifier.Modify(replica1, new List<Uri>(), replicaStorageProvider, Request.Get(""), RequestParameters.Empty, ref currentWeight);
+
+            currentWeight.Should().Be(settings.InitialWeight);
+        }
+
         [TestCaseSource(nameof(TestCaseSource))]
         public void Should_correct_modify_replicas_weights(ReplicaResult[] replicaResults, Dictionary<Uri, double> expectedWeights)
         {

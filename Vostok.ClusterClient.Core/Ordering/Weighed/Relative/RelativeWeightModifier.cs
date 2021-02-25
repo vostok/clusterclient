@@ -58,19 +58,17 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             {
                 if (!NeedUpdateWeights(DateTime.UtcNow, clusterState.LastUpdateTimestamp)) return;
 
-                var timestamp = DateTime.UtcNow;
-
-                ModifyWeights(timestamp, clusterState.ExchangeStatistic(timestamp), clusterState);
+                ModifyWeights(clusterState.ExchangeStatistic(DateTime.UtcNow), clusterState);
             }
         }
 
-        private void ModifyWeights(DateTime currentTimestamp, StatisticSnapshot statisticSnapshot, ClusterState clusterState)
+        private void ModifyWeights(StatisticSnapshot statisticSnapshot, ClusterState clusterState)
         {
-            var newWeights = new Dictionary<Uri, Weight>();
+            var newWeights = new Dictionary<Uri, Weight>(statisticSnapshot.Replicas.Count);
             foreach (var (replica, replicaStatistic) in statisticSnapshot.Replicas)
             {
                 var previousWeight = clusterState.Weights.Get(replica, settings.WeightsTTL) ??
-                                     new Weight(settings.InitialWeight, currentTimestamp - settings.WeightUpdatePeriod);
+                                     new Weight(settings.InitialWeight, clusterState.LastUpdateTimestamp - settings.WeightUpdatePeriod);
                 var newReplicaWeight = CalculateWeight(statisticSnapshot.Cluster, replicaStatistic, previousWeight);
 
                 newWeights.Add(replica, newReplicaWeight);
