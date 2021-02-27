@@ -18,19 +18,19 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         }
 
         [Test]
-        public void Should_return_null_statistic_for_not_existing_replica()
+        public void GetForReplica_should_return_null_statistic_for_not_existing_replica()
         {
             var replica = new Uri("http://notexist");
 
             var statistic = statisticsHistory.GetForReplica(replica);
 
-            statistic.HasValue.Should().BeFalse();
+            statistic.Should().BeNull();
         }
 
         [Test]
-        public void Should_return_null_global_statistic()
+        public void GetForCluster_should_return_null_statistic()
         {
-            statisticsHistory.GetForCluster().HasValue.Should().BeFalse();
+            statisticsHistory.GetForCluster().Should().BeNull();
         }
 
         [Test]

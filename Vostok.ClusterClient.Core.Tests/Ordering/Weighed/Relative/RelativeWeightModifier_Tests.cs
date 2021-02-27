@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using FluentAssertions;
 using FluentAssertions.Extensions;
@@ -9,6 +8,7 @@ using NUnit.Framework;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Relative;
+using Vostok.Clusterclient.Core.Ordering.Weighed.Relative.Interfaces;
 using Vostok.Clusterclient.Core.Tests.Helpers;
 
 namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
@@ -19,11 +19,13 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         private ClusterState clusterState;
         private RelativeWeightSettings settings;
         private IReplicaStorageProvider replicaStorageProvider;
+        private IStatisticHistory statisticHistory;
         private RelativeWeightModifier relativeWeightModifier;
         
         [SetUp]
         public void SetUp()
         {
+            statisticHistory = Substitute.For<IStatisticHistory>();
             settings = new RelativeWeightSettings()
             {
                 WeightUpdatePeriod = 200.Milliseconds(),
@@ -36,7 +38,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
                 MinWeight = 0.005,
                 Sensitivity = 3
             };
-            clusterState = new ClusterState(settings);
+            clusterState = new ClusterState(settings, () => Substitute.For<IActiveStatistic>(), statisticHistory, Substitute.For<IWeights>());
             replicaStorageProvider = Substitute.For<IReplicaStorageProvider>();
             replicaStorageProvider.ObtainGlobalValue(Arg.Any<string>(), Arg.Any<Func<ClusterState>>())
                 .Returns(info => clusterState);
@@ -44,27 +46,14 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         }
 
         [Test]
-        public void Learn_should_report_to_replica_statistic()
+        public void Learn_should_report_to_active_statistic()
         {
             var replica = new Uri("http://r1");
+            var replicaResult = Accepted(replica.OriginalString, 500);
+            
+            relativeWeightModifier.Learn(replicaResult, replicaStorageProvider);
 
-            clusterState.CurrentStatistic.ObserveReplicas(DateTime.UtcNow, 10, uri => null).Should().BeEmpty();
-
-            relativeWeightModifier.Learn(Accepted(replica.OriginalString, 500), replicaStorageProvider);
-
-            clusterState.CurrentStatistic.ObserveReplicas(DateTime.UtcNow, 10, uri => null).Should().NotBeEmpty();
-        }
-
-        [Test]
-        public void Learn_should_report_to_cluster_statistic()
-        {
-            var replica = new Uri("http://r1");
-
-            clusterState.CurrentStatistic.ObserveCluster(DateTime.UtcNow, 10, null).IsZero().Should().BeTrue();
-
-            relativeWeightModifier.Learn(Accepted(replica.OriginalString, 500), replicaStorageProvider);
-
-            clusterState.CurrentStatistic.ObserveCluster(DateTime.UtcNow, 10, null).IsZero().Should().BeFalse();
+            clusterState.CurrentStatistic.Received(1).Report(replicaResult);
         }
 
         [Test]
@@ -72,9 +61,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         {
             var replica = new Uri("http://r1");
             settings.WeightUpdatePeriod = 100.Milliseconds();
-            relativeWeightModifier.Learn(Accepted(replica.OriginalString, 100), replicaStorageProvider);
             
-            clusterState.CurrentStatistic.ObserveCluster(DateTime.UtcNow, 10, null).IsZero().Should().BeFalse();
             var lastUpdateTime = clusterState.LastUpdateTimestamp;
 
             Action assertion = () =>
@@ -82,117 +69,57 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
                 var w = 0d;
                 relativeWeightModifier.Modify(replica, new List<Uri>(), replicaStorageProvider, Request.Get(""), RequestParameters.Empty, ref w);
                 clusterState.LastUpdateTimestamp.Should().BeAfter(lastUpdateTime);
+                clusterState.Weights.Received(1).Update(Arg.Any<IReadOnlyDictionary<Uri, Weight>>());
             };
             assertion.ShouldPassIn(settings.WeightUpdatePeriod, 10.Milliseconds());
         }
 
-        [Test]
-        public void Modify_should_return_previous_weight()
+        [TestCase("http://r1", 0.140)]
+        [TestCase("http://r2", 0.519)]
+        [TestCase("http://r3", 0.916)]
+        public void Modify_should_correct_update_weights(string replica, double expectedWeight)
         {
-            settings.WeightUpdatePeriod = 50.Milliseconds();
-            var replica1 = new Uri("http://r1");
-            var replica2 = new Uri("http://r2");
-
-            relativeWeightModifier.Learn(Accepted(replica1.OriginalString, 100), replicaStorageProvider);
-            relativeWeightModifier.Learn(Rejected(replica1.OriginalString, 20), replicaStorageProvider);
-            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 70), replicaStorageProvider);
-            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 170), replicaStorageProvider);
-
-            Thread.Sleep(settings.WeightUpdatePeriod);
-
-            var previousWeight = 1.0d;
-            relativeWeightModifier.Modify(replica1, new List<Uri>(), replicaStorageProvider, Request.Get(""), RequestParameters.Empty, ref previousWeight);
-
-            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 70), replicaStorageProvider);
-            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 170), replicaStorageProvider);
-
-            Thread.Sleep(settings.WeightUpdatePeriod);
-            var currentWeight = 1.0d;
-            relativeWeightModifier.Modify(replica1, new List<Uri>(), replicaStorageProvider, Request.Get(""), RequestParameters.Empty, ref currentWeight);
-
-            currentWeight.Should().Be(previousWeight);
-        }
-
-        [Test]
-        public void Modify_should_return_initial_weight_when_ttl_expired()
-        {
-            settings.WeightUpdatePeriod = 50.Milliseconds();
-            settings.WeightsTTL = 30.Milliseconds();
-            settings.InitialWeight = 100;
-            var replica1 = new Uri("http://r1");
-            var replica2 = new Uri("http://r2");
-
-            relativeWeightModifier.Learn(Accepted(replica1.OriginalString, 100), replicaStorageProvider);
-            relativeWeightModifier.Learn(Rejected(replica1.OriginalString, 20), replicaStorageProvider);
-            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 70), replicaStorageProvider);
-            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 170), replicaStorageProvider);
-
-            Thread.Sleep(settings.WeightUpdatePeriod);
-
-            var previousWeight = 1.0d;
-            relativeWeightModifier.Modify(replica1, new List<Uri>(), replicaStorageProvider, Request.Get(""), RequestParameters.Empty, ref previousWeight);
-
-            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 70), replicaStorageProvider);
-            relativeWeightModifier.Learn(Accepted(replica2.OriginalString, 170), replicaStorageProvider);
-            previousWeight.Should().NotBe(1.0d);
-
-            Thread.Sleep(settings.WeightUpdatePeriod);
-            var currentWeight = 1.0d;
-            relativeWeightModifier.Modify(replica1, new List<Uri>(), replicaStorageProvider, Request.Get(""), RequestParameters.Empty, ref currentWeight);
-
-            currentWeight.Should().Be(settings.InitialWeight);
-        }
-
-        [TestCaseSource(nameof(TestCaseSource))]
-        public void Should_correct_modify_replicas_weights(ReplicaResult[] replicaResults, Dictionary<Uri, double> expectedWeights)
-        {
-            var replicas = replicaResults.Select(r => r.Replica).ToArray();
-
-            foreach (var replicaResult in replicaResults)
-            {
-                relativeWeightModifier.Learn(replicaResult, replicaStorageProvider);
-            }
-
-            Thread.Sleep(settings.WeightUpdatePeriod);
-            
-            foreach (var replica in replicas)
-            {
-                var weight = 1d;
-                
-                relativeWeightModifier.Modify(replica, replicas, replicaStorageProvider, Request.Get(replica), RequestParameters.Empty, ref weight);
-                
-                weight.Should().BeApproximately(expectedWeights[replica], 0.001);
-            }
-        }
-
-        private static readonly object[] TestCaseSource = {
-            new object[]
-            {
-                new[]
+            var currentTimestamp = DateTime.UtcNow;
+            var previousTimestamp = currentTimestamp - settings.WeightUpdatePeriod;
+            var weights = new Dictionary<Uri, Weight>();
+            clusterState.Weights
+                .When(w => w.Update(Arg.Any<IReadOnlyDictionary<Uri, Weight>>()))
+                .Do(info =>
                 {
-                    Accepted("http://r1", 150),
-                    Accepted("http://r1", 250),
-                    Accepted("http://r1", 135),
-
-                    Accepted("http://r2", 50),
-                    Rejected("http://r2", 25),
-                    Accepted("http://r2", 100),
-
-                    Rejected("http://r3", 5),
-                    Rejected("http://r3", 10),
-                    Rejected("http://r3", 15),
-                },
-                new Dictionary<Uri, double>()
+                    foreach (var weight in info.Arg<IReadOnlyDictionary<Uri, Weight>>())
+                        weights[weight.Key] = weight.Value;
+                });
+            clusterState.Weights.Get(Arg.Any<Uri>()).Returns(
+                c =>
                 {
-                    [new Uri("http://r1")] = 1,
-                    [new Uri("http://r2")] = 0.318,
-                    [new Uri("http://r3")] = 0.139,
-                }
-            }
-        };
-        private static ReplicaResult Accepted(string replica, int time) =>
+                    var ww = weights.TryGetValue(c.Arg<Uri>(), out var w) ? w : (Weight?)null;
+                    return ww;
+                });
+            statisticHistory.GetForCluster().Returns(new Statistic(30, 120, previousTimestamp));
+            statisticHistory.GetForReplica(new Uri("http://r1")).Returns(new Statistic(90, 300, previousTimestamp));
+            statisticHistory.GetForReplica(new Uri("http://r2")).Returns(new Statistic(40, 200, previousTimestamp));
+            statisticHistory.GetForReplica(new Uri("http://r3")).Returns(new Statistic(50, 180, previousTimestamp));
+            clusterState.CurrentStatistic
+                .ObserveCluster(Arg.Any<DateTime>(), Arg.Any<double>(), Arg.Any<Statistic?>())
+                .Returns(info => new Statistic(70, 300, info.Arg<DateTime>()));
+            clusterState.CurrentStatistic
+                .ObserveReplicas(Arg.Any<DateTime>(), Arg.Any<double>(), Arg.Any<Func<Uri, Statistic?>>())
+                .Returns( c =>
+                    new List<(Uri Replica, Statistic Statistic)>()
+                    {
+                        (new Uri("http://r1"), new Statistic(125, 500, c.Arg<DateTime>())),
+                        (new Uri("http://r2"), new Statistic(70, 250, c.Arg<DateTime>())),
+                        (new Uri("http://r3"), new Statistic(60, 190, c.Arg<DateTime>()))
+                    });
+
+            var actualWeight = 1.0d;
+            Thread.Sleep(settings.WeightUpdatePeriod);
+            relativeWeightModifier.Modify(new Uri(replica), new List<Uri>(), replicaStorageProvider, Request.Get(""), RequestParameters.Empty, ref actualWeight);
+
+            actualWeight.Should().BeApproximately(expectedWeight, 0.001);
+        }
+
+        private static ReplicaResult Accepted(string replica,int time) =>
             new ReplicaResult(new Uri(replica), new Response(ResponseCode.Accepted), ResponseVerdict.Accept, time.Milliseconds());
-        private static ReplicaResult Rejected(string replica, int time) =>
-            new ReplicaResult(new Uri(replica), new Response(ResponseCode.InternalServerError), ResponseVerdict.Reject, time.Milliseconds());
     }
 }

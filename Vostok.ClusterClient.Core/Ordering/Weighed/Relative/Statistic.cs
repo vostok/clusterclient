@@ -7,6 +7,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         public readonly double StdDev;
         public readonly double Mean;
         public readonly DateTime Timestamp;
+
         public Statistic(double stdDev, double mean, DateTime timestamp)
         {
             StdDev = stdDev;

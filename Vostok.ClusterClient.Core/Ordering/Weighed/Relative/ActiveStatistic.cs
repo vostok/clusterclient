@@ -3,10 +3,11 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Vostok.Clusterclient.Core.Misc;
 using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering.Weighed.Relative.Interfaces;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
-    internal class ActiveStatistic
+    internal class ActiveStatistic : IActiveStatistic
     {
         private readonly TimeSpan smoothingConstant;
         private readonly int penaltyMultiplier;
@@ -38,7 +39,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             return globalStat.Mean + globalStat.StdDev * penaltyMultiplier;
         }
 
-        public Statistic ObserveCluster(DateTime currentTime, double penalty, Statistic? previous)
+        public Statistic ObserveCluster(DateTime currentTime, double penalty, in Statistic? previous)
         {
             var smoothed = clusterStatistic
                 .Penalize(penalty)

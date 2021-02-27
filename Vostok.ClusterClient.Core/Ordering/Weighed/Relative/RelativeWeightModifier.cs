@@ -43,7 +43,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             
             ModifyWeightsIfNeed(clusterState);
 
-            weight *= clusterState.Weights.Get(replica, settings.WeightsTTL)?.Value ?? settings.InitialWeight;
+            weight *= clusterState.Weights.Get(replica)?.Value ?? settings.InitialWeight;
         }
 
         /// <inheritdoc />
@@ -67,7 +67,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             var newWeights = new Dictionary<Uri, Weight>(statisticSnapshot.Replicas.Count);
             foreach (var (replica, replicaStatistic) in statisticSnapshot.Replicas)
             {
-                var previousWeight = clusterState.Weights.Get(replica, settings.WeightsTTL) ??
+                var previousWeight = clusterState.Weights.Get(replica) ??
                                      new Weight(settings.InitialWeight, clusterState.LastUpdateTimestamp - settings.WeightUpdatePeriod);
                 var newReplicaWeight = CalculateWeight(statisticSnapshot.Cluster, replicaStatistic, previousWeight);
 

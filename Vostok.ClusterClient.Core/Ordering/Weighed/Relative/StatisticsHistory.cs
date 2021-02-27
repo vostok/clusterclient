@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Vostok.Clusterclient.Core.Misc;
+using Vostok.Clusterclient.Core.Ordering.Weighed.Relative.Interfaces;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
-    internal class StatisticsHistory
+    internal class StatisticsHistory : IStatisticHistory
     {
         private Statistic? clusterStatistic;
         private readonly Dictionary<Uri, Statistic> replicasHistoryStatistics 
