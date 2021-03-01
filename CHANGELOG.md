@@ -1,3 +1,7 @@
+## 0.1.25 (01.03.2021):
+
+Changed IIS detection in depended project commons.environment to avoid "iisexpress" process name except correct assembly name. Related commit - https://github.com/vostok/commons.environment/commit/5cc91a9ce09e44ce0048e06f37325ff4bb3291fe
+
 ## 0.1.24 (04.02.2021):
 
 ClusterClient should not prohibit GET or HEAD requests with message body.
