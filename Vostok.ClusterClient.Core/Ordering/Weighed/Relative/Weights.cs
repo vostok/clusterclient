@@ -32,6 +32,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
                 {
                     weights[replica] = newWeights[replica];
                     newReplicas.Remove(replica);
+                    continue;
                 }
                 if (DateTime.UtcNow - weight.Timestamp > weightsTTL)
                     weights.Remove(replica);

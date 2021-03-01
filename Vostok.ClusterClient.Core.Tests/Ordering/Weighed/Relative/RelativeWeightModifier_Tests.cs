@@ -9,7 +9,7 @@ using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Relative;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Relative.Interfaces;
-using Vostok.Clusterclient.Core.Tests.Helpers;
+using Vostok.Commons.Testing;
 
 namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
 {
