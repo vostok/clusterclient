@@ -48,11 +48,12 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
             sender = Substitute.For<IRequestSender>();
             sender
                 .SendToReplicaAsync(Arg.Any<Uri>(), Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
-                .Returns(info =>
-                {
-                    sentRequests.Add(info.Arg<Request>());
-                    return resultSources[info.Arg<Uri>()].Task;
-                });
+                .Returns(
+                    info =>
+                    {
+                        sentRequests.Add(info.Arg<Request>());
+                        return resultSources[info.Arg<Uri>()].Task;
+                    });
 
             delaySources = replicas.Select(_ => new TaskCompletionSource<bool>()).ToList();
             delaySourcesEnumerator = delaySources.GetEnumerator();
@@ -213,9 +214,9 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
         public void Should_launch_requests_except_last_with_connection_timeout()
         {
             sender.ClearReceivedCalls();
-            
+
             strategy = new ForkingRequestStrategy(delaysProvider, delaysPlanner, replicas.Length);
-            
+
             strategy.SendAsync(request, parameters, sender, Budget.WithRemaining(5.Seconds()), replicas, replicas.Length, token);
 
             for (var i = 0; i < replicas.Length; ++i)
@@ -223,7 +224,7 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
 
             for (var i = 0; i < replicas.Length - 1; ++i)
                 sender.Received(1).SendToReplicaAsync(replicas[i], Arg.Any<Request>(), parameters.ConnectionTimeout, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
-            
+
             sender.Received(1).SendToReplicaAsync(replicas.Last(), Arg.Any<Request>(), null, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
         }
 
@@ -389,6 +390,96 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
             sentRequests[4].Headers?[HeaderNames.ConcurrencyLevel].Should().Be("3");
         }
 
+        [Test]
+        public void Should_not_fork_if_has_DontFork_header([Values] ResponseVerdict verdict, [Values(1, 3)] int requestsCount)
+        {
+            var sendTask = strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
+
+            for (var i = 0; i < requestsCount - 1; i++)
+                CompleteForkingDelay();
+
+            var conditionHeader = Headers.Empty.Set(HeaderNames.DontFork, "true");
+            for (var i = 0; i < requestsCount; i++)
+                CompleteRequest(replicas[i], verdict, conditionHeader);
+
+            sendTask.GetAwaiter().GetResult();
+
+            sentRequests.Should().HaveCount(requestsCount);
+        }
+
+        [Test]
+        public void Should_fork_only_if_no_DontFork_header()
+        {
+            // note (patrofimov, 26.03.2021): suppose 2 forks in progress: (0), (1). Then events occur in order:
+            // 1. Fork (0) request reaches backend and changes its state.
+            // 2. Fork (1) request reaches backend and finds out its state is changed. Due to changed backend state, DontFork header attached to response and i.e. code 409 (Conflict).
+            //    Fork (1) response reaches client. Verdict - Rejected, no fork launched due to header.
+            // 3. Fork (0) response reaches client but fails on the way back. Therefore, i.e. 200 OK transforms into 500 InternalServerError. Verdict - Rejected, fork (2) launched due to absent DontFork header.
+            // 4. Fork (2) request reaches backend and due to its changed state receives also response with DontFork and 409 like fork (1).
+            //    Fork (2) response reaches client and cluster request is over with verdict Rejected (409).
+            var sendTask = strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
+
+            CompleteForkingDelay();
+
+            var conditionHeader = Headers.Empty.Set(HeaderNames.DontFork, "true");
+            CompleteRequest(replicas[1], ResponseVerdict.Reject, conditionHeader);
+            CompleteRequest(replicas[0], ResponseVerdict.Reject);
+            CompleteRequest(replicas[2], ResponseVerdict.Reject, conditionHeader);
+
+            sendTask.GetAwaiter().GetResult();
+
+            sentRequests.Should().HaveCount(3);
+        }
+
+        [Test]
+        public void Should_accept_after_rejected_responses_with_DontFork_header()
+        {
+            var sendTask = strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
+
+            CompleteForkingDelay();
+
+            var conditionHeader = Headers.Empty.Set(HeaderNames.DontFork, "true");
+            CompleteRequest(replicas[0], ResponseVerdict.Reject, conditionHeader);
+            CompleteRequest(replicas[1], ResponseVerdict.Accept);
+
+            sendTask.GetAwaiter().GetResult();
+
+            sentRequests.Should().HaveCount(2);
+        }
+
+        [Test]
+        public void Should_not_affect_accepted_responses_with_DontFork_header()
+        {
+            var sendTask = strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
+
+            CompleteForkingDelay();
+
+            var conditionHeader = Headers.Empty.Set(HeaderNames.DontFork, "true");
+            CompleteRequest(replicas[0], ResponseVerdict.Accept, conditionHeader);
+
+            sendTask.GetAwaiter().GetResult();
+
+            sentRequests.Should().HaveCount(2);
+        }
+
+        [Test]
+        public void Should_fork_when_forking_delay_completed_after_rejected_with_DontFork_header()
+        {
+            var sendTask = strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
+
+            CompleteForkingDelay();
+
+            var conditionHeader = Headers.Empty.Set(HeaderNames.DontFork, "true");
+            CompleteRequest(replicas[0], ResponseVerdict.Reject, conditionHeader);
+            CompleteForkingDelay();
+            CompleteRequest(replicas[1], ResponseVerdict.Reject, conditionHeader);
+            CompleteRequest(replicas[2], ResponseVerdict.Reject, conditionHeader);
+
+            sendTask.GetAwaiter().GetResult();
+
+            sentRequests.Should().HaveCount(3);
+        }
+
         private void SetupDelaysPlanner()
         {
             delaysPlanner
@@ -409,9 +500,9 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
                 .Returns(first, next);
         }
 
-        private void CompleteRequest(Uri replica, ResponseVerdict verdict)
+        private void CompleteRequest(Uri replica, ResponseVerdict verdict, Headers headers = null)
         {
-            resultSources[replica].TrySetResult(new ReplicaResult(replica, new Response(ResponseCode.Ok), verdict, TimeSpan.Zero));
+            resultSources[replica].TrySetResult(new ReplicaResult(replica, new Response(ResponseCode.Ok, headers: headers), verdict, TimeSpan.Zero));
         }
 
         private void CompleteForkingDelay()
