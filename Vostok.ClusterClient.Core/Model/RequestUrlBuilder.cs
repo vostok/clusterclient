@@ -83,7 +83,11 @@ namespace Vostok.Clusterclient.Core.Model
                 return result;
 
             using (this)
-                return result = new Uri(builder.ToString(), UriKind.RelativeOrAbsolute);
+            {
+                var uriString = builder.ToString();
+                var uriKind = uriString.StartsWith("/") ? UriKind.Relative : UriKind.RelativeOrAbsolute;
+                return result = new Uri(uriString, uriKind);
+            }
         }
 
         /// <summary>
