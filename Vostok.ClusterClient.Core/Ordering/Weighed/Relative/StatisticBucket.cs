@@ -11,8 +11,8 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         private double successLatencySum;
         private double successLatencySquaredSum;
-        private double rejectLatencySquaredSum;
         private double rejectLatencySum;
+        private double rejectLatencySquaredSum;
 
         public StatisticBucket() { }
 
@@ -28,12 +28,13 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             this.rejectCount = rejectCount;
             this.successLatencySum = successLatencySum;
             this.successLatencySquaredSum = successLatencySquaredSum;
-            this.rejectLatencySquaredSum = rejectLatencySquaredSum;
             this.rejectLatencySum = rejectLatencySum;
+            this.rejectLatencySquaredSum = rejectLatencySquaredSum;
         }
 
         public StatisticBucket Penalize(double penalty)
         {
+            //CR: спросить, зачем тут Interlocked, причем не везде.
             return new StatisticBucket(
                 totalCount,
                 rejectCount,
@@ -99,6 +100,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         private static double PenalizeLatency(double latency, long count, double penalty) => 
             latency + count * penalty;
+
         private static double PenalizeSquaredLatency(double latency, double squaredLatency, double count, double penalty) =>
             squaredLatency + 2 * penalty * latency + penalty * penalty * count;
     }

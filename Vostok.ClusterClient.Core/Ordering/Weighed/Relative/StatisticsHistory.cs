@@ -25,6 +25,8 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         {
             clusterStatistic = snapshot.Cluster;
             
+            //CR: Если реплики постоянно перезапускаются с новыми портами, они тут утекут.
+            //CR: А у нас вообще-то уже лежит Timsptamp, можно вычищать очень старые.
             foreach (var (replica, statistic) in snapshot.Replicas)
                 replicasHistoryStatistics[replica] = statistic;
         }

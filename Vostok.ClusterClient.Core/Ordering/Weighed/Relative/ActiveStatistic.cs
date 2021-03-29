@@ -39,6 +39,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             return globalStat.Mean + globalStat.StdDev * penaltyMultiplier;
         }
 
+        //CR: Мне очень не нравятся названия Observe. Они делают очень много всего для слова "Observe".
         public Statistic ObserveCluster(DateTime currentTime, double penalty, in Statistic? previous)
         {
             var smoothed = clusterStatistic

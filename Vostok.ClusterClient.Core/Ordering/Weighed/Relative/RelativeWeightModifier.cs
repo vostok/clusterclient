@@ -23,6 +23,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         private readonly string storageKey;
         private readonly ILog log;
 
+        //CR: Нормализовать относительно Min и Max weights из IWeighedReplicaOrderingBuilder.
         public RelativeWeightModifier(
             string service, 
             string environment, 
@@ -33,6 +34,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             this.log = (log ?? new SilentLog()).ForContext<RelativeWeightModifier>();
 
             storageKey = CreateStorageKey(service, environment);
+            //CR: stdDevRatioCap to settings?
             weighingHelper = new WeighingHelper(3, settings.Sensitivity);
         }
 
@@ -54,14 +56,19 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         {
             if (!NeedUpdateWeights(DateTime.UtcNow, clusterState.LastUpdateTimestamp)) return;
 
+            //CR: remove lock?
             lock (sync)
             {
                 if (!NeedUpdateWeights(DateTime.UtcNow, clusterState.LastUpdateTimestamp)) return;
 
-                ModifyWeights(clusterState.ExchangeStatistic(DateTime.UtcNow), clusterState);
+                var statisticSnapshot = clusterState.ExchangeStatistic(DateTime.UtcNow);
+                ModifyWeights(statisticSnapshot, clusterState);
             }
         }
 
+        //CR: Кажется, мы никак не трогаем те реплики, которые присутствовали в истории, но отсутствовали в статистике текущего временного бакета.
+        //CR: Возможно, их тоже стоит учитывать, как-то пересчитывать им вес, возможно, применять регенерацию.
+        //CR: Правда, тогда сломается "протухание" и возможно, придется LastUpdateTimestamp расточить на две - LastUpdateTimestamp и LastUsageTimestamp, на последнем строить протухание.
         private void ModifyWeights(StatisticSnapshot statisticSnapshot, ClusterState clusterState)
         {
             var newWeights = new Dictionary<Uri, Weight>(statisticSnapshot.Replicas.Count);
@@ -82,11 +89,11 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         {
             var newWeight = Math.Max(settings.MinWeight, weighingHelper
                 .ComputeWeight(replicaStatistic.Mean, replicaStatistic.StdDev, clusterStatistic.Mean, clusterStatistic.StdDev));
-            var smc = newWeight > previousWeight.Value 
+            var smoothingConstant = newWeight > previousWeight.Value 
                 ? settings.WeightsRaiseSmoothingConstant 
                 : settings.WeightsDownSmoothingConstant;
             var smoothedWeight = SmoothingHelper
-                .SmoothValue(newWeight, previousWeight.Value, clusterStatistic.Timestamp, previousWeight.Timestamp, smc);
+                .SmoothValue(newWeight, previousWeight.Value, clusterStatistic.Timestamp, previousWeight.Timestamp, smoothingConstant);
             return new Weight(smoothedWeight, replicaStatistic.Timestamp);
         }
 

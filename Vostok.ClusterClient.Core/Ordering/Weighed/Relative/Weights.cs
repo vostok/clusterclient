@@ -10,17 +10,18 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
     {
         private readonly TimeSpan weightsTTL;
 
-        public Weights(TimeSpan weightsTTL) =>
-            this.weightsTTL = weightsTTL;
-
+        //CR: Concurrency bug!
         private readonly Dictionary<Uri, Weight> weights =
             new Dictionary<Uri, Weight>();
 
+        public Weights(TimeSpan weightsTTL) =>
+            this.weightsTTL = weightsTTL;
+
         public Weight? Get(Uri replica) =>
             weights.TryGetValue(replica, out var weight)
-                ? DateTime.UtcNow - weight.Timestamp <= weightsTTL 
-                    ? weight 
-                    : (Weight?)null 
+                ? DateTime.UtcNow - weight.Timestamp <= weightsTTL
+                    ? weight
+                    : (Weight?)null
                 : null;
 
         public void Update(IReadOnlyDictionary<Uri, Weight> newWeights)
@@ -34,9 +35,11 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
                     newReplicas.Remove(replica);
                     continue;
                 }
+
                 if (DateTime.UtcNow - weight.Timestamp > weightsTTL)
                     weights.Remove(replica);
             }
+
             foreach (var replica in newReplicas)
                 weights[replica] = newWeights[replica];
         }

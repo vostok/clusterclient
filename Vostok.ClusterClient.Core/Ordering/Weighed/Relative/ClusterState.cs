@@ -28,6 +28,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
                 new ActiveStatistic(settings.StatisticSmoothingConstant, settings.PenaltyMultiplier);
         }
 
+        //CR: StatisticSnapshot FlushCurrentStatisticToHistory(DateTime currentTimestamp)?
         public StatisticSnapshot ExchangeStatistic(DateTime currentTimestamp)
         {
             LastUpdateTimestamp = currentTimestamp;
