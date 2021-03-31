@@ -75,8 +75,8 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         }
 
         [TestCase("http://r1", 0.140)]
-        [TestCase("http://r2", 0.519)]
-        [TestCase("http://r3", 0.916)]
+        [TestCase("http://r2", 0.423)]
+        [TestCase("http://r3", 0.731)]
         public void Modify_should_correct_update_weights(string replica, double expectedWeight)
         {
             var currentTimestamp = DateTime.UtcNow;

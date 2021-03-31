@@ -34,20 +34,25 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         public StatisticBucket Penalize(double penalty)
         {
-            //CR: спросить, зачем тут Interlocked, причем не везде.
+            var total = Interlocked.Read(ref totalCount);
+            var successSum = InterlockedEx.Read(ref successLatencySum);
+            var successSquareSum = InterlockedEx.Read(ref successLatencySquaredSum);
+            var rejectSum = InterlockedEx.Read(ref rejectLatencySum);
+            var rejectSquareSum = InterlockedEx.Read(ref rejectLatencySquaredSum);
+            var rejected = Interlocked.Read(ref rejectCount);
             return new StatisticBucket(
-                totalCount,
-                rejectCount,
-                successLatencySum,
-                successLatencySquaredSum,
+                total,
+                rejected,
+                successSum,
+                successSquareSum,
                 PenalizeLatency(
-                    InterlockedEx.Read(ref rejectLatencySum),
-                    Interlocked.Read(ref rejectCount),
+                    rejectSum,
+                    rejected,
                     penalty),
                 PenalizeSquaredLatency(
-                    InterlockedEx.Read(ref rejectLatencySum),
-                    InterlockedEx.Read(ref rejectLatencySquaredSum),
-                    Interlocked.Read(ref rejectCount),
+                    rejectSum,
+                    rejectSquareSum,
+                    rejected,
                     penalty)
             );
         }
@@ -62,9 +67,9 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             }
             else
             {
-                Interlocked.Increment(ref rejectCount);
                 InterlockedEx.Add(ref rejectLatencySum, result.Time.TotalMilliseconds);
                 InterlockedEx.Add(ref rejectLatencySquaredSum, result.Time.TotalMilliseconds * result.Time.TotalMilliseconds);
+                Interlocked.Increment(ref rejectCount);
             }
         }
 

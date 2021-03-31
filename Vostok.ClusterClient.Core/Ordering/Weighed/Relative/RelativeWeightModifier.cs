@@ -18,7 +18,6 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
     public class RelativeWeightModifier : IReplicaWeightModifier
     {
         private readonly RelativeWeightSettings settings;
-        private readonly WeighingHelper weighingHelper;
         private readonly object sync = new object();
         private readonly string storageKey;
         private readonly ILog log;
@@ -34,8 +33,6 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             this.log = (log ?? new SilentLog()).ForContext<RelativeWeightModifier>();
 
             storageKey = CreateStorageKey(service, environment);
-            //CR: stdDevRatioCap to settings?
-            weighingHelper = new WeighingHelper(3, settings.Sensitivity);
         }
 
         /// <inheritdoc />
@@ -87,8 +84,8 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         private Weight CalculateWeight(in Statistic clusterStatistic, in Statistic replicaStatistic, in Weight previousWeight)
         {
-            var newWeight = Math.Max(settings.MinWeight, weighingHelper
-                .ComputeWeight(replicaStatistic.Mean, replicaStatistic.StdDev, clusterStatistic.Mean, clusterStatistic.StdDev));
+            var newWeight = Math.Max(settings.MinWeight, WeighingHelper
+                .ComputeWeight(replicaStatistic.Mean, replicaStatistic.StdDev, clusterStatistic.Mean, clusterStatistic.StdDev, settings.Sensitivity));
             var smoothingConstant = newWeight > previousWeight.Value 
                 ? settings.WeightsRaiseSmoothingConstant 
                 : settings.WeightsDownSmoothingConstant;

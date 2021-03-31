@@ -2,30 +2,22 @@
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
-    internal class WeighingHelper
+    internal static class WeighingHelper
     {
-        private readonly double stdDevRatioCap;
-        private readonly double sensitivity;
-
-        public WeighingHelper(
-            double stdDevRatioCap,
-            double sensitivity)
-        {
-            this.stdDevRatioCap = stdDevRatioCap;
-            this.sensitivity = sensitivity;
-        }
-
-        public double ComputeWeight(
+        public static double ComputeWeight(
             double replicaAverage,
             double replicaStdDev,
             double globalAverage,
-            double globalStdDev)
+            double globalStdDev,
+            double sensitivity)
         {
-            replicaStdDev = Math.Min(replicaStdDev, globalStdDev * stdDevRatioCap);
+            // http://homework.uoregon.edu/pub/class/es202/ztest.html
 
-            var weight = ComputeCDF(globalAverage, replicaAverage, replicaStdDev);
+            var stdDev = Math.Sqrt(replicaStdDev * replicaStdDev + globalStdDev * globalStdDev);
 
-            return Math.Pow(weight, sensitivity);
+            var weight = ComputeCDF(globalAverage, replicaAverage, stdDev);
+
+            return ApplySensitivity(weight, sensitivity);
         }
 
         public static double ComputeCDF(double x, double mean, double stdDev)
@@ -37,5 +29,8 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
             return 1.0 / (1.0 + Math.Exp(-y * (1.5976 + 0.070566 * y * y)));
         }
+
+        private static double ApplySensitivity(double weight, double sensitivity) =>
+            sensitivity < double.Epsilon ? 1 : Math.Pow(weight, sensitivity);
     }
 }
