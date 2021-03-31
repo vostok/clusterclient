@@ -8,40 +8,42 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
     internal class Weights : IWeights
     {
-        private readonly TimeSpan weightsTTL;
+        private readonly TimeSpan weightsTtL;
 
-        //CR: Concurrency bug!
-        private readonly Dictionary<Uri, Weight> weights =
+        private Dictionary<Uri, Weight> currentWeights =
             new Dictionary<Uri, Weight>();
 
-        public Weights(TimeSpan weightsTTL) =>
-            this.weightsTTL = weightsTTL;
+        public Weights(TimeSpan weightsTtL) =>
+            this.weightsTtL = weightsTtL;
 
         public Weight? Get(Uri replica) =>
-            weights.TryGetValue(replica, out var weight)
-                ? DateTime.UtcNow - weight.Timestamp <= weightsTTL
+            currentWeights.TryGetValue(replica, out var weight)
+                ? DateTime.UtcNow - weight.Timestamp <= weightsTtL
                     ? weight
                     : (Weight?)null
                 : null;
 
-        public void Update(IReadOnlyDictionary<Uri, Weight> newWeights)
+        public void Update(IReadOnlyDictionary<Uri, Weight> updatedWeights)
         {
-            var newReplicas = new HashSet<Uri>(newWeights.Select(p => p.Key));
-            foreach (var (replica, weight) in weights.Select(p => p).ToArray())
+            var newReplicas = new HashSet<Uri>(updatedWeights.Select(p => p.Key));
+            var newWeights = new Dictionary<Uri, Weight>(updatedWeights.Count);
+            foreach (var (currentReplica, currentWeight) in currentWeights)
             {
-                if (newReplicas.Contains(replica))
+                if (newReplicas.Contains(currentReplica))
                 {
-                    weights[replica] = newWeights[replica];
-                    newReplicas.Remove(replica);
+                    newWeights[currentReplica] = updatedWeights[currentReplica];
+                    newReplicas.Remove(currentReplica);
                     continue;
                 }
 
-                if (DateTime.UtcNow - weight.Timestamp > weightsTTL)
-                    weights.Remove(replica);
+                if (DateTime.UtcNow - currentWeight.Timestamp < weightsTtL)
+                    newWeights[currentReplica] = currentWeight;
             }
 
-            foreach (var replica in newReplicas)
-                weights[replica] = newWeights[replica];
+            foreach (var newReplica in newReplicas)
+                newWeights[newReplica] = updatedWeights[newReplica];
+
+            currentWeights = newWeights;
         }
     }
 }
