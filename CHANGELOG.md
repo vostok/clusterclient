@@ -1,3 +1,7 @@
+## 0.1.26 (01.03.2021):
+
+Make TimeoutHeaderTransport public to easy use wherever I don't need to create full and high weight ClusterClient.
+
 ## 0.1.25 (01.03.2021):
 
 Changed IIS detection in depended project commons.environment to avoid "iisexpress" process name except correct assembly name. Related commit - https://github.com/vostok/commons.environment/commit/5cc91a9ce09e44ce0048e06f37325ff4bb3291fe
