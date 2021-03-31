@@ -119,16 +119,15 @@ namespace Vostok.Clusterclient.Core.Strategies
 
                 var result = await resultTask.ConfigureAwait(false);
 
+                currentTasks.RemoveAll(task => !(task is Task<ReplicaResult>));
+
                 if (result.Verdict == ResponseVerdict.Accept)
                     return true;
 
                 if (result.Response.Headers[HeaderNames.DontFork] == null)
-                {
-                    currentTasks.RemoveAll(task => !(task is Task<ReplicaResult>));
                     return false;
-                }
 
-                if (currentTasks.Count(x => x is Task<ReplicaResult>) == 0)
+                if (currentTasks.Count == 0)
                     return true;
             }
         }

@@ -463,7 +463,7 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
         }
 
         [Test]
-        public void Should_fork_when_forking_delay_completed_after_rejected_with_DontFork_header()
+        public void Should_not_launch_more_requests_when_forking_delay_completed_after_rejected_with_DontFork_header()
         {
             var sendTask = strategy.SendAsync(request, parameters, sender, Budget.Infinite, replicas, replicas.Length, token);
 
@@ -473,11 +473,10 @@ namespace Vostok.Clusterclient.Core.Tests.Strategies
             CompleteRequest(replicas[0], ResponseVerdict.Reject, conditionHeader);
             CompleteForkingDelay();
             CompleteRequest(replicas[1], ResponseVerdict.Reject, conditionHeader);
-            CompleteRequest(replicas[2], ResponseVerdict.Reject, conditionHeader);
 
             sendTask.GetAwaiter().GetResult();
 
-            sentRequests.Should().HaveCount(3);
+            sentRequests.Should().HaveCount(2);
         }
 
         private void SetupDelaysPlanner()
