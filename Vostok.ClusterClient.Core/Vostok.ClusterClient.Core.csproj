@@ -31,6 +31,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\AtomicBoolean.cs">
+      <Link>Commons\AtomicBoolean.cs</Link>
+    </Compile>
     <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\ThreadSafeRandom.cs">
       <Link>Commons\ThreadSafeRandom.cs</Link>
     </Compile>

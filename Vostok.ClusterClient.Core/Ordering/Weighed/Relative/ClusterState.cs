@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Relative.Interfaces;
+using Vostok.Commons.Threading;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
@@ -9,7 +10,8 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         private readonly Func<IActiveStatistic> activeStatisticFactory;
         private readonly IStatisticHistory statisticHistory;
 
-        public DateTime LastUpdateTimestamp { get; private set; } = DateTime.UtcNow;
+        public AtomicBoolean IsUpdatingNow { get; }
+        public DateTime LastUpdateTimestamp { get; private set; }
         public IActiveStatistic CurrentStatistic { get; private set; }
         public IWeights Weights { get; }
 
@@ -21,7 +23,10 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         {
             this.activeStatisticFactory = activeStatisticFactory ?? CreateDefault;
             this.statisticHistory = statisticHistory ?? new StatisticsHistory();
-            Weights = weights ?? new Weights(settings.WeightsTTL);
+
+            IsUpdatingNow = new AtomicBoolean(false);
+            LastUpdateTimestamp = DateTime.UtcNow;
+            Weights = weights ?? new Weights(settings);
             CurrentStatistic = this.activeStatisticFactory();
 
             IActiveStatistic CreateDefault() =>

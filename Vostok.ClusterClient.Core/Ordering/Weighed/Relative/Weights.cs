@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Vostok.Clusterclient.Core.Misc;
@@ -8,17 +9,16 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
     internal class Weights : IWeights
     {
-        private readonly TimeSpan weightsTtL;
-
-        private Dictionary<Uri, Weight> currentWeights =
+        private readonly RelativeWeightSettings settings;
+        private volatile Dictionary<Uri, Weight> currentWeights =
             new Dictionary<Uri, Weight>();
 
-        public Weights(TimeSpan weightsTtL) =>
-            this.weightsTtL = weightsTtL;
+        public Weights(RelativeWeightSettings settings) =>
+            this.settings = settings;
 
         public Weight? Get(Uri replica) =>
             currentWeights.TryGetValue(replica, out var weight)
-                ? DateTime.UtcNow - weight.Timestamp <= weightsTtL
+                ? DateTime.UtcNow - weight.Timestamp <= settings.WeightsTTL
                     ? weight
                     : (Weight?)null
                 : null;
@@ -36,8 +36,8 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
                     continue;
                 }
 
-                if (DateTime.UtcNow - currentWeight.Timestamp < weightsTtL)
-                    newWeights[currentReplica] = currentWeight;
+                if (DateTime.UtcNow - currentWeight.Timestamp < settings.WeightsTTL)
+                    newWeights[currentReplica] = ApplyRegenerationIfNeed(currentWeight);
             }
 
             foreach (var newReplica in newReplicas)
@@ -45,5 +45,37 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
             currentWeights = newWeights;
         }
+
+        public void Normalize()
+        {
+            if (currentWeights.Count == 0) return;
+
+            var currentRelativeMaxWeight = currentWeights.Max(p => p.Value.Value);
+            var newWeights = new Dictionary<Uri, Weight>(currentWeights.Count);
+            foreach (var (replica, currentWeight) in currentWeights)
+            {
+                var normalizedWeight = currentWeight.Value / currentRelativeMaxWeight;
+
+                newWeights[replica] = new Weight(normalizedWeight, currentWeight.Timestamp);
+            }
+
+            currentWeights = newWeights;
+        }
+
+        private Weight ApplyRegenerationIfNeed(Weight weight)
+        {
+            var ageMinutes = (DateTime.UtcNow - weight.Timestamp).TotalMinutes;
+            ageMinutes = Math.Max(0, ageMinutes - settings.RegenerationLag.TotalMinutes);
+
+            var regenerationAmount = Math.Max(0, ageMinutes * settings.RegenerationRatePerMinute);
+            var newValue = Math.Min(1.0, weight.Value + regenerationAmount);
+            return new Weight(newValue, weight.Timestamp);
+        }
+
+        public IEnumerator<KeyValuePair<Uri, Weight>> GetEnumerator() =>
+            ((IEnumerable<KeyValuePair<Uri, Weight>>)currentWeights).GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() =>
+            GetEnumerator();
     }
 }

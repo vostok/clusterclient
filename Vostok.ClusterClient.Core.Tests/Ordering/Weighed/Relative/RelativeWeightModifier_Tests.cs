@@ -42,7 +42,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             replicaStorageProvider = Substitute.For<IReplicaStorageProvider>();
             replicaStorageProvider.ObtainGlobalValue(Arg.Any<string>(), Arg.Any<Func<ClusterState>>())
                 .Returns(info => clusterState);
-            relativeWeightModifier = new RelativeWeightModifier("srv", "env", settings, null);
+            relativeWeightModifier = new RelativeWeightModifier(settings, "srv", "env", 0, 1, 1, null);
         }
 
         [Test]
@@ -70,6 +70,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
                 relativeWeightModifier.Modify(replica, new List<Uri>(), replicaStorageProvider, Request.Get(""), RequestParameters.Empty, ref w);
                 clusterState.LastUpdateTimestamp.Should().BeAfter(lastUpdateTime);
                 clusterState.Weights.Received(1).Update(Arg.Any<IReadOnlyDictionary<Uri, Weight>>());
+                clusterState.Weights.Received(1).Normalize();
             };
             assertion.ShouldPassIn(settings.WeightUpdatePeriod, 10.Milliseconds());
         }
