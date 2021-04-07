@@ -7,28 +7,46 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
     internal class StatisticsHistory : IStatisticHistory
     {
-        private Statistic? clusterStatistic;
-        private readonly Dictionary<Uri, Statistic> replicasHistoryStatistics 
-            = new Dictionary<Uri, Statistic>();
+        private readonly TimeSpan statisticTtl;
+        private ClusterStatistic currentHistory;
 
-        public Statistic? GetForReplica(Uri replica)
+        public StatisticsHistory(TimeSpan statisticTtl)
         {
-            return replicasHistoryStatistics.TryGetValue(replica, out var statistic) 
-                ? statistic 
-                : default(Statistic?);
+            this.statisticTtl = statisticTtl;
         }
 
-        public Statistic? GetForCluster() =>
-            clusterStatistic;
+        public ClusterStatistic Get() =>
+            currentHistory != null
+                ? new ClusterStatistic(currentHistory.Cluster, currentHistory.Replicas) 
+                : null;
 
-        public void Update(StatisticSnapshot snapshot)
+        public void Update(ClusterStatistic snapshot)
         {
-            clusterStatistic = snapshot.Cluster;
-            
-            //CR: Если реплики постоянно перезапускаются с новыми портами, они тут утекут.
-            //CR: А у нас вообще-то уже лежит Timsptamp, можно вычищать очень старые.
-            foreach (var (replica, statistic) in snapshot.Replicas)
-                replicasHistoryStatistics[replica] = statistic;
+            if (currentHistory == null)
+            {
+                currentHistory = new ClusterStatistic(snapshot.Cluster, snapshot.Replicas);
+                return;
+            }
+
+            var newReplicas = new HashSet<Uri>(snapshot.Replicas.Keys);
+            var replicasUpdatedHistory = new Dictionary<Uri, Statistic>(snapshot.Replicas.Count);
+            foreach (var (currentReplica, currentStatistic) in currentHistory.Replicas)
+            {
+                if (snapshot.Replicas.ContainsKey(currentReplica))
+                {
+                    replicasUpdatedHistory[currentReplica] = snapshot.Replicas[currentReplica];
+                    newReplicas.Remove(currentReplica);
+                    continue;
+                }
+
+                if (DateTime.UtcNow - currentStatistic.Timestamp < statisticTtl)
+                    replicasUpdatedHistory[currentReplica] = currentStatistic;
+            }
+
+            foreach (var newReplica in newReplicas)
+                replicasUpdatedHistory[newReplica] = snapshot.Replicas[newReplica];
+
+            currentHistory = new ClusterStatistic(snapshot.Cluster, replicasUpdatedHistory);
         }
     }
 }

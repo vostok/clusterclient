@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
-    internal class StatisticSnapshot
+    internal class ClusterStatistic
     {
         public readonly Statistic Cluster;
         public readonly IReadOnlyDictionary<Uri, Statistic> Replicas;
 
-        public StatisticSnapshot(
+        public ClusterStatistic(
             Statistic cluster, 
             IReadOnlyDictionary<Uri, Statistic> replicas)
         {

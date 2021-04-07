@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
@@ -41,13 +40,12 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
 
             activeStatistic.Report(Accepted(replica, 125));
             activeStatistic.Report(Accepted(replica, 1325));
-            var replicas = activeStatistic.ObserveReplicas(timestamp, 15, uri => null).ToArray();
+            var snapshot = activeStatistic.CalculateClusterStatistic(timestamp, 15, null);
 
-            replicas.Length.Should().Be(1);
-            replicas[0].Replica.Should().Be(replica);
-            replicas[0].Statistic.Mean.Should().NotBeApproximately(0, 0.001);
-            replicas[0].Statistic.StdDev.Should().NotBeApproximately(0, 0.001);
-            replicas[0].Statistic.Timestamp.Should().Be(timestamp);
+            snapshot.Replicas.Count.Should().Be(1);
+            snapshot.Replicas[replica].Mean.Should().NotBeApproximately(0, 0.001);
+            snapshot.Replicas[replica].StdDev.Should().NotBeApproximately(0, 0.001);
+            snapshot.Replicas[replica].Timestamp.Should().Be(timestamp);
         }
 
         [Test]
@@ -58,11 +56,11 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
 
             activeStatistic.Report(Accepted(replica, 125));
             activeStatistic.Report(Accepted(replica, 1325));
-            var statistic = activeStatistic.ObserveCluster(timestamp, 12, null);
+            var snapshot = activeStatistic.CalculateClusterStatistic(timestamp, 15, null);
 
-            statistic.Mean.Should().NotBeApproximately(0, 0.001);
-            statistic.StdDev.Should().NotBeApproximately(0, 0.001);
-            statistic.Timestamp.Should().Be(timestamp);
+            snapshot.Cluster.Mean.Should().NotBeApproximately(0, 0.001);
+            snapshot.Cluster.StdDev.Should().NotBeApproximately(0, 0.001);
+            snapshot.Cluster.Timestamp.Should().Be(timestamp);
         }
 
         private static ReplicaResult Accepted(Uri replica, int time) =>

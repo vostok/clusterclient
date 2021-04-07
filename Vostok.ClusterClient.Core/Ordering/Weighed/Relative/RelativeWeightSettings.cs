@@ -14,6 +14,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         public TimeSpan WeightUpdatePeriod = TimeSpan.FromSeconds(3);
         public TimeSpan WeightsTTL = TimeSpan.FromMinutes(10);
         public TimeSpan RegenerationLag = TimeSpan.FromMinutes(3);
+        public TimeSpan StatisticTTL = TimeSpan.FromMinutes(30);
         public TimeSpan StatisticSmoothingConstant = TimeSpan.FromSeconds(5);
         public TimeSpan WeightsDownSmoothingConstant = TimeSpan.FromSeconds(3);
         public TimeSpan WeightsRaiseSmoothingConstant = TimeSpan.FromMinutes(1);

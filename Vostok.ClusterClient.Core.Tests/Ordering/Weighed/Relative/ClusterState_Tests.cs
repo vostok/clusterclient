@@ -26,60 +26,46 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         }
 
         [Test]
-        public void Exchange_should_swap_to_new_active_statistic()
+        public void Flush_should_swap_to_new_active_statistic()
         {
             var previousUpdateTime = clusterState.LastUpdateTimestamp;
             var previousActiveStat = clusterState.CurrentStatistic;
             
             Thread.Sleep(50);
-            var _ = clusterState.ExchangeStatistic(DateTime.UtcNow);
+            var _ = clusterState.FlushCurrentStatisticToHistory(DateTime.UtcNow);
 
             clusterState.LastUpdateTimestamp.Should().BeAfter(previousUpdateTime);
             clusterState.CurrentStatistic.Should().NotBeSameAs(previousActiveStat);
         }
 
         [Test]
-        public void Exchange_should_make_snapshot_according_to_statistic_history()
+        public void Flush_should_make_snapshot_according_to_statistic_history()
         {
             var timestamp = DateTime.UtcNow;
+            var penalty = 25d;
+            var historyStatistic = new ClusterStatistic(new Statistic(), new Dictionary<Uri, Statistic>());
 
-            clusterState.CurrentStatistic.ObserveReplicas(timestamp, Arg.Any<double>(), Arg.Any<Func<Uri, Statistic?>>())
-                .Returns(new List<(Uri Replica, Statistic Statistic)>())
-                .AndDoes(info => info.ArgAt<Func<Uri, Statistic?>>(2)(new Uri("http://r1")));
-
-            var _ = clusterState.ExchangeStatistic(timestamp);
-
-            statisticHistory.Received(1).GetForCluster();
-            statisticHistory.Received(1).GetForReplica(Arg.Any<Uri>());
-        }
-
-        [Test]
-        public void Exchange_should_make_snapshot_according_to_previous_statistic()
-        {
-            var timestamp = DateTime.UtcNow;
-            var clusterStatistic = new Statistic(11, 15, timestamp);
-            var penalty = 125;
             clusterState.CurrentStatistic.CalculatePenalty().Returns(penalty);
-            statisticHistory.GetForCluster().Returns(clusterStatistic);
-            clusterState.CurrentStatistic.ObserveReplicas(timestamp, Arg.Any<double>(), Arg.Any<Func<Uri, Statistic?>>())
-                .Returns(new List<(Uri Replica, Statistic Statistic)>())
-                .AndDoes(info => info.ArgAt<Func<Uri, Statistic?>>(2)(new Uri("http://r1")));
+            clusterState.CurrentStatistic.CalculateClusterStatistic(timestamp, Arg.Any<double>(), Arg.Any<ClusterStatistic>())
+                .Returns(info => new ClusterStatistic(new Statistic(), new Dictionary<Uri, Statistic>()));
+            statisticHistory.Get().Returns(historyStatistic);
 
             var previousActiveStat = clusterState.CurrentStatistic;
-            var _ = clusterState.ExchangeStatistic(timestamp);
+            var _ = clusterState.FlushCurrentStatisticToHistory(timestamp);
 
-            previousActiveStat.Received(1).ObserveCluster(timestamp, penalty, clusterStatistic);
-            previousActiveStat.Received(1).ObserveReplicas(timestamp, penalty, Arg.Any<Func<Uri, Statistic?>>());
+            previousActiveStat.Received(1).CalculatePenalty();
+            previousActiveStat.Received(1).CalculateClusterStatistic(timestamp, penalty, historyStatistic);
+            statisticHistory.Received(1).Get();
         }
 
         [Test]
-        public void Exchange_should_update_statistic_history()
+        public void Flush_should_update_statistic_history()
         {
             var timestamp = DateTime.UtcNow;
 
-            var snapshot = clusterState.ExchangeStatistic(timestamp);
+            var clusterStatistic = clusterState.FlushCurrentStatisticToHistory(timestamp);
 
-            statisticHistory.Received(1).Update(snapshot);
+            statisticHistory.Received(1).Update(clusterStatistic);
         }
     }
 }

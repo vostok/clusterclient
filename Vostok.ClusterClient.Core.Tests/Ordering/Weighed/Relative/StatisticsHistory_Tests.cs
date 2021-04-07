@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using NUnit.Framework;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Relative;
+// ReSharper disable once RedundantUsingDirective 
+using Vostok.Clusterclient.Core.Misc; // KeyValuePairExtensions
 
 namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
 {
@@ -14,24 +17,12 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         [SetUp]
         public void SetUp()
         {
-            statisticsHistory = new StatisticsHistory();
+            statisticsHistory = new StatisticsHistory(1.Hours());
         }
 
         [Test]
-        public void GetForReplica_should_return_null_statistic_for_not_existing_replica()
-        {
-            var replica = new Uri("http://notexist");
-
-            var statistic = statisticsHistory.GetForReplica(replica);
-
-            statistic.Should().BeNull();
-        }
-
-        [Test]
-        public void GetForCluster_should_return_null_statistic()
-        {
-            statisticsHistory.GetForCluster().Should().BeNull();
-        }
+        public void Get_should_return_null_statistic() =>
+            statisticsHistory.Get().Should().BeNull();
 
         [Test]
         public void Update_should_add_new_statistic()
@@ -44,11 +35,13 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
                 [new Uri("http://r3")] = new Statistic(0.5, 0.35, DateTime.UtcNow),
             };
 
-            statisticsHistory.Update(new StatisticSnapshot(clusterStatistic, replicasStatistic));
+            statisticsHistory.Update(new ClusterStatistic(clusterStatistic, replicasStatistic));
 
-            statisticsHistory.GetForCluster().Should().Be(clusterStatistic);
-            foreach (var statistic in replicasStatistic)
-                statisticsHistory.GetForReplica(statistic.Key).Should().Be(statistic.Value);
+            var clusterStats = statisticsHistory.Get();
+            clusterStats.Cluster.Should().Be(clusterStatistic);
+            clusterStats.Replicas.Count.Should().Be(3);
+            foreach (var (replica, statistic) in clusterStats.Replicas)
+                statistic.Should().Be(replicasStatistic[replica]);
         }
 
         [Test]
@@ -65,11 +58,12 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
                 [r3] = new Statistic(0.5, 0.35, DateTime.UtcNow),
             };
 
-            statisticsHistory.Update(new StatisticSnapshot(clusterStatistic, replicasStatistic));
+            statisticsHistory.Update(new ClusterStatistic(clusterStatistic, replicasStatistic));
 
-            statisticsHistory.GetForCluster().Should().Be(clusterStatistic);
-            foreach (var statistic in replicasStatistic)
-                statisticsHistory.GetForReplica(statistic.Key).Should().Be(statistic.Value);
+            var clusterStats = statisticsHistory.Get();
+            clusterStats.Cluster.Should().Be(clusterStatistic);
+            foreach (var (replica, statistic) in clusterStats.Replicas)
+                statistic.Should().Be(replicasStatistic[replica]);
 
             var newCluster = new Statistic(1, 1, DateTime.UtcNow);
             var newReplicas = new Dictionary<Uri, Statistic>()
@@ -77,12 +71,50 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
                 [new Uri("http://r3")] = new Statistic(9.5, 1.35, DateTime.UtcNow),
             };
 
-            statisticsHistory.Update(new StatisticSnapshot(newCluster, newReplicas));
+            statisticsHistory.Update(new ClusterStatistic(newCluster, newReplicas));
+            
+            clusterStats = statisticsHistory.Get();
+            clusterStats.Cluster.Should().Be(newCluster);
+            clusterStats.Replicas[r1].Should().Be(replicasStatistic[r1]);
+            clusterStats.Replicas[r2].Should().Be(replicasStatistic[r2]);
+            clusterStats.Replicas[r3].Should().Be(newReplicas[r3]);
+        }
 
-            statisticsHistory.GetForCluster().Should().Be(newCluster);
-            statisticsHistory.GetForReplica(r1).Should().Be(replicasStatistic[r1]);
-            statisticsHistory.GetForReplica(r2).Should().Be(replicasStatistic[r2]);
-            statisticsHistory.GetForReplica(r3).Should().Be(newReplicas[r3]);
+        [Test]
+        public void Update_should_delete_obsolete_statistics()
+        {
+            statisticsHistory = new StatisticsHistory(1.Minutes());
+
+            var r1 = new Uri("http://r1");
+            var r2 = new Uri("http://r2");
+            var r3 = new Uri("http://r3");
+            var clusterStatistic = new Statistic(3, 15, DateTime.UtcNow);
+            var replicasStatistic = new Dictionary<Uri, Statistic>()
+            {
+                [r1] = new Statistic(7, 2.5, DateTime.UtcNow - 20.Seconds()),
+                [r2] = new Statistic(8, 9, DateTime.UtcNow - 40.Seconds()),
+                [r3] = new Statistic(0.5, 0.35, DateTime.UtcNow - 2.Minutes()),
+            };
+
+            statisticsHistory.Update(new ClusterStatistic(clusterStatistic, replicasStatistic));
+            
+            var clusterStats = statisticsHistory.Get();
+            clusterStats.Cluster.Should().Be(clusterStatistic);
+            clusterStats.Replicas.Count.Should().Be(3);
+            foreach (var (replica, statistic) in clusterStats.Replicas)
+                statistic.Should().Be(replicasStatistic[replica]);
+
+            var newReplicasStats = new Dictionary<Uri, Statistic>()
+            {
+                [r2] = new Statistic(5, 10, DateTime.UtcNow)
+            };
+            statisticsHistory.Update(new ClusterStatistic(clusterStatistic, newReplicasStats));
+            
+            clusterStats = statisticsHistory.Get();
+            clusterStats.Cluster.Should().Be(clusterStatistic);
+            clusterStats.Replicas.Count.Should().Be(2);
+            clusterStats.Replicas[r1].Should().Be(replicasStatistic[r1]);
+            clusterStats.Replicas[r2].Should().Be(newReplicasStats[r2]);
         }
     }
 }

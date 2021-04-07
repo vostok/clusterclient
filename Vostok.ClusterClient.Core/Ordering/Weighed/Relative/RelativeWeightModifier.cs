@@ -18,13 +18,14 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
     [PublicAPI]
     public class RelativeWeightModifier : IReplicaWeightModifier
     {
+        private readonly IRelativeWeightCalculator relativeWeightCalculator;
+        private readonly IWeightsNormalizer weightsNormalizer;
+        private readonly ILog log;
         private readonly RelativeWeightSettings settings;
         private readonly double minWeight;
         private readonly double initialWeight;
         private readonly double maxWeight;
-        private readonly object sync = new object();
         private readonly string storageKey;
-        private readonly ILog log;
 
         public RelativeWeightModifier(
             RelativeWeightSettings settings,
@@ -42,6 +43,24 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             this.log = (log ?? new SilentLog()).ForContext<RelativeWeightModifier>();
 
             storageKey = CreateStorageKey(service, environment);
+            relativeWeightCalculator = new RelativeWeightCalculator(settings);
+            weightsNormalizer = new WeightsNormalizer();
+        }
+
+        internal RelativeWeightModifier(
+            RelativeWeightSettings settings,
+            string service,
+            string environment,
+            IRelativeWeightCalculator relativeWeightCalculator,
+            IWeightsNormalizer weightsNormalizer,
+            double minWeight = ClusterClientDefaults.MinimumReplicaWeight,
+            double initialWeight = ClusterClientDefaults.InitialReplicaWeight,
+            double maxWeight = ClusterClientDefaults.MaximumReplicaWeight,
+            ILog log = null)
+            : this(settings, service, environment, minWeight, initialWeight, maxWeight, log)
+        {
+            this.relativeWeightCalculator = relativeWeightCalculator;
+            this.weightsNormalizer = weightsNormalizer;
         }
 
         /// <inheritdoc />
@@ -64,48 +83,38 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             if (!needUpdateWeights || !clusterState.IsUpdatingNow.TrySetTrue())
                 return;
 
-            var statisticSnapshot = clusterState.ExchangeStatistic(DateTime.UtcNow);
+            var clusterStatistic = clusterState.FlushCurrentStatisticToHistory(DateTime.UtcNow);
                
-            ModifyWeights(statisticSnapshot, clusterState.Weights, clusterState.LastUpdateTimestamp);
+            ModifyWeights(clusterStatistic, clusterState.Weights, clusterState.LastUpdateTimestamp);
             
             clusterState.IsUpdatingNow.Value = false;
         }
 
-        private void ModifyWeights(StatisticSnapshot statisticSnapshot, IWeights weights, DateTime weightsLastUpdateTime)
+        private void ModifyWeights(ClusterStatistic clusterStatistic, IWeights weights, DateTime weightsLastUpdateTime)
         {
-            var newWeights = new Dictionary<Uri, Weight>(statisticSnapshot.Replicas.Count);
-            foreach (var (replica, replicaStatistic) in statisticSnapshot.Replicas)
+            var newWeights = new Dictionary<Uri, Weight>(clusterStatistic.Replicas.Count);
+            var relativeMaxWeight = 0d;
+            foreach (var (replica, replicaStatistic) in clusterStatistic.Replicas)
             {
-                var previousWeight = weights.Get(replica) ??
-                                     new Weight(settings.InitialWeight, weightsLastUpdateTime - settings.WeightUpdatePeriod);
-                var newReplicaWeight = CalculateWeight(statisticSnapshot.Cluster, replicaStatistic, previousWeight);
-
+                var previousWeight = weights.Get(replica) ?? new Weight(settings.InitialWeight, weightsLastUpdateTime - settings.WeightUpdatePeriod);
+                var newReplicaWeight = relativeWeightCalculator.Calculate(clusterStatistic.Cluster, replicaStatistic, previousWeight);
                 newWeights.Add(replica, newReplicaWeight);
+
+                if (newReplicaWeight.Value > relativeMaxWeight)
+                    relativeMaxWeight = newReplicaWeight.Value;
             }
-            
+
+            weightsNormalizer.Normalize(newWeights, relativeMaxWeight);
             weights.Update(newWeights);
-            weights.Normalize();
             
             LogWeights(weights);
-        }
-
-        private Weight CalculateWeight(in Statistic clusterStatistic, in Statistic replicaStatistic, in Weight previousWeight)
-        {
-            var newWeight = Math.Max(settings.MinWeight, WeighingHelper
-                .ComputeWeight(replicaStatistic.Mean, replicaStatistic.StdDev, clusterStatistic.Mean, clusterStatistic.StdDev, settings.Sensitivity));
-            var smoothingConstant = newWeight > previousWeight.Value 
-                ? settings.WeightsRaiseSmoothingConstant 
-                : settings.WeightsDownSmoothingConstant;
-            var smoothedWeight = SmoothingHelper
-                .SmoothValue(newWeight, previousWeight.Value, clusterStatistic.Timestamp, previousWeight.Timestamp, smoothingConstant);
-            return new Weight(smoothedWeight, replicaStatistic.Timestamp);
         }
 
         private double EnforceWeightLimits(Weight? weight)
         {
             return !weight.HasValue ? 
                 initialWeight : 
-                Math.Max(minWeight, weight.Value.Value * maxWeight);
+                Math.Max(minWeight, Math.Min(maxWeight, weight.Value.Value * maxWeight));
         }
 
         private bool NeedUpdateWeights(in DateTime currentTimestamp, in DateTime previousTimestamp) =>

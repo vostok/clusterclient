@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Relative.Interfaces;
 using Vostok.Commons.Threading;
 
@@ -22,7 +21,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             IWeights weights = null)
         {
             this.activeStatisticFactory = activeStatisticFactory ?? CreateDefault;
-            this.statisticHistory = statisticHistory ?? new StatisticsHistory();
+            this.statisticHistory = statisticHistory ?? new StatisticsHistory(settings.StatisticTTL);
 
             IsUpdatingNow = new AtomicBoolean(false);
             LastUpdateTimestamp = DateTime.UtcNow;
@@ -33,25 +32,21 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
                 new ActiveStatistic(settings.StatisticSmoothingConstant, settings.PenaltyMultiplier);
         }
 
-        //CR: StatisticSnapshot FlushCurrentStatisticToHistory(DateTime currentTimestamp)?
-        public StatisticSnapshot ExchangeStatistic(DateTime currentTimestamp)
+        public ClusterStatistic FlushCurrentStatisticToHistory(DateTime currentTimestamp)
         {
             LastUpdateTimestamp = currentTimestamp;
 
             var previousActiveStatistic = CurrentStatistic;
             CurrentStatistic = activeStatisticFactory();
 
-            var penalty = previousActiveStatistic.CalculatePenalty();
+            var penalty = previousActiveStatistic
+                .CalculatePenalty();
             var clusterStatistic = previousActiveStatistic
-                .ObserveCluster(currentTimestamp, penalty, statisticHistory.GetForCluster());
-            var replicasStatistic = previousActiveStatistic
-                .ObserveReplicas(currentTimestamp, penalty, uri => statisticHistory.GetForReplica(uri))
-                .ToDictionary(t => t.Replica, t => t.Statistic);
-            var snapshot = new StatisticSnapshot(clusterStatistic, replicasStatistic);
+                .CalculateClusterStatistic(currentTimestamp, penalty, statisticHistory.Get());
             
-            statisticHistory.Update(snapshot);
+            statisticHistory.Update(clusterStatistic);
             
-            return snapshot;
+            return clusterStatistic;
         }
     }
 }

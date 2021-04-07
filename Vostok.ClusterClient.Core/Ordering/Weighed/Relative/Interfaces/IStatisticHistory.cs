@@ -1,13 +1,9 @@
-﻿using System;
-
-namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative.Interfaces
+﻿namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative.Interfaces
 {
     internal interface IStatisticHistory
     {
-        Statistic? GetForCluster();
-        
-        Statistic? GetForReplica(Uri replica);
-        
-        void Update(StatisticSnapshot snapshot);
+        ClusterStatistic Get();
+
+        void Update(ClusterStatistic snapshot);
     }
 }

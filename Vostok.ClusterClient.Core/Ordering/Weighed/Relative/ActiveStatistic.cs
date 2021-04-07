@@ -39,24 +39,27 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             return globalStat.Mean + globalStat.StdDev * penaltyMultiplier;
         }
 
-        //CR: Мне очень не нравятся названия Observe. Они делают очень много всего для слова "Observe".
-        public Statistic ObserveCluster(DateTime currentTime, double penalty, in Statistic? previous)
+        public ClusterStatistic CalculateClusterStatistic(DateTime currentTime, double penalty, ClusterStatistic previous)
         {
-            var smoothed = clusterStatistic
+            var clusterSmoothedStatistic = clusterStatistic
                 .Penalize(penalty)
-                .ObserveSmoothed(currentTime, smoothingConstant, previous);
-            return smoothed;
-        }
-
-        public IEnumerable<(Uri Replica, Statistic Statistic)> ObserveReplicas(
-            DateTime currentTime, double penalty, Func<Uri, Statistic?> previousStatisticProvider)
-        {
+                .ObserveSmoothed(currentTime, smoothingConstant, previous?.Cluster);
+            
+            var replicasSmoothedStatistic = new Dictionary<Uri, Statistic>(replicasStatistic.Count);
             foreach (var (replica, statisticBucket) in replicasStatistic)
             {
-                var smoothed = statisticBucket
+                var replicaSmoothedStatistic = statisticBucket
                     .Penalize(penalty)
-                    .ObserveSmoothed(currentTime, smoothingConstant, previousStatisticProvider(replica));
-                yield return (replica, smoothed);
+                    .ObserveSmoothed(currentTime, smoothingConstant, GetReplicaStatisticHistory(replica));
+                replicasSmoothedStatistic.Add(replica, replicaSmoothedStatistic);
+            }
+            return new ClusterStatistic(clusterSmoothedStatistic, replicasSmoothedStatistic);
+
+            Statistic? GetReplicaStatisticHistory(Uri replica)
+            {
+                if (previous == null || !previous.Replicas.TryGetValue(replica, out var statistic))
+                    return null;
+                return statistic;
             }
         }
     }

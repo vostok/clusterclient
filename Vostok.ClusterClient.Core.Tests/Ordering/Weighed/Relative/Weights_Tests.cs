@@ -92,27 +92,6 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         }
 
         [Test]
-        public void Should_normalize_weights()
-        {
-            var (replica1, weight1) = (new Uri("http://replica1"), new Weight(0.5, DateTime.UtcNow));
-            var (replica2, weight2) = (new Uri("http://replica2"), new Weight(0.2, DateTime.UtcNow));
-            var (replica3, weight3) = (new Uri("http://replica3"), new Weight(0.15, DateTime.UtcNow));
-            var currentWeights = new Dictionary<Uri, Weight>()
-            {
-                [replica1] = weight1,
-                [replica2] = weight2,
-                [replica3] = weight3,
-            };
-            weights.Update(currentWeights);
-
-            weights.Normalize();
-
-            weights.Get(replica1).Value.Value.Should().BeApproximately(1.0, 0.001);
-            weights.Get(replica2).Value.Value.Should().BeApproximately(0.4, 0.001);
-            weights.Get(replica3).Value.Value.Should().BeApproximately(0.3, 0.001);
-        }
-
-        [Test]
         public void Should_correct_regenerate_weights_on_update()
         {
             settings.WeightsTTL = 5.Minutes();
