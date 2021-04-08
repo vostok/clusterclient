@@ -39,10 +39,8 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             var previousActiveStatistic = CurrentStatistic;
             CurrentStatistic = activeStatisticFactory();
 
-            var penalty = previousActiveStatistic
-                .CalculatePenalty();
             var clusterStatistic = previousActiveStatistic
-                .CalculateClusterStatistic(currentTimestamp, penalty, statisticHistory.Get());
+                .GetPenalizedAndSmoothedStatistic(currentTimestamp, statisticHistory.Get());
             
             statisticHistory.Update(clusterStatistic);
             

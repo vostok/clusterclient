@@ -42,19 +42,16 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         public void Flush_should_make_snapshot_according_to_statistic_history()
         {
             var timestamp = DateTime.UtcNow;
-            var penalty = 25d;
             var historyStatistic = new ClusterStatistic(new Statistic(), new Dictionary<Uri, Statistic>());
 
-            clusterState.CurrentStatistic.CalculatePenalty().Returns(penalty);
-            clusterState.CurrentStatistic.CalculateClusterStatistic(timestamp, Arg.Any<double>(), Arg.Any<ClusterStatistic>())
+            clusterState.CurrentStatistic.GetPenalizedAndSmoothedStatistic(timestamp, Arg.Any<ClusterStatistic>())
                 .Returns(info => new ClusterStatistic(new Statistic(), new Dictionary<Uri, Statistic>()));
             statisticHistory.Get().Returns(historyStatistic);
 
             var previousActiveStat = clusterState.CurrentStatistic;
             var _ = clusterState.FlushCurrentStatisticToHistory(timestamp);
 
-            previousActiveStat.Received(1).CalculatePenalty();
-            previousActiveStat.Received(1).CalculateClusterStatistic(timestamp, penalty, historyStatistic);
+            previousActiveStat.Received(1).GetPenalizedAndSmoothedStatistic(timestamp, historyStatistic);
             statisticHistory.Received(1).Get();
         }
 

@@ -40,7 +40,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
 
             activeStatistic.Report(Accepted(replica, 125));
             activeStatistic.Report(Accepted(replica, 1325));
-            var snapshot = activeStatistic.CalculateClusterStatistic(timestamp, 15, null);
+            var snapshot = activeStatistic.GetPenalizedAndSmoothedStatistic(timestamp, null);
 
             snapshot.Replicas.Count.Should().Be(1);
             snapshot.Replicas[replica].Mean.Should().NotBeApproximately(0, 0.001);
@@ -56,7 +56,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
 
             activeStatistic.Report(Accepted(replica, 125));
             activeStatistic.Report(Accepted(replica, 1325));
-            var snapshot = activeStatistic.CalculateClusterStatistic(timestamp, 15, null);
+            var snapshot = activeStatistic.GetPenalizedAndSmoothedStatistic(timestamp, null);
 
             snapshot.Cluster.Mean.Should().NotBeApproximately(0, 0.001);
             snapshot.Cluster.StdDev.Should().NotBeApproximately(0, 0.001);

@@ -44,7 +44,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             clusterState = new ClusterState(settings, () =>
             {
                 var activeStatistic = Substitute.For<IActiveStatistic>();
-                activeStatistic.CalculateClusterStatistic(Arg.Any<DateTime>(), Arg.Any<double>(), Arg.Any<ClusterStatistic>())
+                activeStatistic.GetPenalizedAndSmoothedStatistic(Arg.Any<DateTime>(), Arg.Any<ClusterStatistic>())
                     .Returns(new ClusterStatistic(new Statistic(), new Dictionary<Uri, Statistic>()));
                 return activeStatistic;
             }, statisticHistory, Substitute.For<IWeights>());
@@ -95,7 +95,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             var _ = 0d;
             var weightsUpdateTime = 250.Milliseconds();
             settings.WeightUpdatePeriod = 50.Milliseconds();
-            clusterState.CurrentStatistic.CalculateClusterStatistic(Arg.Any<DateTime>(), Arg.Any<double>(), Arg.Any<ClusterStatistic>())
+            clusterState.CurrentStatistic.GetPenalizedAndSmoothedStatistic(Arg.Any<DateTime>(), Arg.Any<ClusterStatistic>())
                 .Returns(info => new ClusterStatistic(new Statistic(), new Dictionary<Uri, Statistic>()))
                 .AndDoes(info => Thread.Sleep(weightsUpdateTime));
             
@@ -126,7 +126,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             relativeWeightCalculator.DidNotReceiveWithAnyArgs()
                 .Calculate(Arg.Any<Statistic>(), Arg.Any<Statistic>(), Arg.Any<Weight>());
             clusterState.CurrentStatistic.DidNotReceiveWithAnyArgs()
-                .CalculateClusterStatistic(Arg.Any<DateTime>(), Arg.Any<double>(), Arg.Any<ClusterStatistic>());
+                .GetPenalizedAndSmoothedStatistic(Arg.Any<DateTime>(), Arg.Any<ClusterStatistic>());
         }
 
         [Test]
@@ -162,7 +162,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
                 [r2.Item1] = r2.Item2,
                 [r3.Item1] = r3.Item2,
             });
-            clusterState.CurrentStatistic.CalculateClusterStatistic(Arg.Any<DateTime>(), Arg.Any<double>(), Arg.Any<ClusterStatistic>())
+            clusterState.CurrentStatistic.GetPenalizedAndSmoothedStatistic(Arg.Any<DateTime>(), Arg.Any<ClusterStatistic>())
                 .Returns(clusterStatistic);
             relativeWeightCalculator.Calculate(clusterStatistic.Cluster, r1.Item2, Arg.Any<Weight>()).Returns(r1.Item3);
             relativeWeightCalculator.Calculate(clusterStatistic.Cluster, r2.Item2, Arg.Any<Weight>()).Returns(r2.Item3);

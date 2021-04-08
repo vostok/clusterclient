@@ -33,14 +33,10 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
                 .Report(result);
         }
 
-        public double CalculatePenalty()
+        public ClusterStatistic GetPenalizedAndSmoothedStatistic(DateTime currentTime, ClusterStatistic previous)
         {
-            var globalStat = clusterStatistic.Observe(DateTime.UtcNow);
-            return globalStat.Mean + globalStat.StdDev * penaltyMultiplier;
-        }
+            var penalty = CalculatePenalty();
 
-        public ClusterStatistic CalculateClusterStatistic(DateTime currentTime, double penalty, ClusterStatistic previous)
-        {
             var clusterSmoothedStatistic = clusterStatistic
                 .Penalize(penalty)
                 .ObserveSmoothed(currentTime, smoothingConstant, previous?.Cluster);
@@ -61,6 +57,12 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
                     return null;
                 return statistic;
             }
+        }
+
+        internal double CalculatePenalty()
+        {
+            var globalStat = clusterStatistic.Observe(DateTime.UtcNow);
+            return globalStat.Mean + globalStat.StdDev * penaltyMultiplier;
         }
     }
 }
