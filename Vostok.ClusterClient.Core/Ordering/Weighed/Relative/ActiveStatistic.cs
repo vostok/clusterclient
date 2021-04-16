@@ -7,6 +7,7 @@ using Vostok.Clusterclient.Core.Ordering.Weighed.Relative.Interfaces;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
+    // CR(m_kiskachi) RawClusterStatiscics?
     internal class ActiveStatistic : IActiveStatistic
     {
         private readonly TimeSpan smoothingConstant;
@@ -35,8 +36,10 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         public ClusterStatistic GetPenalizedAndSmoothedStatistic(DateTime currentTime, ClusterStatistic previous)
         {
+            // CR(m_kiskachi) Почему для вычисления пенальти мы используем utcNow, а для сглаживания после штрафа переменную currentTime? Получается, что время для сглаживания отстает от времени для которого мы только что высчитали штраф.
             var penalty = CalculatePenalty();
 
+            // CR(m_kiskachi) SmoothedAggregatedStatisticForCluster
             var clusterSmoothedStatistic = clusterStatistic
                 .Penalize(penalty)
                 .ObserveSmoothed(currentTime, smoothingConstant, previous?.Cluster);

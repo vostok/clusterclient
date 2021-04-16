@@ -24,6 +24,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         {
             if (currentHistory == null)
             {
+                // CR(m_kiskachi) Зачем создавать новый?
                 currentHistory = new ClusterStatistic(snapshot.Cluster, snapshot.Replicas);
                 return;
             }
@@ -39,6 +40,8 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
                     continue;
                 }
 
+                // CR(m_kiskachi) Можно закешировать DateTime.UtcNow для цикла, чтобы вычищение по TTL происходило 
+                // CR(m_kiskachi) как бы в один момент времени, а не размазывалось на разные доли секунд.
                 if (DateTime.UtcNow - currentStatistic.Timestamp < statisticTtl)
                     replicasUpdatedHistory[currentReplica] = currentStatistic;
             }

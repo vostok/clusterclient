@@ -69,6 +69,9 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             {
                 InterlockedEx.Add(ref rejectLatencySum, result.Time.TotalMilliseconds);
                 InterlockedEx.Add(ref rejectLatencySquaredSum, result.Time.TotalMilliseconds * result.Time.TotalMilliseconds);
+                // CR(m_kiskachi) В одном из комитов увеличение rejectCount переехало вниз. В то время как увеличение totalCount осталось вверху.
+                // Это навело меня на мысль, что лучше сделать однообразно. Кажется, что лучше, чтобы сначала происходил
+                // инкремент количества, а уже потом латенси.
                 Interlocked.Increment(ref rejectCount);
             }
         }
@@ -84,7 +87,9 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
             return new Statistic(stdDev, mean, timestamp);
         }
-
+        // CR(m_kiskachi) Этот метод делает два действия: агрегирует и сглаживает.
+        // Будет лучше читаться, если разбить его на два, чтобы при вызове было:
+        // .Aggregate().Smoothe()
         public Statistic ObserveSmoothed(DateTime current, TimeSpan smoothingConstant, Statistic? previousStat)
         {
             var rowStatistic = Observe(current);

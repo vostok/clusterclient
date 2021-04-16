@@ -16,6 +16,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         public ClusterState(
             RelativeWeightSettings settings, 
+            // CR(m_kiskachi) Интерфейс конструктора не должен подстраиваться под тесты.
             Func<IActiveStatistic> activeStatisticFactory = null, 
             IStatisticHistory statisticHistory = null, 
             IWeights weights = null)
@@ -32,12 +33,12 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
                 new ActiveStatistic(settings.StatisticSmoothingConstant, settings.PenaltyMultiplier);
         }
 
+        // CR(m_kiskachi) FlushCurrentStatisticToHistory -> FlushCurrentRawStatisticToHistory
         public ClusterStatistic FlushCurrentStatisticToHistory(DateTime currentTimestamp)
         {
             LastUpdateTimestamp = currentTimestamp;
 
             var previousActiveStatistic = CurrentStatistic;
-            CurrentStatistic = activeStatisticFactory();
 
             var clusterStatistic = previousActiveStatistic
                 .GetPenalizedAndSmoothedStatistic(currentTimestamp, statisticHistory.Get());

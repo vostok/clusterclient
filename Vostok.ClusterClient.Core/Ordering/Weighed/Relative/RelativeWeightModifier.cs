@@ -47,6 +47,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             weightsNormalizer = new WeightsNormalizer();
         }
 
+        // CR(m_kiskachi) Интерфейс конструктора не должен подстраиваться под тесты.
         internal RelativeWeightModifier(
             RelativeWeightSettings settings,
             string service,
@@ -70,6 +71,9 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             
             ModifyWeightsIfNeed(clusterState);
 
+            // CR(m_kiskachi) Сейчас мы сначала вписываем вес в границы между min и max, а потом 
+            // домножаем на это вес, пришедший снаружи. Получается, что окончательный вес может быть
+            // больше максимума.
             weight *= EnforceWeightLimits(clusterState.Weights.Get(replica));
         }
 
@@ -80,6 +84,8 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         private void ModifyWeightsIfNeed(ClusterState clusterState)
         {
             var needUpdateWeights = NeedUpdateWeights(DateTime.UtcNow, clusterState.LastUpdateTimestamp);
+            // CR(m_kiskachi) Если во время выполнения этого кода произойдет исключения, то есть риск никогда не 
+            // отпустить флаг. Нужен try + finally
             if (!needUpdateWeights || !clusterState.IsUpdatingNow.TrySetTrue())
                 return;
 
@@ -103,17 +109,21 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
                 if (newReplicaWeight.Value > relativeMaxWeight)
                     relativeMaxWeight = newReplicaWeight.Value;
             }
-
+            // CR(m_kiskachi) Не нормализуются веса, которые не менялись в текущем бакете.
             weightsNormalizer.Normalize(newWeights, relativeMaxWeight);
             weights.Update(newWeights);
             
+            // CR(m_kiskachi) Много логов, лучше писать их в DEBUG
             LogWeights(weights);
         }
 
         private double EnforceWeightLimits(Weight? weight)
         {
             return !weight.HasValue ? 
-                initialWeight : 
+                initialWeight :
+                // CR(m_kiskachi) Текущая формула будет хорошо работать только с весами от 0 до 1, и когда минимальный вес ноль.
+                // Кажется нужно что-то вроде: 
+                // minWeight + weight.Value.Value * (maxWeight - minWeight) / maxWeight
                 Math.Max(minWeight, Math.Min(maxWeight, weight.Value.Value * maxWeight));
         }
 
