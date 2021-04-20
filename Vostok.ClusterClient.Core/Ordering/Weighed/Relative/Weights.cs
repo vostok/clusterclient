@@ -27,6 +27,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         {
             var newReplicas = new HashSet<Uri>(updatedWeights.Select(p => p.Key));
             var newWeights = new Dictionary<Uri, Weight>(updatedWeights.Count);
+            var currentTime = DateTime.UtcNow;
             foreach (var (currentReplica, currentWeight) in currentWeights)
             {
                 if (newReplicas.Contains(currentReplica))
@@ -36,7 +37,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
                     continue;
                 }
 
-                if (DateTime.UtcNow - currentWeight.Timestamp < settings.WeightsTTL)
+                if (currentTime - currentWeight.Timestamp < settings.WeightsTTL)
                     newWeights[currentReplica] = ApplyRegenerationIfNeed(currentWeight);
             }
 

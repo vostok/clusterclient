@@ -2,8 +2,8 @@
 {
     internal interface IStatisticHistory
     {
-        ClusterStatistic Get();
+        AggregatedClusterStatistic Get();
 
-        void Update(ClusterStatistic snapshot);
+        void Update(AggregatedClusterStatistic snapshot);
     }
 }

@@ -76,7 +76,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             }
         }
 
-        public Statistic Observe(DateTime timestamp)
+        public AggregatedStatistic Observe(DateTime timestamp)
         {
             var mean = (InterlockedEx.Read(ref successLatencySum) + InterlockedEx.Read(ref rejectLatencySum)) / Math.Max(1, Interlocked.Read(ref totalCount));
 
@@ -85,12 +85,12 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
             var stdDev = Math.Sqrt(variance);
 
-            return new Statistic(stdDev, mean, timestamp);
+            return new AggregatedStatistic(stdDev, mean, timestamp);
         }
         // CR(m_kiskachi) Этот метод делает два действия: агрегирует и сглаживает.
         // Будет лучше читаться, если разбить его на два, чтобы при вызове было:
         // .Aggregate().Smoothe()
-        public Statistic ObserveSmoothed(DateTime current, TimeSpan smoothingConstant, Statistic? previousStat)
+        public AggregatedStatistic ObserveSmoothed(DateTime current, TimeSpan smoothingConstant, AggregatedStatistic? previousStat)
         {
             var rowStatistic = Observe(current);
             if (!previousStat.HasValue)
@@ -101,11 +101,11 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             var prevTime = previousStat.Value.Timestamp;
 
             if (rowStatistic.IsZero())
-                return new Statistic(prevStdDev, prevMean, current);
+                return new AggregatedStatistic(prevStdDev, prevMean, current);
 
             var mean = SmoothingHelper.SmoothValue(rowStatistic.Mean, prevMean, current, prevTime, smoothingConstant);
             var stdDev = SmoothingHelper.SmoothValue(rowStatistic.StdDev, prevStdDev, current, prevTime, smoothingConstant);
-            return new Statistic(stdDev, mean, current);
+            return new AggregatedStatistic(stdDev, mean, current);
         }
 
         private static double PenalizeLatency(double latency, long count, double penalty) => 

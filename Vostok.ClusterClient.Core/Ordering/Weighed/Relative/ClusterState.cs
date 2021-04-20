@@ -6,18 +6,18 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
     internal class ClusterState
     {
-        private readonly Func<IActiveStatistic> activeStatisticFactory;
+        private readonly Func<IRawClusterStatistic> activeStatisticFactory;
         private readonly IStatisticHistory statisticHistory;
 
         public AtomicBoolean IsUpdatingNow { get; }
         public DateTime LastUpdateTimestamp { get; private set; }
-        public IActiveStatistic CurrentStatistic { get; private set; }
+        public IRawClusterStatistic CurrentStatistic { get; private set; }
         public IWeights Weights { get; }
 
         public ClusterState(
             RelativeWeightSettings settings, 
             // CR(m_kiskachi) Интерфейс конструктора не должен подстраиваться под тесты.
-            Func<IActiveStatistic> activeStatisticFactory = null, 
+            Func<IRawClusterStatistic> activeStatisticFactory = null, 
             IStatisticHistory statisticHistory = null, 
             IWeights weights = null)
         {
@@ -29,16 +29,16 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             Weights = weights ?? new Weights(settings);
             CurrentStatistic = this.activeStatisticFactory();
 
-            IActiveStatistic CreateDefault() =>
-                new ActiveStatistic(settings.StatisticSmoothingConstant, settings.PenaltyMultiplier);
+            IRawClusterStatistic CreateDefault() =>
+                new RawClusterStatistic(settings.StatisticSmoothingConstant, settings.PenaltyMultiplier);
         }
 
-        // CR(m_kiskachi) FlushCurrentStatisticToHistory -> FlushCurrentRawStatisticToHistory
-        public ClusterStatistic FlushCurrentStatisticToHistory(DateTime currentTimestamp)
+        public AggregatedClusterStatistic FlushCurrentRawStatisticToHistory(DateTime currentTimestamp)
         {
             LastUpdateTimestamp = currentTimestamp;
 
             var previousActiveStatistic = CurrentStatistic;
+            CurrentStatistic = activeStatisticFactory();
 
             var clusterStatistic = previousActiveStatistic
                 .GetPenalizedAndSmoothedStatistic(currentTimestamp, statisticHistory.Get());

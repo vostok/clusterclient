@@ -7,8 +7,7 @@ using Vostok.Clusterclient.Core.Ordering.Weighed.Relative.Interfaces;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
-    // CR(m_kiskachi) RawClusterStatiscics?
-    internal class ActiveStatistic : IActiveStatistic
+    internal class RawClusterStatistic : IRawClusterStatistic
     {
         private readonly TimeSpan smoothingConstant;
         private readonly int penaltyMultiplier;
@@ -16,7 +15,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         private readonly StatisticBucket clusterStatistic;
         private readonly ConcurrentDictionary<Uri, StatisticBucket> replicasStatistic;
 
-        public ActiveStatistic(TimeSpan smoothingConstant, int penaltyMultiplier)
+        public RawClusterStatistic(TimeSpan smoothingConstant, int penaltyMultiplier)
         {
             this.smoothingConstant = smoothingConstant;
             this.penaltyMultiplier = penaltyMultiplier;
@@ -34,27 +33,25 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
                 .Report(result);
         }
 
-        public ClusterStatistic GetPenalizedAndSmoothedStatistic(DateTime currentTime, ClusterStatistic previous)
+        public AggregatedClusterStatistic GetPenalizedAndSmoothedStatistic(DateTime currentTime, AggregatedClusterStatistic previous)
         {
-            // CR(m_kiskachi) Почему для вычисления пенальти мы используем utcNow, а для сглаживания после штрафа переменную currentTime? Получается, что время для сглаживания отстает от времени для которого мы только что высчитали штраф.
             var penalty = CalculatePenalty();
 
-            // CR(m_kiskachi) SmoothedAggregatedStatisticForCluster
-            var clusterSmoothedStatistic = clusterStatistic
+            var smoothedAggregatedClusterStatistic = clusterStatistic
                 .Penalize(penalty)
                 .ObserveSmoothed(currentTime, smoothingConstant, previous?.Cluster);
             
-            var replicasSmoothedStatistic = new Dictionary<Uri, Statistic>(replicasStatistic.Count);
+            var replicasSmoothedAggregatedStatistic = new Dictionary<Uri, AggregatedStatistic>(replicasStatistic.Count);
             foreach (var (replica, statisticBucket) in replicasStatistic)
             {
                 var replicaSmoothedStatistic = statisticBucket
                     .Penalize(penalty)
                     .ObserveSmoothed(currentTime, smoothingConstant, GetReplicaStatisticHistory(replica));
-                replicasSmoothedStatistic.Add(replica, replicaSmoothedStatistic);
+                replicasSmoothedAggregatedStatistic.Add(replica, replicaSmoothedStatistic);
             }
-            return new ClusterStatistic(clusterSmoothedStatistic, replicasSmoothedStatistic);
+            return new AggregatedClusterStatistic(smoothedAggregatedClusterStatistic, replicasSmoothedAggregatedStatistic);
 
-            Statistic? GetReplicaStatisticHistory(Uri replica)
+            AggregatedStatistic? GetReplicaStatisticHistory(Uri replica)
             {
                 if (previous == null || !previous.Replicas.TryGetValue(replica, out var statistic))
                     return null;

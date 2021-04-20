@@ -2,13 +2,13 @@
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
-    internal readonly struct Statistic
+    internal readonly struct AggregatedStatistic
     {
         public readonly double StdDev;
         public readonly double Mean;
         public readonly DateTime Timestamp;
 
-        public Statistic(double stdDev, double mean, DateTime timestamp)
+        public AggregatedStatistic(double stdDev, double mean, DateTime timestamp)
         {
             StdDev = stdDev;
             Mean = mean;
@@ -18,11 +18,11 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         public bool IsZero() =>
             StdDev < double.Epsilon && Mean < double.Epsilon;
 
-        public bool Equals(Statistic other) =>
+        public bool Equals(AggregatedStatistic other) =>
             StdDev.Equals(other.StdDev) && Mean.Equals(other.Mean) && Timestamp.Equals(other.Timestamp);
 
         public override bool Equals(object obj) =>
-            obj is Statistic other && Equals(other);
+            obj is AggregatedStatistic other && Equals(other);
 
         public override int GetHashCode()
         {

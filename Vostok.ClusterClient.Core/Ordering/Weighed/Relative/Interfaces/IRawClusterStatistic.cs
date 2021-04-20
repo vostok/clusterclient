@@ -3,10 +3,10 @@ using Vostok.Clusterclient.Core.Model;
 
 namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative.Interfaces
 {
-    internal interface IActiveStatistic
+    internal interface IRawClusterStatistic
     {
         void Report(ReplicaResult replicaResult);
 
-        ClusterStatistic GetPenalizedAndSmoothedStatistic(DateTime currentTime, ClusterStatistic previous);
+        AggregatedClusterStatistic GetPenalizedAndSmoothedStatistic(DateTime currentTime, AggregatedClusterStatistic previous);
     }
 }

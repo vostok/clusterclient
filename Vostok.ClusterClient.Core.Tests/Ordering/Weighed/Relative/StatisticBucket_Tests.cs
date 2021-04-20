@@ -36,7 +36,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         public void Should_smooth_statistic(int[] responseTimes, double expectedMean, double expectedStdDev)
         {
             var timestamp = DateTime.UtcNow;
-            var previousStatistic = new Statistic(3, 8.125, timestamp - 5.Seconds());
+            var previousStatistic = new AggregatedStatistic(3, 8.125, timestamp - 5.Seconds());
             foreach (var responseTime in responseTimes)
                 statisticBucket.Report(Accepted(responseTime));
 
@@ -51,7 +51,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         public void ObserveSmoothed_should_return_previous_statistic_if_current_is_empty()
         {
             var timestamp = DateTime.UtcNow;
-            var previousStatistic = new Statistic(3, 8.125, timestamp - 5.Seconds());
+            var previousStatistic = new AggregatedStatistic(3, 8.125, timestamp - 5.Seconds());
 
             var smoothedStat = statisticBucket.ObserveSmoothed(timestamp, 15.Seconds(), previousStatistic);
 

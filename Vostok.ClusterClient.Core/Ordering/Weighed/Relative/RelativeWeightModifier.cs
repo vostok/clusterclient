@@ -84,26 +84,31 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         private void ModifyWeightsIfNeed(ClusterState clusterState)
         {
             var needUpdateWeights = NeedUpdateWeights(DateTime.UtcNow, clusterState.LastUpdateTimestamp);
-            // CR(m_kiskachi) Если во время выполнения этого кода произойдет исключения, то есть риск никогда не 
-            // отпустить флаг. Нужен try + finally
-            if (!needUpdateWeights || !clusterState.IsUpdatingNow.TrySetTrue())
-                return;
+            var updatingFlagChanged = false;
+            try
+            {
+                if (!needUpdateWeights || !(updatingFlagChanged = clusterState.IsUpdatingNow.TrySetTrue()))
+                    return;
 
-            var clusterStatistic = clusterState.FlushCurrentStatisticToHistory(DateTime.UtcNow);
-               
-            ModifyWeights(clusterStatistic, clusterState.Weights, clusterState.LastUpdateTimestamp);
-            
-            clusterState.IsUpdatingNow.Value = false;
+                var aggregatedClusterStatistic = clusterState.FlushCurrentRawStatisticToHistory(DateTime.UtcNow);
+
+                ModifyWeights(aggregatedClusterStatistic, clusterState.Weights, clusterState.LastUpdateTimestamp);
+            }
+            finally
+            {
+                if (updatingFlagChanged)
+                    clusterState.IsUpdatingNow.Value = false;
+            }
         }
 
-        private void ModifyWeights(ClusterStatistic clusterStatistic, IWeights weights, DateTime weightsLastUpdateTime)
+        private void ModifyWeights(AggregatedClusterStatistic aggregatedClusterStatistic, IWeights weights, DateTime weightsLastUpdateTime)
         {
-            var newWeights = new Dictionary<Uri, Weight>(clusterStatistic.Replicas.Count);
+            var newWeights = new Dictionary<Uri, Weight>(aggregatedClusterStatistic.Replicas.Count);
             var relativeMaxWeight = 0d;
-            foreach (var (replica, replicaStatistic) in clusterStatistic.Replicas)
+            foreach (var (replica, replicaStatistic) in aggregatedClusterStatistic.Replicas)
             {
                 var previousWeight = weights.Get(replica) ?? new Weight(settings.InitialWeight, weightsLastUpdateTime - settings.WeightUpdatePeriod);
-                var newReplicaWeight = relativeWeightCalculator.Calculate(clusterStatistic.Cluster, replicaStatistic, previousWeight);
+                var newReplicaWeight = relativeWeightCalculator.Calculate(aggregatedClusterStatistic.Cluster, replicaStatistic, previousWeight);
                 newWeights.Add(replica, newReplicaWeight);
 
                 if (newReplicaWeight.Value > relativeMaxWeight)
@@ -113,7 +118,6 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             weightsNormalizer.Normalize(newWeights, relativeMaxWeight);
             weights.Update(newWeights);
             
-            // CR(m_kiskachi) Много логов, лучше писать их в DEBUG
             LogWeights(weights);
         }
 
@@ -138,12 +142,12 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         private void LogWeights(IEnumerable<KeyValuePair<Uri, Weight>> weights)
         {
-            if (!log.IsEnabledForInfo()) return;
+            if (!log.IsEnabledForDebug()) return;
 
             var newWeightsLog = new StringBuilder($"Weights:{Environment.NewLine}");
             foreach (var (replica, weight) in weights)
                 newWeightsLog.AppendLine($"{replica}: {weight}");
-            log.Info(newWeightsLog.ToString());
+            log.Debug(newWeightsLog.ToString());
         }
     }
 }

@@ -36,8 +36,8 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         public void Should_correct_calculate_weights(double replicaStdDev, double replicaAvg, double expectedWeight)
         {
             var timeStamp = DateTime.UtcNow;
-            var clusterStatistic = new Statistic(70, 300, timeStamp);
-            var replicaStatistic = new Statistic(replicaStdDev, replicaAvg, timeStamp);
+            var clusterStatistic = new AggregatedStatistic(70, 300, timeStamp);
+            var replicaStatistic = new AggregatedStatistic(replicaStdDev, replicaAvg, timeStamp);
 
             var calculatedWeight = relativeWeightCalculator
                 .Calculate(clusterStatistic, replicaStatistic, new Weight(settings.InitialWeight, timeStamp - settings.WeightUpdatePeriod));

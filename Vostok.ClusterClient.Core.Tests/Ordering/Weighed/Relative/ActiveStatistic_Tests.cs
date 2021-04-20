@@ -10,24 +10,24 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
     [TestFixture]
     public class ActiveStatistic_Tests
     {
-        private ActiveStatistic activeStatistic;
+        private RawClusterStatistic rawClusterStatistic;
         private const int PenaltyMultiplier = 50;
 
         [SetUp]
         public void SetUp()
         {
-            activeStatistic = new ActiveStatistic(1.Seconds(), PenaltyMultiplier);
+            rawClusterStatistic = new RawClusterStatistic(1.Seconds(), PenaltyMultiplier);
         }
 
         [Test]
         public void Should_correct_calculate_penalty()
         {
             var replica = new Uri("http://replica");
-            activeStatistic.Report(Accepted(replica, 125));
-            activeStatistic.Report(Accepted(replica, 1325));
-            activeStatistic.Report(Accepted(replica, 525));
+            rawClusterStatistic.Report(Accepted(replica, 125));
+            rawClusterStatistic.Report(Accepted(replica, 1325));
+            rawClusterStatistic.Report(Accepted(replica, 525));
             
-            var penalty = activeStatistic.CalculatePenalty();
+            var penalty = rawClusterStatistic.CalculatePenalty();
 
             penalty.Should().BeApproximately(25602.715, 0.001);
         }
@@ -38,9 +38,9 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             var timestamp = DateTime.UtcNow;
             var replica = new Uri("http://replica");
 
-            activeStatistic.Report(Accepted(replica, 125));
-            activeStatistic.Report(Accepted(replica, 1325));
-            var snapshot = activeStatistic.GetPenalizedAndSmoothedStatistic(timestamp, null);
+            rawClusterStatistic.Report(Accepted(replica, 125));
+            rawClusterStatistic.Report(Accepted(replica, 1325));
+            var snapshot = rawClusterStatistic.GetPenalizedAndSmoothedStatistic(timestamp, null);
 
             snapshot.Replicas.Count.Should().Be(1);
             snapshot.Replicas[replica].Mean.Should().NotBeApproximately(0, 0.001);
@@ -54,9 +54,9 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             var timestamp = DateTime.UtcNow;
             var replica = new Uri("http://replica");
 
-            activeStatistic.Report(Accepted(replica, 125));
-            activeStatistic.Report(Accepted(replica, 1325));
-            var snapshot = activeStatistic.GetPenalizedAndSmoothedStatistic(timestamp, null);
+            rawClusterStatistic.Report(Accepted(replica, 125));
+            rawClusterStatistic.Report(Accepted(replica, 1325));
+            var snapshot = rawClusterStatistic.GetPenalizedAndSmoothedStatistic(timestamp, null);
 
             snapshot.Cluster.Mean.Should().NotBeApproximately(0, 0.001);
             snapshot.Cluster.StdDev.Should().NotBeApproximately(0, 0.001);

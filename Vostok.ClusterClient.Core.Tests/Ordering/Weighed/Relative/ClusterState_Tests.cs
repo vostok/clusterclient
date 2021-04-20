@@ -21,7 +21,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             statisticHistory = Substitute.For<IStatisticHistory>();
             clusterState = new ClusterState(
                 new RelativeWeightSettings(), 
-                () => Substitute.For<IActiveStatistic>(), 
+                () => Substitute.For<IRawClusterStatistic>(), 
                 statisticHistory);
         }
 
@@ -32,7 +32,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             var previousActiveStat = clusterState.CurrentStatistic;
             
             Thread.Sleep(50);
-            var _ = clusterState.FlushCurrentStatisticToHistory(DateTime.UtcNow);
+            var _ = clusterState.FlushCurrentRawStatisticToHistory(DateTime.UtcNow);
 
             clusterState.LastUpdateTimestamp.Should().BeAfter(previousUpdateTime);
             clusterState.CurrentStatistic.Should().NotBeSameAs(previousActiveStat);
@@ -42,14 +42,14 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         public void Flush_should_make_snapshot_according_to_statistic_history()
         {
             var timestamp = DateTime.UtcNow;
-            var historyStatistic = new ClusterStatistic(new Statistic(), new Dictionary<Uri, Statistic>());
+            var historyStatistic = new AggregatedClusterStatistic(new AggregatedStatistic(), new Dictionary<Uri, AggregatedStatistic>());
 
-            clusterState.CurrentStatistic.GetPenalizedAndSmoothedStatistic(timestamp, Arg.Any<ClusterStatistic>())
-                .Returns(info => new ClusterStatistic(new Statistic(), new Dictionary<Uri, Statistic>()));
+            clusterState.CurrentStatistic.GetPenalizedAndSmoothedStatistic(timestamp, Arg.Any<AggregatedClusterStatistic>())
+                .Returns(info => new AggregatedClusterStatistic(new AggregatedStatistic(), new Dictionary<Uri, AggregatedStatistic>()));
             statisticHistory.Get().Returns(historyStatistic);
 
             var previousActiveStat = clusterState.CurrentStatistic;
-            var _ = clusterState.FlushCurrentStatisticToHistory(timestamp);
+            var _ = clusterState.FlushCurrentRawStatisticToHistory(timestamp);
 
             previousActiveStat.Received(1).GetPenalizedAndSmoothedStatistic(timestamp, historyStatistic);
             statisticHistory.Received(1).Get();
@@ -60,7 +60,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         {
             var timestamp = DateTime.UtcNow;
 
-            var clusterStatistic = clusterState.FlushCurrentStatisticToHistory(timestamp);
+            var clusterStatistic = clusterState.FlushCurrentRawStatisticToHistory(timestamp);
 
             statisticHistory.Received(1).Update(clusterStatistic);
         }

@@ -10,7 +10,6 @@ namespace Vostok.Clusterclient.Core.Ordering.Storage
         private readonly ConcurrentDictionary<string, TValue> values = new ConcurrentDictionary<string, TValue>();
 
         public TValue Obtain(string storageKey, Func<TValue> factory) =>
-            values.TryGetValue(storageKey, out var value) ? value : values.GetOrAdd(storageKey, _ => factory());
-        // CR(m_kiskachi) Тут кажется достаточно => values.GetOrAdd(storageKey, _ => factory() ?
+            values.GetOrAdd(storageKey, _ => factory());
     }
 }
