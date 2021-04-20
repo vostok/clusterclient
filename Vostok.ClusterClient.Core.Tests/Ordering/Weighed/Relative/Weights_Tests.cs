@@ -24,6 +24,32 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         }
 
         [Test]
+        public void Should_correct_normalize_weights()
+        {
+            var replica1 = new Uri("http://replica1");
+            var replica2 = new Uri("http://replica2");
+            var replica3 = new Uri("http://replica3");
+
+            var newWeights = new Dictionary<Uri, Weight>()
+            {
+                [new Uri("http://replica1")] = new Weight(0.5, DateTime.UtcNow),
+                [new Uri("http://replica2")] = new Weight(0.7, DateTime.UtcNow + 5.Seconds()),
+                [new Uri("http://replica3")] = new Weight(0.1, DateTime.UtcNow + 10.Seconds())
+            };
+
+            weights.Update(newWeights);
+
+            foreach (var p in newWeights)
+                weights.Get(p.Key).Should().Be(p.Value);
+
+            weights.Normalize();
+
+            weights.Get(replica1).Value.Value.Should().BeApproximately(0.714, 0.001);
+            weights.Get(replica2).Value.Value.Should().BeApproximately(1.000, 0.001);
+            weights.Get(replica3).Value.Value.Should().BeApproximately(0.142, 0.001);
+        }
+
+        [Test]
         public void Should_add_new_weights()
         {
             var newWeights = new Dictionary<Uri, Weight>()

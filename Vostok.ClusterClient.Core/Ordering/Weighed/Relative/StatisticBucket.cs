@@ -37,9 +37,9 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             var total = Interlocked.Read(ref totalCount);
             var successSum = InterlockedEx.Read(ref successLatencySum);
             var successSquareSum = InterlockedEx.Read(ref successLatencySquaredSum);
+            var rejected = Interlocked.Read(ref rejectCount);
             var rejectSum = InterlockedEx.Read(ref rejectLatencySum);
             var rejectSquareSum = InterlockedEx.Read(ref rejectLatencySquaredSum);
-            var rejected = Interlocked.Read(ref rejectCount);
             return new StatisticBucket(
                 total,
                 rejected,
@@ -67,16 +67,13 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             }
             else
             {
+                Interlocked.Increment(ref rejectCount);
                 InterlockedEx.Add(ref rejectLatencySum, result.Time.TotalMilliseconds);
                 InterlockedEx.Add(ref rejectLatencySquaredSum, result.Time.TotalMilliseconds * result.Time.TotalMilliseconds);
-                // CR(m_kiskachi) В одном из комитов увеличение rejectCount переехало вниз. В то время как увеличение totalCount осталось вверху.
-                // Это навело меня на мысль, что лучше сделать однообразно. Кажется, что лучше, чтобы сначала происходил
-                // инкремент количества, а уже потом латенси.
-                Interlocked.Increment(ref rejectCount);
             }
         }
 
-        public AggregatedStatistic Observe(DateTime timestamp)
+        public AggregatedStatistic Aggregate(DateTime timestamp)
         {
             var mean = (InterlockedEx.Read(ref successLatencySum) + InterlockedEx.Read(ref rejectLatencySum)) / Math.Max(1, Interlocked.Read(ref totalCount));
 
@@ -86,26 +83,6 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             var stdDev = Math.Sqrt(variance);
 
             return new AggregatedStatistic(stdDev, mean, timestamp);
-        }
-        // CR(m_kiskachi) Этот метод делает два действия: агрегирует и сглаживает.
-        // Будет лучше читаться, если разбить его на два, чтобы при вызове было:
-        // .Aggregate().Smoothe()
-        public AggregatedStatistic ObserveSmoothed(DateTime current, TimeSpan smoothingConstant, AggregatedStatistic? previousStat)
-        {
-            var rowStatistic = Observe(current);
-            if (!previousStat.HasValue)
-                return rowStatistic;
-
-            var prevMean = previousStat.Value.Mean;
-            var prevStdDev = previousStat.Value.StdDev;
-            var prevTime = previousStat.Value.Timestamp;
-
-            if (rowStatistic.IsZero())
-                return new AggregatedStatistic(prevStdDev, prevMean, current);
-
-            var mean = SmoothingHelper.SmoothValue(rowStatistic.Mean, prevMean, current, prevTime, smoothingConstant);
-            var stdDev = SmoothingHelper.SmoothValue(rowStatistic.StdDev, prevStdDev, current, prevTime, smoothingConstant);
-            return new AggregatedStatistic(stdDev, mean, current);
         }
 
         private static double PenalizeLatency(double latency, long count, double penalty) => 

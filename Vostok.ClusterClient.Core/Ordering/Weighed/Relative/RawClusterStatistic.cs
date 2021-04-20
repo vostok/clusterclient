@@ -28,6 +28,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         { 
             clusterStatistic
                 .Report(result);
+
             replicasStatistic
                 .GetOrAdd(result.Replica, new StatisticBucket())
                 .Report(result);
@@ -39,14 +40,17 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
             var smoothedAggregatedClusterStatistic = clusterStatistic
                 .Penalize(penalty)
-                .ObserveSmoothed(currentTime, smoothingConstant, previous?.Cluster);
-            
+                .Aggregate(currentTime)
+                .Smooth(previous?.Cluster, smoothingConstant);
+
             var replicasSmoothedAggregatedStatistic = new Dictionary<Uri, AggregatedStatistic>(replicasStatistic.Count);
             foreach (var (replica, statisticBucket) in replicasStatistic)
             {
                 var replicaSmoothedStatistic = statisticBucket
                     .Penalize(penalty)
-                    .ObserveSmoothed(currentTime, smoothingConstant, GetReplicaStatisticHistory(replica));
+                    .Aggregate(currentTime)
+                    .Smooth(GetReplicaStatisticHistory(replica), smoothingConstant);
+
                 replicasSmoothedAggregatedStatistic.Add(replica, replicaSmoothedStatistic);
             }
             return new AggregatedClusterStatistic(smoothedAggregatedClusterStatistic, replicasSmoothedAggregatedStatistic);
@@ -61,7 +65,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         internal double CalculatePenalty()
         {
-            var globalStat = clusterStatistic.Observe(DateTime.UtcNow);
+            var globalStat = clusterStatistic.Aggregate(DateTime.UtcNow);
             return globalStat.Mean + globalStat.StdDev * penaltyMultiplier;
         }
     }

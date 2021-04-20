@@ -1,4 +1,5 @@
 ﻿using System;
+using Vostok.Clusterclient.Core.Misc;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Relative.Interfaces;
 using Vostok.Commons.Threading;
 
@@ -6,46 +7,43 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
     internal class ClusterState
     {
-        private readonly Func<IRawClusterStatistic> activeStatisticFactory;
-        private readonly IStatisticHistory statisticHistory;
-
+        private readonly RelativeWeightSettings settings;
+        
         public AtomicBoolean IsUpdatingNow { get; }
-        public DateTime LastUpdateTimestamp { get; private set; }
+        public DateTime LastUpdateTimestamp { get;  set; }
+        public ITimeProvider TimeProvider { get; }
+        public IRelativeWeightCalculator RelativeWeightCalculator { get; }
         public IRawClusterStatistic CurrentStatistic { get; private set; }
+        public IStatisticHistory StatisticHistory { get; private set; }
         public IWeights Weights { get; }
-
+        
         public ClusterState(
-            RelativeWeightSettings settings, 
-            // CR(m_kiskachi) Интерфейс конструктора не должен подстраиваться под тесты.
-            Func<IRawClusterStatistic> activeStatisticFactory = null, 
+            RelativeWeightSettings settings,
+            IRelativeWeightCalculator relativeWeightCalculator = null,
+            IRawClusterStatistic rawClusterStatistic = null,
+            ITimeProvider timeProvider = null,
             IStatisticHistory statisticHistory = null, 
             IWeights weights = null)
         {
-            this.activeStatisticFactory = activeStatisticFactory ?? CreateDefault;
-            this.statisticHistory = statisticHistory ?? new StatisticsHistory(settings.StatisticTTL);
-
+            this.settings = settings;
+            
             IsUpdatingNow = new AtomicBoolean(false);
-            LastUpdateTimestamp = DateTime.UtcNow;
+            TimeProvider = timeProvider ?? new TimeProvider();
+            RelativeWeightCalculator = relativeWeightCalculator ?? new RelativeWeightCalculator(settings);
             Weights = weights ?? new Weights(settings);
-            CurrentStatistic = this.activeStatisticFactory();
+            CurrentStatistic = rawClusterStatistic ?? new RawClusterStatistic(settings.StatisticSmoothingConstant, settings.PenaltyMultiplier);
+            StatisticHistory = statisticHistory ?? new StatisticsHistory(settings.StatisticTTL);
 
-            IRawClusterStatistic CreateDefault() =>
-                new RawClusterStatistic(settings.StatisticSmoothingConstant, settings.PenaltyMultiplier);
+            LastUpdateTimestamp = TimeProvider.GetCurrentTime();
         }
 
-        public AggregatedClusterStatistic FlushCurrentRawStatisticToHistory(DateTime currentTimestamp)
+        public IRawClusterStatistic SwapToNewRawStatistic()
         {
-            LastUpdateTimestamp = currentTimestamp;
+            var previousRawStatistic = CurrentStatistic;
 
-            var previousActiveStatistic = CurrentStatistic;
-            CurrentStatistic = activeStatisticFactory();
+            CurrentStatistic = new RawClusterStatistic(settings.StatisticSmoothingConstant, settings.PenaltyMultiplier);
 
-            var clusterStatistic = previousActiveStatistic
-                .GetPenalizedAndSmoothedStatistic(currentTimestamp, statisticHistory.Get());
-            
-            statisticHistory.Update(clusterStatistic);
-            
-            return clusterStatistic;
+            return previousRawStatistic;
         }
     }
 }

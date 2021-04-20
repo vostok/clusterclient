@@ -15,8 +15,19 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             Timestamp = timestamp;
         }
 
-        public bool IsZero() =>
-            StdDev < double.Epsilon && Mean < double.Epsilon;
+        public AggregatedStatistic Smooth(AggregatedStatistic? previous, TimeSpan smoothingConstant)
+        {
+            if (!previous.HasValue)
+                return this;
+
+            var previousAggregatedStatistic = previous.Value;
+            var smoothedStdDev = SmoothingHelper
+                .SmoothValue(StdDev, previousAggregatedStatistic.StdDev, Timestamp, previousAggregatedStatistic.Timestamp, smoothingConstant);
+            var smoothedMean = SmoothingHelper
+                .SmoothValue(Mean, previousAggregatedStatistic.Mean, Timestamp, previousAggregatedStatistic.Timestamp, smoothingConstant);
+
+            return new AggregatedStatistic(smoothedStdDev, smoothedMean, Timestamp);
+        }
 
         public bool Equals(AggregatedStatistic other) =>
             StdDev.Equals(other.StdDev) && Mean.Equals(other.Mean) && Timestamp.Equals(other.Timestamp);

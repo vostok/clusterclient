@@ -8,7 +8,7 @@ using Vostok.Clusterclient.Core.Ordering.Weighed.Relative;
 namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
 {
     [TestFixture]
-    public class ActiveStatistic_Tests
+    public class RawClusterStatistic_Tests
     {
         private RawClusterStatistic rawClusterStatistic;
         private const int PenaltyMultiplier = 50;

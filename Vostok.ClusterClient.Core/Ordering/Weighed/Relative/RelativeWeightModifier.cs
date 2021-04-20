@@ -18,12 +18,9 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
     [PublicAPI]
     public class RelativeWeightModifier : IReplicaWeightModifier
     {
-        private readonly IRelativeWeightCalculator relativeWeightCalculator;
-        private readonly IWeightsNormalizer weightsNormalizer;
         private readonly ILog log;
         private readonly RelativeWeightSettings settings;
         private readonly double minWeight;
-        private readonly double initialWeight;
         private readonly double maxWeight;
         private readonly string storageKey;
 
@@ -32,36 +29,15 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             string service,
             string environment,
             double minWeight = ClusterClientDefaults.MinimumReplicaWeight,
-            double initialWeight = ClusterClientDefaults.InitialReplicaWeight,
             double maxWeight = ClusterClientDefaults.MaximumReplicaWeight,
             ILog log = null)
         {
             this.settings = settings;
             this.minWeight = minWeight;
-            this.initialWeight = initialWeight;
             this.maxWeight = maxWeight;
             this.log = (log ?? new SilentLog()).ForContext<RelativeWeightModifier>();
 
             storageKey = CreateStorageKey(service, environment);
-            relativeWeightCalculator = new RelativeWeightCalculator(settings);
-            weightsNormalizer = new WeightsNormalizer();
-        }
-
-        // CR(m_kiskachi) Интерфейс конструктора не должен подстраиваться под тесты.
-        internal RelativeWeightModifier(
-            RelativeWeightSettings settings,
-            string service,
-            string environment,
-            IRelativeWeightCalculator relativeWeightCalculator,
-            IWeightsNormalizer weightsNormalizer,
-            double minWeight = ClusterClientDefaults.MinimumReplicaWeight,
-            double initialWeight = ClusterClientDefaults.InitialReplicaWeight,
-            double maxWeight = ClusterClientDefaults.MaximumReplicaWeight,
-            ILog log = null)
-            : this(settings, service, environment, minWeight, initialWeight, maxWeight, log)
-        {
-            this.relativeWeightCalculator = relativeWeightCalculator;
-            this.weightsNormalizer = weightsNormalizer;
         }
 
         /// <inheritdoc />
@@ -71,10 +47,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             
             ModifyWeightsIfNeed(clusterState);
 
-            // CR(m_kiskachi) Сейчас мы сначала вписываем вес в границы между min и max, а потом 
-            // домножаем на это вес, пришедший снаружи. Получается, что окончательный вес может быть
-            // больше максимума.
-            weight *= EnforceWeightLimits(clusterState.Weights.Get(replica));
+            weight = ModifyAndApplyLimits(weight, clusterState.Weights.Get(replica));
         }
 
         /// <inheritdoc />
@@ -83,16 +56,23 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         private void ModifyWeightsIfNeed(ClusterState clusterState)
         {
-            var needUpdateWeights = NeedUpdateWeights(DateTime.UtcNow, clusterState.LastUpdateTimestamp);
+            var needUpdateWeights = NeedUpdateWeights(clusterState.TimeProvider.GetCurrentTime(), clusterState.LastUpdateTimestamp);
             var updatingFlagChanged = false;
             try
             {
                 if (!needUpdateWeights || !(updatingFlagChanged = clusterState.IsUpdatingNow.TrySetTrue()))
                     return;
 
-                var aggregatedClusterStatistic = clusterState.FlushCurrentRawStatisticToHistory(DateTime.UtcNow);
+                var currentTime = clusterState.TimeProvider.GetCurrentTime();
+                clusterState.LastUpdateTimestamp = currentTime;
 
-                ModifyWeights(aggregatedClusterStatistic, clusterState.Weights, clusterState.LastUpdateTimestamp);
+                var aggregatedClusterStatistic = clusterState
+                    .SwapToNewRawStatistic()
+                    .GetPenalizedAndSmoothedStatistic(currentTime, clusterState.StatisticHistory.Get());
+                
+                ModifyWeights(aggregatedClusterStatistic, clusterState.RelativeWeightCalculator, clusterState.Weights, clusterState.LastUpdateTimestamp);
+
+                clusterState.StatisticHistory.Update(aggregatedClusterStatistic);
             }
             finally
             {
@@ -101,7 +81,11 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             }
         }
 
-        private void ModifyWeights(AggregatedClusterStatistic aggregatedClusterStatistic, IWeights weights, DateTime weightsLastUpdateTime)
+        private void ModifyWeights(
+            AggregatedClusterStatistic aggregatedClusterStatistic,
+            IRelativeWeightCalculator relativeWeightCalculator,
+            IWeights weights,
+            DateTime weightsLastUpdateTime)
         {
             var newWeights = new Dictionary<Uri, Weight>(aggregatedClusterStatistic.Replicas.Count);
             var relativeMaxWeight = 0d;
@@ -114,21 +98,22 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
                 if (newReplicaWeight.Value > relativeMaxWeight)
                     relativeMaxWeight = newReplicaWeight.Value;
             }
-            // CR(m_kiskachi) Не нормализуются веса, которые не менялись в текущем бакете.
-            weightsNormalizer.Normalize(newWeights, relativeMaxWeight);
+            
             weights.Update(newWeights);
+            weights.Normalize();
             
             LogWeights(weights);
         }
 
-        private double EnforceWeightLimits(Weight? weight)
+        private double ModifyAndApplyLimits(double externalWeight, Weight? relativeWeight)
         {
-            return !weight.HasValue ? 
-                initialWeight :
-                // CR(m_kiskachi) Текущая формула будет хорошо работать только с весами от 0 до 1, и когда минимальный вес ноль.
-                // Кажется нужно что-то вроде: 
-                // minWeight + weight.Value.Value * (maxWeight - minWeight) / maxWeight
-                Math.Max(minWeight, Math.Min(maxWeight, weight.Value.Value * maxWeight));
+            // ExternalWeight - [minWeight; maxWeight]
+            // RelativeWeight - [0; 1]
+            // ModifiedWeight - [0; maxWeight]
+            var relative = relativeWeight?.Value ?? settings.InitialWeight;
+            var modified = externalWeight * relative;
+
+            return minWeight + modified / maxWeight * (maxWeight - minWeight);
         }
 
         private bool NeedUpdateWeights(in DateTime currentTimestamp, in DateTime previousTimestamp) =>

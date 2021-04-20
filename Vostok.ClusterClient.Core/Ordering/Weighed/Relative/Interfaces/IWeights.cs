@@ -8,5 +8,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative.Interfaces
         Weight? Get(Uri replica);
 
         void Update(IReadOnlyDictionary<Uri, Weight> updatedWeights);
+
+        void Normalize();
     }
 }

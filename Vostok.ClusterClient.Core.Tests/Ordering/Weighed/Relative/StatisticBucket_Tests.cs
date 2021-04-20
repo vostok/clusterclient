@@ -25,7 +25,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             foreach (var responseTime in responseTimes)
                 statisticBucket.Report(Accepted(responseTime));
             
-            var statistic = statisticBucket.Observe(timestamp);
+            var statistic = statisticBucket.Aggregate(timestamp);
 
             statistic.Timestamp.Should().Be(timestamp);
             statistic.Mean.Should().BeApproximately(expectedMean, 0.001);
@@ -40,24 +40,13 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             foreach (var responseTime in responseTimes)
                 statisticBucket.Report(Accepted(responseTime));
 
-            var smoothedStat = statisticBucket.ObserveSmoothed(timestamp, 15.Seconds(), previousStatistic);
+            var smoothedStat = statisticBucket
+                .Aggregate(timestamp)
+                .Smooth(previousStatistic, 15.Seconds());
 
             smoothedStat.Timestamp.Should().Be(timestamp);
             smoothedStat.Mean.Should().BeApproximately(expectedMean, 0.001);
             smoothedStat.StdDev.Should().BeApproximately(expectedStdDev, 0.001);
-        }
-
-        [Test]
-        public void ObserveSmoothed_should_return_previous_statistic_if_current_is_empty()
-        {
-            var timestamp = DateTime.UtcNow;
-            var previousStatistic = new AggregatedStatistic(3, 8.125, timestamp - 5.Seconds());
-
-            var smoothedStat = statisticBucket.ObserveSmoothed(timestamp, 15.Seconds(), previousStatistic);
-
-            smoothedStat.Timestamp.Should().Be(timestamp);
-            smoothedStat.Mean.Should().BeApproximately(8.125, 0.001);
-            smoothedStat.StdDev.Should().BeApproximately(3, 0.001);
         }
 
         [TestCase(new[] { 120, 150, 70, 60, 90, 80, 170, 320 }, new int[0], 132.5, 79.647)]
@@ -71,7 +60,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
                 statisticBucket.Report(Rejected(responseTime));
 
             var penalizedStat = statisticBucket.Penalize(1000)
-                .Observe(timestamp);
+                .Aggregate(timestamp);
 
             penalizedStat.Timestamp.Should().Be(timestamp);
             penalizedStat.Mean.Should().BeApproximately(expectedMean, 0.001);
