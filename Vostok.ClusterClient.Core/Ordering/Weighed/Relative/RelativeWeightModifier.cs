@@ -45,7 +45,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         {
             var clusterState = storageProvider.ObtainGlobalValue(storageKey, CreateClusterState);
             
-            ModifyWeightsIfNeed(clusterState);
+            ModifyClusterWeightsIfNeed(clusterState);
 
             weight = ModifyAndApplyLimits(weight, clusterState.Weights.Get(replica));
         }
@@ -54,7 +54,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         public void Learn(ReplicaResult result, IReplicaStorageProvider storageProvider) =>
             storageProvider.ObtainGlobalValue(storageKey, CreateClusterState).CurrentStatistic.Report(result);
 
-        private void ModifyWeightsIfNeed(ClusterState clusterState)
+        private void ModifyClusterWeightsIfNeed(ClusterState clusterState)
         {
             var needUpdateWeights = NeedUpdateWeights(clusterState.TimeProvider.GetCurrentTime(), clusterState.LastUpdateTimestamp);
             var updatingFlagChanged = false;
