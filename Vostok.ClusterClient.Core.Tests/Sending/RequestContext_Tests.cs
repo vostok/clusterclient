@@ -22,8 +22,11 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
                 new RequestParameters(Strategy.Sequential2),
                 Budget.Infinite,
                 new ConsoleLog(),
-                null,
-                int.MaxValue);
+                clusterProvider: default,
+                replicaOrdering: default,
+                transport: default,
+                maximumReplicasToUse: int.MaxValue,
+                connectionAttempts: default);
         }
 
         [Test]

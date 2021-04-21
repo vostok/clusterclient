@@ -42,7 +42,16 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
             request4 = Request.Get("/4");
             request5 = Request.Get("/5");
 
-            context = new RequestContext(request1, new RequestParameters(Strategy.SingleReplica), Budget.Infinite, new ConsoleLog(), null, int.MaxValue);
+            context = new RequestContext(
+                request1,
+                new RequestParameters(Strategy.SingleReplica),
+                Budget.Infinite,
+                new ConsoleLog(),
+                clusterProvider: default,
+                replicaOrdering: default,
+                transport: default,
+                maximumReplicasToUse: int.MaxValue,
+                connectionAttempts: default);
 
             transform1 = Substitute.For<IRequestTransform>();
             transform1.Transform(Arg.Any<Request>()).Returns(_ => request2);

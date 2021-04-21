@@ -73,6 +73,8 @@ namespace Vostok.Clusterclient.Core
 
         public IRetryStrategy RetryStrategy { get; set; }
 
+        public IRetryStrategyEx RetryStrategyEx { get; set; }
+
         public IResponseSelector ResponseSelector { get; set; }
 
         public IRequestStrategy DefaultRequestStrategy { get; set; }
@@ -169,8 +171,12 @@ namespace Vostok.Clusterclient.Core
             if (RetryPolicy == null)
                 RetryPolicy = ClusterClientDefaults.RetryPolicy;
 
-            if (RetryStrategy == null)
-                RetryStrategy = ClusterClientDefaults.RetryStrategy;
+            if (RetryStrategyEx == null)
+            {
+                RetryStrategyEx = RetryStrategy == null
+                    ? ClusterClientDefaults.RetryStrategyEx
+                    : new RetryStrategyAdapter(RetryStrategy);
+            }
 
             if (ResponseSelector == null)
                 ResponseSelector = ClusterClientDefaults.ResponseSelector;

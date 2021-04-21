@@ -7,9 +7,11 @@ using NSubstitute;
 using NUnit.Framework;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Ordering;
 using Vostok.Clusterclient.Core.Sending;
 using Vostok.Clusterclient.Core.Strategies;
 using Vostok.Clusterclient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Topology;
 using Vostok.Clusterclient.Core.Transport;
 using Vostok.Logging.Console;
 
@@ -37,13 +39,34 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
             result = new ReplicaResult(replica, new Response(ResponseCode.Ok), ResponseVerdict.Accept, 1.Milliseconds());
             timeout = 1.Minutes();
             connectionTimeout = 1.Seconds();
-            
+
             resultSource = new TaskCompletionSource<ReplicaResult>();
 
             baseSender = Substitute.For<IRequestSenderInternal>();
-            baseSender.SendToReplicaAsync(null, null, null, null, TimeSpan.Zero, CancellationToken.None).ReturnsForAnyArgs(_ => resultSource.Task);
+            baseSender.SendToReplicaAsync(
+                    transport: default,
+                    replicaOrdering: default,
+                    replica: default,
+                    request: default,
+                    connectionAttempts: default,
+                    connectionTimeout: default,
+                    timeout: TimeSpan.Zero,
+                    CancellationToken.None
+                )
+                .ReturnsForAnyArgs(_ => resultSource.Task);
 
-            context = new RequestContext(request, new RequestParameters(Strategy.SingleReplica), Budget.WithRemaining(timeout), new ConsoleLog(), Substitute.For<ITransport>(), int.MaxValue, null, CancellationToken.None);
+            context = new RequestContext(
+                request,
+                new RequestParameters(Strategy.SingleReplica),
+                Budget.WithRemaining(timeout),
+                new ConsoleLog(),
+                Substitute.For<IClusterProvider>(),
+                Substitute.For<IReplicaOrdering>(),
+                Substitute.For<ITransport>(),
+                int.MaxValue,
+                connectionAttempts: default,
+                clientApplicationName: null,
+                CancellationToken.None);
             contextualSender = new ContextualRequestSender(baseSender, context);
         }
 
@@ -94,7 +117,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
 
             contextualSender.SendToReplicaAsync(replica, request, connectionTimeout, timeout, tokenSource.Token).GetAwaiter().GetResult();
 
-            baseSender.Received().SendToReplicaAsync(context.Transport, replica, request, connectionTimeout, timeout, tokenSource.Token);
+            baseSender.Received().SendToReplicaAsync(context.Transport, context.ReplicaOrdering, replica, request, context.ConnectionAttempts, connectionTimeout, timeout, tokenSource.Token);
         }
 
         [Test]

@@ -1,3 +1,23 @@
+## 0.1.26 (01.03.2021):
+
+Make TimeoutHeaderTransport public to easy use wherever I don't need to create full and high weight ClusterClient.
+
+## 0.1.25 (01.03.2021):
+
+Changed IIS detection in depended project commons.environment to avoid "iisexpress" process name except correct assembly name. Related commit - https://github.com/vostok/commons.environment/commit/5cc91a9ce09e44ce0048e06f37325ff4bb3291fe
+
+## 0.1.24 (04.02.2021):
+
+ClusterClient should not prohibit GET or HEAD requests with message body.
+
+## 0.1.23 (28.01.2021):
+
+Extended `IRequestContext` interface with `ClusterProvider`, `ReplicaOrdering`, and `ConnectionAttempts` properties to enable their customization in request module.
+
+## 0.1.22 (23.11.2020):
+
+Added `IRetryStrategyEx` - an extended interface similar to the old IRetryStrategy but with IRequestContext and last seen ClusterResult.
+
 ## 0.1.21 (21.10.2020):
 
 Added AppendToHeaderWithQuality extension to RequestHeadersExtensions.

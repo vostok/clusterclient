@@ -38,7 +38,16 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
 
         private bool IsValid(Request request)
         {
-            var context = new RequestContext(request, RequestParameters.Empty.WithStrategy(Strategy.Sequential1), RequestTimeBudget.Infinite, new SilentLog(), null, 0);
+            var context = new RequestContext(
+                request,
+                RequestParameters.Empty.WithStrategy(Strategy.Sequential1),
+                RequestTimeBudget.Infinite,
+                new SilentLog(),
+                clusterProvider: default,
+                replicaOrdering: default,
+                transport: default,
+                maximumReplicasToUse: default,
+                connectionAttempts: default);
             var result = module.ExecuteAsync(context, c => Task.FromResult(ClusterResult.Canceled(request))).GetAwaiter().GetResult();
 
             return result.Status != ClusterResultStatus.IncorrectArguments;

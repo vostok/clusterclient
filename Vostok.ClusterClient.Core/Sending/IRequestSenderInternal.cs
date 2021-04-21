@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Ordering;
 using Vostok.Clusterclient.Core.Transport;
 
 namespace Vostok.Clusterclient.Core.Sending
@@ -16,8 +17,10 @@ namespace Vostok.Clusterclient.Core.Sending
         [ItemNotNull]
         Task<ReplicaResult> SendToReplicaAsync(
             [NotNull] ITransport transport,
+            [NotNull] IReplicaOrdering replicaOrdering,
             [NotNull] Uri replica,
             [NotNull] Request request,
+            int connectionAttempts,
             TimeSpan? connectionTimeout,
             TimeSpan timeout,
             CancellationToken cancellationToken);

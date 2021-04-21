@@ -37,7 +37,7 @@ namespace Vostok.Clusterclient.Core.Modules
             AddModule(new RequestValidationModule());
 
             AddModule(new TimeoutValidationModule());
-            AddModule(new RequestRetryModule(config.RetryPolicy, config.RetryStrategy));
+            AddModule(new RequestRetryModule(config.RetryPolicy, config.RetryStrategyEx));
 
             // -->> adaptive throttling module <<-- //
 
@@ -45,10 +45,10 @@ namespace Vostok.Clusterclient.Core.Modules
 
             // -->> replica budgeting module <<-- //
 
+            // -->> service-mesh module is injected before RequestExecutionModule <<-- //
+
             AddModule(
                 new RequestExecutionModule(
-                    config.ClusterProvider,
-                    config.ReplicaOrdering,
                     config.ResponseSelector,
                     storageProvider,
                     requestSender,

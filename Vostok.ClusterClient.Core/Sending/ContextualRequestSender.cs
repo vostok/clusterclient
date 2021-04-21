@@ -23,8 +23,20 @@ namespace Vostok.Clusterclient.Core.Sending
 
             try
             {
-                var result = await sender.SendToReplicaAsync(context.Transport, replica, request, connectionTimeout, timeout, cancellationToken).ConfigureAwait(false);
+                var result = await sender.SendToReplicaAsync(
+                        context.Transport,
+                        context.ReplicaOrdering,
+                        replica,
+                        request,
+                        context.ConnectionAttempts,
+                        connectionTimeout,
+                        timeout,
+                        cancellationToken
+                    )
+                    .ConfigureAwait(false);
+
                 context.SetReplicaResult(result);
+
                 return result;
             }
             catch (OperationCanceledException)

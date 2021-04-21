@@ -469,7 +469,8 @@ namespace Vostok.Clusterclient.Core.Tests
         {
             configuration.AugmentWithDefaults();
 
-            configuration.RetryStrategy.Should().BeSameAs(ClusterClientDefaults.RetryStrategy);
+            configuration.RetryStrategy.Should().BeNull("This is deprecated module and it should be converted to RetryStrategyEx one.");
+            configuration.RetryStrategyEx.Should().BeSameAs(ClusterClientDefaults.RetryStrategyEx);
         }
 
         [Test]

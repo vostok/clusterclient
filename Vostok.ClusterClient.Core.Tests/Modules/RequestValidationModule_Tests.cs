@@ -120,7 +120,7 @@ namespace Vostok.Clusterclient.Core.Tests.Modules
 
         private static Request CreateIncorrectRequest()
         {
-            return new Request(RequestMethods.Head, new Uri("foo/bar", UriKind.Relative), new Content(new byte[] {1, 2, 3}));
+            return new Request(RequestMethods.Get, new Uri("ftp://foo/bar", UriKind.Absolute));
         }
 
         private void ShouldPassChecks()

@@ -12,8 +12,8 @@ using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Ordering;
 using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Clusterclient.Core.Sending;
-using Vostok.Clusterclient.Core.Transport;
 using Vostok.Clusterclient.Core.Tests.Helpers;
+using Vostok.Clusterclient.Core.Transport;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.Clusterclient.Core.Tests.Sending
@@ -32,6 +32,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
         private IReplicaStorageProvider storageProvider;
         private IResponseClassifier responseClassifier;
         private IRequestConverter requestConverter;
+        private IReplicaOrdering replicaOrdering;
         private ITransport transport;
         private ILog log;
 
@@ -47,6 +48,8 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
             timeout = 5.Seconds();
             connectionTimeout = null;
 
+            replicaOrdering = Substitute.For<IReplicaOrdering>();
+
             configuration = Substitute.For<IClusterClientConfiguration>();
             configuration.ResponseCriteria.Returns(new List<IResponseCriterion> {Substitute.For<IResponseCriterion>()});
             configuration.Logging.Returns(
@@ -55,7 +58,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
                     LogReplicaRequests = true,
                     LogReplicaResults = true
                 });
-            configuration.ReplicaOrdering.Returns(Substitute.For<IReplicaOrdering>());
+            configuration.ReplicaOrdering.Returns(replicaOrdering);
             configuration.Log.Returns(log = Substitute.For<ILog>());
 
             log.IsEnabledFor(default).ReturnsForAnyArgs(true);
@@ -72,8 +75,6 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
             transport.SendAsync(Arg.Any<Request>(), Arg.Any<TimeSpan?>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Returns(_ => response);
 
             sender = new RequestSender(configuration, storageProvider, responseClassifier, requestConverter);
-
-            configuration.ConnectionAttempts.Returns(1);
         }
 
         [Test]
@@ -93,12 +94,12 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
 
             transport.Received(1).SendAsync(absoluteRequest, connectionTimeout, Arg.Any<TimeSpan>(), tokenSource.Token);
         }
-        
+
         [Test]
         public void Should_pass_connection_timeout()
         {
             connectionTimeout = 1.Seconds();
-            
+
             Send();
 
             transport.Received(1).SendAsync(absoluteRequest, connectionTimeout, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
@@ -108,7 +109,7 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
         public void Should_pass_null_connection_timeout_when_it_is_greater_than_full_timeout()
         {
             connectionTimeout = 10.Seconds();
-            
+
             Send();
 
             transport.Received(1).SendAsync(absoluteRequest, null, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
@@ -247,7 +248,18 @@ namespace Vostok.Clusterclient.Core.Tests.Sending
 
         private ReplicaResult Send(CancellationToken token = default)
         {
-            return sender.SendToReplicaAsync(transport, replica, relativeRequest, connectionTimeout, timeout, token).GetAwaiter().GetResult();
+            return sender.SendToReplicaAsync(
+                    transport,
+                    replicaOrdering,
+                    replica,
+                    relativeRequest,
+                    connectionAttempts: 1,
+                    connectionTimeout,
+                    timeout,
+                    token
+                )
+                .GetAwaiter()
+                .GetResult();
         }
     }
 }
