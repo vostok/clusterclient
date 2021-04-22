@@ -70,7 +70,10 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
                     .SwapToNewRawStatistic()
                     .GetPenalizedAndSmoothedStatistic(currentTime, clusterState.StatisticHistory.Get());
                 
-                ModifyWeights(aggregatedClusterStatistic, clusterState.RelativeWeightCalculator, clusterState.Weights, clusterState.LastUpdateTimestamp);
+                ModifyWeights(aggregatedClusterStatistic, 
+                    clusterState.RelativeWeightCalculator,
+                    clusterState.WeightsNormalizer,
+                    clusterState.Weights);
 
                 clusterState.StatisticHistory.Update(aggregatedClusterStatistic);
             }
@@ -84,23 +87,28 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         private void ModifyWeights(
             AggregatedClusterStatistic aggregatedClusterStatistic,
             IRelativeWeightCalculator relativeWeightCalculator,
-            IWeights weights,
-            DateTime weightsLastUpdateTime)
+            IWeightsNormalizer weightsNormalizer,
+            IWeights weights)
         {
             var newWeights = new Dictionary<Uri, Weight>(aggregatedClusterStatistic.Replicas.Count);
+            var statisticCollectedTimestamp = aggregatedClusterStatistic.Cluster.Timestamp;
             var relativeMaxWeight = 0d;
             foreach (var (replica, replicaStatistic) in aggregatedClusterStatistic.Replicas)
             {
-                var previousWeight = weights.Get(replica) ?? new Weight(settings.InitialWeight, weightsLastUpdateTime - settings.WeightUpdatePeriod);
-                var newReplicaWeight = relativeWeightCalculator.Calculate(aggregatedClusterStatistic.Cluster, replicaStatistic, previousWeight);
+                var previousWeight = weights.Get(replica) ??
+                                     new Weight(settings.InitialWeight, statisticCollectedTimestamp - settings.WeightUpdatePeriod);
+                
+                var newReplicaWeight = relativeWeightCalculator
+                    .Calculate(aggregatedClusterStatistic.Cluster, replicaStatistic, previousWeight);
+                
                 newWeights.Add(replica, newReplicaWeight);
 
-                if (newReplicaWeight.Value > relativeMaxWeight)
+                if (relativeMaxWeight < newReplicaWeight.Value)
                     relativeMaxWeight = newReplicaWeight.Value;
             }
             
+            weightsNormalizer.Normalize(newWeights, relativeMaxWeight);
             weights.Update(newWeights);
-            weights.Normalize();
             
             LogWeights(weights);
         }

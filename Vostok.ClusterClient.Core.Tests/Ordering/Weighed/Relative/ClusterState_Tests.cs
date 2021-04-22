@@ -1,10 +1,6 @@
-﻿using System;
-using FluentAssertions;
-using NSubstitute;
+﻿using FluentAssertions;
 using NUnit.Framework;
-using Vostok.Clusterclient.Core.Misc;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Relative;
-using Vostok.Clusterclient.Core.Ordering.Weighed.Relative.Interfaces;
 
 namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
 {

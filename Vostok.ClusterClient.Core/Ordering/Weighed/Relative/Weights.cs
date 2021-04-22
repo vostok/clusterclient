@@ -47,17 +47,6 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             currentWeights = newWeights;
         }
 
-        public void Normalize()
-        {
-            var maxWeight = currentWeights.Values.Max(w => w.Value);
-            var newWeights = new Dictionary<Uri, Weight>();
-
-            foreach (var (replica, currentWeight) in currentWeights)
-                newWeights[replica] = new Weight(currentWeight.Value / maxWeight, currentWeight.Timestamp);
-
-            currentWeights = newWeights;
-        }
-
         private Weight ApplyRegenerationIfNeed(Weight weight)
         {
             var ageMinutes = (DateTime.UtcNow - weight.Timestamp).TotalMinutes;

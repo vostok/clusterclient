@@ -15,6 +15,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         public IRelativeWeightCalculator RelativeWeightCalculator { get; }
         public IRawClusterStatistic CurrentStatistic { get; private set; }
         public IStatisticHistory StatisticHistory { get; private set; }
+        public IWeightsNormalizer WeightsNormalizer { get; }
         public IWeights Weights { get; }
         
         public ClusterState(
@@ -23,6 +24,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             IRawClusterStatistic rawClusterStatistic = null,
             ITimeProvider timeProvider = null,
             IStatisticHistory statisticHistory = null, 
+            IWeightsNormalizer weightsNormalizer = null,
             IWeights weights = null)
         {
             this.settings = settings;
@@ -31,6 +33,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             TimeProvider = timeProvider ?? new TimeProvider();
             RelativeWeightCalculator = relativeWeightCalculator ?? new RelativeWeightCalculator(settings);
             Weights = weights ?? new Weights(settings);
+            WeightsNormalizer = weightsNormalizer ?? new WeightsNormalizer();
             CurrentStatistic = rawClusterStatistic ?? new RawClusterStatistic(settings.StatisticSmoothingConstant, settings.PenaltyMultiplier);
             StatisticHistory = statisticHistory ?? new StatisticsHistory(settings.StatisticTTL);
 

@@ -6,6 +6,7 @@ using Vostok.Clusterclient.Core.Ordering.Weighed.Relative;
 
 namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
 {
+    [TestFixture]
     public class RelativeWeightCalculator_Tests
     {
         private RelativeWeightSettings settings;
