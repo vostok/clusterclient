@@ -120,6 +120,9 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             // ModifiedWeight - [0; maxWeight]
             var relative = relativeWeight?.Value ?? settings.InitialWeight;
             var modified = externalWeight * relative;
+            
+            if (double.IsPositiveInfinity(maxWeight))
+                return minWeight + modified;
 
             return minWeight + modified / maxWeight * (maxWeight - minWeight);
         }
