@@ -33,7 +33,7 @@ namespace Vostok.Clusterclient.Core.Model
     {
         private static readonly Func<string, string> Escape = Uri.EscapeDataString;
         private static readonly UnboundedObjectPool<StringBuilder> Builders;
-        private static readonly bool IsWindows = RuntimeInformation .IsOSPlatform(OSPlatform.Windows);
+        private static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
         private StringBuilder builder;
         private bool hasQueryParameters;

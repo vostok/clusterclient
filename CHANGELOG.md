@@ -1,3 +1,7 @@
+## 0.1.27 (11.05.2021):
+
+Use uri kind Relative in case of non-windows and leading slash.
+
 ## 0.1.26 (01.03.2021):
 
 Make TimeoutHeaderTransport public to easy use wherever I don't need to create full and high weight ClusterClient.
