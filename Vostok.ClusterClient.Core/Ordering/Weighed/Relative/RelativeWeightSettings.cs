@@ -11,6 +11,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         public double InitialWeight = 0.5;
         public double Sensitivity = 4;
         public double RegenerationRatePerMinute = 0.05;
+        public double WeightByStatusesRpsThreshold = 1;
         public TimeSpan WeightUpdatePeriod = TimeSpan.FromSeconds(3);
         public TimeSpan WeightsTTL = TimeSpan.FromMinutes(10);
         public TimeSpan RegenerationLag = TimeSpan.FromMinutes(3);

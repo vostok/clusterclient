@@ -75,14 +75,15 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         public AggregatedStatistic Aggregate(DateTime timestamp)
         {
-            var mean = (InterlockedEx.Read(ref successLatencySum) + InterlockedEx.Read(ref rejectLatencySum)) / Math.Max(1, Interlocked.Read(ref totalCount));
+            var total = Math.Max(1, Interlocked.Read(ref totalCount));
+            var mean = (InterlockedEx.Read(ref successLatencySum) + InterlockedEx.Read(ref rejectLatencySum)) / total;
 
-            var squaredMean = (InterlockedEx.Read(ref successLatencySquaredSum) + InterlockedEx.Read(ref rejectLatencySquaredSum)) / Math.Max(1, Interlocked.Read(ref totalCount));
+            var squaredMean = (InterlockedEx.Read(ref successLatencySquaredSum) + InterlockedEx.Read(ref rejectLatencySquaredSum)) / total;
             var variance = Math.Max(0d, squaredMean - mean * mean);
-
             var stdDev = Math.Sqrt(variance);
-
-            return new AggregatedStatistic(stdDev, mean, timestamp);
+            var errorFraction = (double)Interlocked.Read(ref rejectCount) / total;
+            
+            return new AggregatedStatistic(total, errorFraction, stdDev, mean, timestamp);
         }
 
         private static double PenalizeLatency(double latency, long count, double penalty) => 

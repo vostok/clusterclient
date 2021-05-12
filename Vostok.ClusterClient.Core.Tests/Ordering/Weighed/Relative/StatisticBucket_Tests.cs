@@ -36,7 +36,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         public void Should_smooth_statistic(int[] responseTimes, double expectedMean, double expectedStdDev)
         {
             var timestamp = DateTime.UtcNow;
-            var previousStatistic = new AggregatedStatistic(3, 8.125, timestamp - 5.Seconds());
+            var previousStatistic = new AggregatedStatistic(10, 0.1, 3, 8.125, timestamp - 5.Seconds());
             foreach (var responseTime in responseTimes)
                 statisticBucket.Report(Accepted(responseTime));
 
@@ -47,6 +47,8 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             smoothedStat.Timestamp.Should().Be(timestamp);
             smoothedStat.Mean.Should().BeApproximately(expectedMean, 0.001);
             smoothedStat.StdDev.Should().BeApproximately(expectedStdDev, 0.001);
+            smoothedStat.TotalCount.Should().BeApproximately(9.433, 0.001);
+            smoothedStat.ErrorFraction.Should().BeApproximately(0.071, 0.001);
         }
 
         [TestCase(new[] { 120, 150, 70, 60, 90, 80, 170, 320 }, new int[0], 132.5, 79.647)]

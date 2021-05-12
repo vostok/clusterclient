@@ -4,7 +4,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 {
     internal static class WeighingHelper
     {
-        public static double ComputeWeight(
+        public static double ComputeWeightByLatency(
             double replicaAverage,
             double replicaStdDev,
             double globalAverage,
@@ -20,6 +20,27 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             return ApplySensitivity(weight, sensitivity);
         }
 
+        public static double ComputeWeightByStatuses(double replicaTotalCount, double replicaErrorFraction, double clusterTotalCount, double clusterErrorFraction, double sensitivity)
+        {
+            // https://stats.stackexchange.com/a/113607
+
+            var p1 = Round(clusterErrorFraction);
+            var n1 = clusterTotalCount;
+
+            var p2 = Round(replicaErrorFraction);
+            var n2 = replicaTotalCount;
+
+            var phat = (n1 * p1 + n2 * p2) / (n1 + n2);
+
+            var stdDev = Math.Sqrt(phat * (1 - phat) * (1.0 / n1 + 1.0 / n2));
+
+            var weight = ComputeCDF(p1, p2, stdDev);
+
+            weight = ApplySensitivity(weight, sensitivity);
+            
+            return weight;
+        }
+
         public static double ComputeCDF(double x, double mean, double stdDev)
         {
             if (stdDev <= double.Epsilon)
@@ -32,5 +53,9 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         private static double ApplySensitivity(double weight, double sensitivity) =>
             sensitivity < double.Epsilon ? 1 : Math.Pow(weight, sensitivity);
+
+        private static double Round(double value) =>
+            Math.Round(value, 5, MidpointRounding.AwayFromZero);
+
     }
 }

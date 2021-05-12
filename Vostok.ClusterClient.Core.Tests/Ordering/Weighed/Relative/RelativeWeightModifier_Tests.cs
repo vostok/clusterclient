@@ -112,7 +112,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             var timestamp = DateTime.UtcNow;
             clusterState.LastUpdateTimestamp = timestamp;
             clusterState.TimeProvider.GetCurrentTime().Returns(timestamp + settings.WeightUpdatePeriod + 1.Seconds());
-            var clusterStatistic = new AggregatedClusterStatistic(new AggregatedStatistic(13, 130, timestamp), new Dictionary<Uri, AggregatedStatistic>());
+            var clusterStatistic = new AggregatedClusterStatistic(new AggregatedStatistic(10, 0.2, 13, 130, timestamp), new Dictionary<Uri, AggregatedStatistic>());
             clusterState.CurrentStatistic.GetPenalizedAndSmoothedStatistic(Arg.Any<DateTime>(), Arg.Any<AggregatedClusterStatistic>())
                 .Returns(clusterStatistic);
 
@@ -128,7 +128,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             var timestamp = DateTime.UtcNow;
             clusterState.LastUpdateTimestamp = timestamp;
             clusterState.TimeProvider.GetCurrentTime().Returns(timestamp + settings.WeightUpdatePeriod + 1.Seconds());
-            var clusterStatistic = new AggregatedClusterStatistic(new AggregatedStatistic(13, 130, timestamp), new Dictionary<Uri, AggregatedStatistic>());
+            var clusterStatistic = new AggregatedClusterStatistic(new AggregatedStatistic(10, 0.2, 13, 130, timestamp), new Dictionary<Uri, AggregatedStatistic>());
             clusterState.CurrentStatistic.GetPenalizedAndSmoothedStatistic(Arg.Any<DateTime>(), Arg.Any<AggregatedClusterStatistic>())
                 .Returns(clusterStatistic);
 
@@ -144,10 +144,10 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             var timestamp = DateTime.UtcNow;
             clusterState.LastUpdateTimestamp = timestamp;
             clusterState.TimeProvider.GetCurrentTime().Returns(timestamp + settings.WeightUpdatePeriod + 1.Seconds());
-            var r1 = (new Uri("http://r1"), new AggregatedStatistic(12, 150, timestamp), new Weight(0.5, timestamp));
-            var r2 = (new Uri("http://r2"), new AggregatedStatistic(15, 120, timestamp), new Weight(0.7, timestamp));
-            var r3 = (new Uri("http://r3"), new AggregatedStatistic(15, 110, timestamp), new Weight(0.1, timestamp));
-            var clusterStatistic = new AggregatedClusterStatistic(new AggregatedStatistic(13, 130, timestamp), new Dictionary<Uri, AggregatedStatistic>()
+            var r1 = (new Uri("http://r1"), new AggregatedStatistic(10, 0.2, 12, 150, timestamp), new Weight(0.5, timestamp));
+            var r2 = (new Uri("http://r2"), new AggregatedStatistic(10, 0.2, 15, 120, timestamp), new Weight(0.7, timestamp));
+            var r3 = (new Uri("http://r3"), new AggregatedStatistic(10, 0.2, 15, 110, timestamp), new Weight(0.1, timestamp));
+            var clusterStatistic = new AggregatedClusterStatistic(new AggregatedStatistic(10, 0.2, 13, 130, timestamp), new Dictionary<Uri, AggregatedStatistic>()
             {
                 [r1.Item1] = r1.Item2,
                 [r2.Item1] = r2.Item2,
@@ -173,10 +173,10 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
             var timestamp = DateTime.UtcNow;
             clusterState.LastUpdateTimestamp = timestamp;
             clusterState.TimeProvider.GetCurrentTime().Returns(timestamp + settings.WeightUpdatePeriod + 1.Seconds());
-            var r1 = (new Uri("http://r1"), new AggregatedStatistic(12, 150, timestamp));
-            var r2 = (new Uri("http://r2"), new AggregatedStatistic(15, 120, timestamp));
-            var r3 = (new Uri("http://r3"), new AggregatedStatistic(15, 110, timestamp));
-            var clusterStatistic = new AggregatedClusterStatistic(new AggregatedStatistic(13, 130, timestamp), new Dictionary<Uri, AggregatedStatistic>()
+            var r1 = (new Uri("http://r1"), new AggregatedStatistic(10, 0.2, 12, 150, timestamp));
+            var r2 = (new Uri("http://r2"), new AggregatedStatistic(10, 0.2, 15, 120, timestamp));
+            var r3 = (new Uri("http://r3"), new AggregatedStatistic(10, 0.2, 15, 110, timestamp));
+            var clusterStatistic = new AggregatedClusterStatistic(new AggregatedStatistic(10, 0.2, 13, 130, timestamp), new Dictionary<Uri, AggregatedStatistic>()
             {
                 [r1.Item1] = r1.Item2,
                 [r2.Item1] = r2.Item2,
