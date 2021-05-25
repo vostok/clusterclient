@@ -1,3 +1,7 @@
+## 0.1.28 (25.05.2021):
+
+Added `RelativeWeightsModifier`.
+
 ## 0.1.27 (11.05.2021):
 
 Use uri kind Relative in case of non-windows and leading slash.
