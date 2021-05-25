@@ -19,6 +19,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
     public class RelativeWeightModifier : IReplicaWeightModifier
     {
         private readonly ILog log;
+        private readonly IGlobalStorageProvider globalStorageProvider;
         private readonly RelativeWeightSettings settings;
         private readonly double minWeight;
         private readonly double maxWeight;
@@ -30,12 +31,14 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             string environment,
             double minWeight = ClusterClientDefaults.MinimumReplicaWeight,
             double maxWeight = ClusterClientDefaults.MaximumReplicaWeight,
+            IGlobalStorageProvider globalStorageProvider = null,
             ILog log = null)
         {
             this.settings = settings;
             this.minWeight = minWeight;
             this.maxWeight = maxWeight;
             this.log = (log ?? new SilentLog()).ForContext<RelativeWeightModifier>();
+            this.globalStorageProvider = globalStorageProvider ?? new PerInstanceGlobalStorageProvider();
 
             storageKey = CreateStorageKey(service, environment);
         }
@@ -43,7 +46,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
         /// <inheritdoc />
         public void Modify(Uri replica, IList<Uri> allReplicas, IReplicaStorageProvider storageProvider, Request request, RequestParameters parameters, ref double weight)
         {
-            var clusterState = storageProvider.ObtainGlobalValue(storageKey, CreateClusterState);
+            var clusterState = globalStorageProvider.ObtainGlobalValue(storageKey, CreateClusterState);
             
             ModifyClusterWeightsIfNeed(clusterState);
 
@@ -52,7 +55,7 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         /// <inheritdoc />
         public void Learn(ReplicaResult result, IReplicaStorageProvider storageProvider) =>
-            storageProvider.ObtainGlobalValue(storageKey, CreateClusterState).CurrentStatistic.Report(result);
+            globalStorageProvider.ObtainGlobalValue(storageKey, CreateClusterState).CurrentStatistic.Report(result);
 
         private void ModifyClusterWeightsIfNeed(ClusterState clusterState)
         {

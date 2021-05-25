@@ -19,6 +19,7 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
         private ClusterState clusterState;
         private RelativeWeightSettings settings;
         private IReplicaStorageProvider replicaStorageProvider;
+        private IGlobalStorageProvider storageProvider;
         private RelativeWeightModifier relativeWeightModifier;
         
         [SetUp]
@@ -44,9 +45,10 @@ namespace Vostok.Clusterclient.Core.Tests.Ordering.Weighed.Relative
                 weightsNormalizer: Substitute.For<IWeightsNormalizer>(),
                 weights: Substitute.For<IWeights>());
             replicaStorageProvider = Substitute.For<IReplicaStorageProvider>();
-            replicaStorageProvider.ObtainGlobalValue(Arg.Any<string>(), Arg.Any<Func<ClusterState>>())
+            storageProvider = Substitute.For<IGlobalStorageProvider>();
+            storageProvider.ObtainGlobalValue(Arg.Any<string>(), Arg.Any<Func<ClusterState>>())
                 .Returns(info => clusterState);
-            relativeWeightModifier = new RelativeWeightModifier(settings, "srv", "env", 0, 1);
+            relativeWeightModifier = new RelativeWeightModifier(settings, "srv", "env", 0, 1, storageProvider);
         }
 
         [Test]

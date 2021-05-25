@@ -1,5 +1,6 @@
 ﻿using System;
 using JetBrains.Annotations;
+using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Adaptive;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Gray;
 using Vostok.Clusterclient.Core.Ordering.Weighed.Leadership;
@@ -93,9 +94,10 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed
         /// Adds an <see cref="RelativeWeightModifier"/> with given <see cref="RelativeWeightSettings"/> to the chain.
         /// </summary>
         /// <param name="builder"></param>
-        /// <param name="settings">A relative weight settings</param>
-        public static void AddRelativeWeightModifier(this IWeighedReplicaOrderingBuilder builder, RelativeWeightSettings settings) =>
-            builder.AddModifier(new RelativeWeightModifier(settings, builder.ServiceName, builder.Environment, builder.MinimumWeight, builder.MaximumWeight, builder.Log));
+        /// <param name="settings">A relative weight settings.</param>
+        /// <param name="globalStorageProvider">Global storage.</param>
+        public static void AddRelativeWeightModifier(this IWeighedReplicaOrderingBuilder builder, RelativeWeightSettings settings, IGlobalStorageProvider globalStorageProvider = null) =>
+            builder.AddModifier(new RelativeWeightModifier(settings, builder.ServiceName, builder.Environment, builder.MinimumWeight, builder.MaximumWeight, globalStorageProvider, builder.Log));
 
         /// <summary>
         /// Adds a <see cref="LeadershipWeightModifier"/> with given <paramref name="leaderResultDetector"/> to the chain.
