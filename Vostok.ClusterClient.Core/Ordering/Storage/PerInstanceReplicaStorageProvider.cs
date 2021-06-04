@@ -5,11 +5,8 @@ namespace Vostok.Clusterclient.Core.Ordering.Storage
 {
     internal class PerInstanceReplicaStorageProvider : IReplicaStorageProvider
     {
-        private readonly ConcurrentDictionary<Type, object> containers;
-
-        public PerInstanceReplicaStorageProvider() =>
-            containers = new ConcurrentDictionary<Type, object>();
-
+        private readonly ConcurrentDictionary<Type, object> containers = new ConcurrentDictionary<Type, object>();
+       
         public ConcurrentDictionary<Uri, TValue> Obtain<TValue>(string storageKey = null) =>
             ObtainContainer<TValue>().Obtain(storageKey);
 

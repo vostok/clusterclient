@@ -8,7 +8,7 @@
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <VersionPrefix>0.1.28</VersionPrefix>
+    <VersionPrefix>0.1.29</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup>
     <Title>Vostok.ClusterClient.Core</Title>
@@ -31,6 +31,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\AtomicBoolean.cs">
+      <Link>Commons\AtomicBoolean.cs</Link>
+    </Compile>
     <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\ThreadSafeRandom.cs">
       <Link>Commons\ThreadSafeRandom.cs</Link>
     </Compile>
