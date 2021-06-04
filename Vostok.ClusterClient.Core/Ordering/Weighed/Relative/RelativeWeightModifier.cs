@@ -113,7 +113,19 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             weightsNormalizer.Normalize(newWeights, relativeMaxWeight);
             weights.Update(newWeights);
             
-            LogWeights(weights);
+            LogWeights(weights, newWeights);
+        }
+
+        private void LogWeights(IWeights oldWeights, Dictionary<Uri, Weight> newWeights)
+        {
+            const double significantWeightChange = 0.1;
+            foreach (var (replica, newWeight) in newWeights)
+            {
+                var previousWeight = oldWeights.Get(replica);
+                if (previousWeight.HasValue && Math.Abs(previousWeight.Value.Value - newWeight.Value) > significantWeightChange)
+                    log.Debug("Replica {ReplicaUrl} weight has changed from {PreviousWeight} to {NewWeight}",
+                        replica, previousWeight.Value.Value.ToString("F4"), newWeight.Value.ToString("F4"));
+            }
         }
 
         private double ModifyAndApplyLimits(double externalWeight, Weight? relativeWeight)
@@ -138,15 +150,5 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         private ClusterState CreateClusterState() =>
             new ClusterState(settings);
-
-        private void LogWeights(IEnumerable<KeyValuePair<Uri, Weight>> weights)
-        {
-            if (!log.IsEnabledForDebug()) return;
-
-            var newWeightsLog = new StringBuilder($"Weights:{Environment.NewLine}");
-            foreach (var (replica, weight) in weights)
-                newWeightsLog.AppendLine($"{replica}: {weight}");
-            log.Debug(newWeightsLog.ToString());
-        }
     }
 }
