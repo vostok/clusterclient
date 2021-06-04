@@ -116,18 +116,6 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
             LogWeights(weights, newWeights);
         }
 
-        private void LogWeights(IWeights oldWeights, Dictionary<Uri, Weight> newWeights)
-        {
-            const double significantWeightChange = 0.1;
-            foreach (var (replica, newWeight) in newWeights)
-            {
-                var previousWeight = oldWeights.Get(replica);
-                if (previousWeight.HasValue && Math.Abs(previousWeight.Value.Value - newWeight.Value) > significantWeightChange)
-                    log.Debug("Replica {ReplicaUrl} weight has changed from {PreviousWeight} to {NewWeight}",
-                        replica, previousWeight.Value.Value.ToString("F4"), newWeight.Value.ToString("F4"));
-            }
-        }
-
         private double ModifyAndApplyLimits(double externalWeight, Weight? relativeWeight)
         {
             // ExternalWeight - [minWeight; maxWeight]
@@ -150,5 +138,20 @@ namespace Vostok.Clusterclient.Core.Ordering.Weighed.Relative
 
         private ClusterState CreateClusterState() =>
             new ClusterState(settings);
+        
+        private void LogWeights(IWeights oldWeights, Dictionary<Uri, Weight> newWeights)
+        {
+            const double significantWeightChange = 0.1;
+            const double degradedWeightBorder = 0.7;
+            foreach (var (replica, newWeight) in newWeights)
+            {
+                var previousWeight = oldWeights.Get(replica)?.Value ?? settings.InitialWeight;
+
+                if (Math.Abs(previousWeight - newWeight.Value) > significantWeightChange ||
+                    previousWeight > degradedWeightBorder && newWeight.Value < degradedWeightBorder)
+                    log.Debug("Replica {ReplicaUrl} weight has changed from {PreviousWeight} to {NewWeight}",
+                        replica, previousWeight.ToString("F4"), newWeight.Value.ToString("F4"));
+            }
+        }
     }
 }
