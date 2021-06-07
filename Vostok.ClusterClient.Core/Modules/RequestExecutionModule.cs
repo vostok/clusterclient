@@ -42,7 +42,7 @@ namespace Vostok.Clusterclient.Core.Modules
                 return ClusterResult.ReplicasNotFound(context.Request);
             }
 
-            if (replicasFilters.Count > 0)
+            if (replicasFilters?.Count > 0)
             {
                 replicas = FilterReplicas(replicas, context).ToList();
                 if (replicas.Count == 0)
