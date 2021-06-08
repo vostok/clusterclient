@@ -113,6 +113,6 @@ namespace Vostok.Clusterclient.Core.Model
         /// <summary>
         /// A custom response header which indicates that client must not schedule fork after response from server.
         /// </summary>
-        public const string DontFork = "DontFork";
+        public const string DontFork = "Dont-Fork";
     }
 }
