@@ -1,3 +1,7 @@
+## 0.1.29 (04.06.2021):
+
+RelativeWeightModifier - log only significant weights changes.
+
 ## 0.1.28 (25.05.2021):
 
 Added `RelativeWeightsModifier`.
