@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Vostok.Clusterclient.Core.Misc;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Ordering.Storage;
 using Vostok.Clusterclient.Core.Sending;
+using Vostok.Clusterclient.Core.Topology;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.Clusterclient.Core.Modules
@@ -15,17 +17,20 @@ namespace Vostok.Clusterclient.Core.Modules
         private readonly IReplicaStorageProvider storageProvider;
         private readonly IRequestSenderInternal requestSender;
         private readonly IClusterResultStatusSelector resultStatusSelector;
+        private readonly List<IReplicasFilter> replicasFilters;
 
         public RequestExecutionModule(
             IResponseSelector responseSelector,
             IReplicaStorageProvider storageProvider,
             IRequestSenderInternal requestSender,
-            IClusterResultStatusSelector resultStatusSelector)
+            IClusterResultStatusSelector resultStatusSelector,
+            List<IReplicasFilter> replicasFilters)
         {
             this.responseSelector = responseSelector;
             this.storageProvider = storageProvider;
             this.requestSender = requestSender;
             this.resultStatusSelector = resultStatusSelector;
+            this.replicasFilters = replicasFilters;
         }
 
         public async Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
@@ -37,7 +42,17 @@ namespace Vostok.Clusterclient.Core.Modules
                 return ClusterResult.ReplicasNotFound(context.Request);
             }
 
-            var contextImpl = (RequestContext)context;
+            if (replicasFilters?.Count > 0)
+            {
+                replicas = FilterReplicas(replicas, context).ToList();
+                if (replicas.Count == 0)
+                {
+                    LogReplicasNotFound(context);
+                    return ClusterResult.ReplicasNotFound(context.Request);
+                }
+            }
+
+            var contextImpl = (RequestContext) context;
             var contextualSender = new ContextualRequestSender(requestSender, contextImpl);
 
             var maxReplicasToUse = context.MaximumReplicasToUse;
@@ -64,6 +79,9 @@ namespace Vostok.Clusterclient.Core.Modules
 
             return new ClusterResult(resultStatus, replicaResults, selectedResponse, context.Request);
         }
+
+        private IEnumerable<Uri> FilterReplicas(IEnumerable<Uri> replicas, IRequestContext context) 
+            => replicasFilters.Aggregate(replicas, (urls, replicaFilter) => replicaFilter.Filter(urls, context));
 
         #region Logging
 

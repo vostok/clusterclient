@@ -52,6 +52,12 @@ namespace Vostok.Clusterclient.Core.Tests
         }
 
         [Test]
+        public void Should_initially_have_empty_replica_filters_list()
+        {
+            configuration.ReplicasFilters.Should().BeEmpty();
+        }
+
+        [Test]
         public void Should_initially_have_null_replica_transform()
         {
             configuration.ReplicaTransform.Should().BeNull();
@@ -168,6 +174,14 @@ namespace Vostok.Clusterclient.Core.Tests
         public void Validate_should_produce_no_errors_when_request_transforms_list_is_null()
         {
             configuration.RequestTransforms = null;
+
+            configuration.Validate().Should().BeEmpty();
+        }
+
+        [Test]
+        public void Validate_should_produce_no_errors_when_replica_filters_list_is_null()
+        {
+            configuration.ReplicasFilters = null;
 
             configuration.Validate().Should().BeEmpty();
         }
@@ -394,6 +408,14 @@ namespace Vostok.Clusterclient.Core.Tests
             configuration.AugmentWithDefaults();
 
             configuration.RequestTransforms.Should().BeEmpty();
+        }
+
+        [Test]
+        public void AugmentWithDefaults_should_not_add_any_replica_filters()
+        {
+            configuration.AugmentWithDefaults();
+
+            configuration.ReplicasFilters.Should().BeEmpty();
         }
 
         [Test]

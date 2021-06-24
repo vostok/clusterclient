@@ -23,7 +23,8 @@ namespace Vostok.Clusterclient.Core
             Log = log;
             Modules = new Dictionary<Type, RelatedModules>();
             ModulesToRemove = new HashSet<Type>();
-
+            
+            ReplicasFilters = new List<IReplicasFilter>();
             RequestTransforms = new List<IRequestTransformMetadata>();
             ResponseTransforms = new List<IResponseTransform>();
             ResponseCriteria = new List<IResponseCriterion>();
@@ -52,6 +53,8 @@ namespace Vostok.Clusterclient.Core
         public ITransport Transport { get; set; }
 
         public IClusterProvider ClusterProvider { get; set; }
+        
+        public List<IReplicasFilter> ReplicasFilters { get; set; }
 
         public IReplicaTransform ReplicaTransform { get; set; }
 
@@ -121,6 +124,9 @@ namespace Vostok.Clusterclient.Core
 
             if (RequestTransforms != null && RequestTransforms.Any(transform => transform == null))
                 yield return "One of provided request transforms is null";
+
+            if (ReplicasFilters != null && ReplicasFilters.Any(filter => filter == null))
+                yield return "One of provided replica filters is null";
 
             if (ResponseTransforms != null && ResponseTransforms.Any(transform => transform == null))
                 yield return "One of provided response transforms is null";
