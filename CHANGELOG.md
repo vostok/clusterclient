@@ -1,3 +1,7 @@
+## 0.1.30 (24.06.2021):
+
+Added `IReplicaFilter` interface and use given realizations from `ClusterClientConfiguration` in execution module for filter given replicas from cluster provider.
+
 ## 0.1.29 (04.06.2021):
 
 RelativeWeightModifier - log only significant weights changes.

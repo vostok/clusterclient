@@ -3,6 +3,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Vostok.Clusterclient.Core.Criteria;
 using Vostok.Clusterclient.Core.Modules;
+using Vostok.Clusterclient.Core.Topology;
 using Vostok.Clusterclient.Core.Transforms;
 using Vostok.Logging.Console;
 
@@ -59,6 +60,16 @@ namespace Vostok.Clusterclient.Core.Tests
             configuration.AddRequestTransform(Substitute.For<IRequestTransform>());
 
             configuration.RequestTransforms.Should().HaveCount(1);
+        }
+
+        [Test]
+        public void AddReplicaFilter_should_not_fail_if_filters_list_is_null()
+        {
+            configuration.ReplicasFilters = null;
+
+            configuration.AddReplicasFilter(Substitute.For<IReplicasFilter>());
+
+            configuration.ReplicasFilters.Should().HaveCount(1);
         }
 
         [Test]
