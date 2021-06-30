@@ -1,3 +1,8 @@
+## 0.1.31 (30.06.2021):
+
+Added `VerdictBasedRetryPolicy` which earlier was duplicated in couple different solutions.
+Added `Dont-Fork` header name, which in case of not accepted response verdict instructs `ForkingRequestStrategy` not to schedule fork if response has such header.
+
 ## 0.1.30 (24.06.2021):
 
 Added `IReplicaFilter` interface and use given realizations from `ClusterClientConfiguration` in execution module for filter given replicas from cluster provider.
