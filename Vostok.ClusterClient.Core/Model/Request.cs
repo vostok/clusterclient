@@ -20,7 +20,7 @@ namespace Vostok.Clusterclient.Core.Model
             [NotNull] Uri url,
             [CanBeNull] Content content = null,
             [CanBeNull] Headers headers = null)
-            : this(method, url, null, null, content, headers)
+            : this(method, url, null, null, null, content, headers)
         {
         }
 
@@ -29,7 +29,7 @@ namespace Vostok.Clusterclient.Core.Model
             [NotNull] Uri url,
             [CanBeNull] IStreamContent content,
             [CanBeNull] Headers headers = default)
-            : this(method, url, null, content, null, headers)
+            : this(method, url, null, content, null, null, headers)
         {
         }
 
@@ -38,7 +38,16 @@ namespace Vostok.Clusterclient.Core.Model
             [NotNull] Uri url,
             [CanBeNull] CompositeContent content,
             [CanBeNull] Headers headers = default)
-            : this(method, url, content, null, null, headers)
+            : this(method, url, content, null, null, null, headers)
+        {
+        }
+
+        public Request(
+            [NotNull] string method,
+            [NotNull] Uri url,
+            [CanBeNull] IContentProducer contentProducer,
+            [CanBeNull] Headers headers = default)
+            : this(method, url, null, null, contentProducer, null, headers)
         {
         }
 
@@ -47,6 +56,7 @@ namespace Vostok.Clusterclient.Core.Model
             [NotNull] Uri url,
             [CanBeNull] CompositeContent compositeContent,
             [CanBeNull] IStreamContent streamContent,
+            [CanBeNull] IContentProducer contentProducer,
             [CanBeNull] Content content,
             [CanBeNull] Headers headers)
         {
@@ -88,6 +98,9 @@ namespace Vostok.Clusterclient.Core.Model
         [CanBeNull]
         public IStreamContent StreamContent { get; }
 
+        [CanBeNull]
+        public IContentProducer ContentProducer { get; }
+
         /// <summary>
         /// Returns request headers or <c>null</c> if there are none.
         /// </summary>
@@ -118,7 +131,7 @@ namespace Vostok.Clusterclient.Core.Model
         [NotNull]
         public Request WithUrl([NotNull] Uri url)
         {
-            return new Request(Method, url, CompositeContent, StreamContent, Content, Headers);
+            return new Request(Method, url, CompositeContent, StreamContent, ContentProducer, Content, Headers);
         }
 
         /// <summary>
@@ -182,7 +195,7 @@ namespace Vostok.Clusterclient.Core.Model
         [NotNull]
         public Request WithHeader([NotNull] string name, [NotNull] string value)
         {
-            return new Request(Method, Url, CompositeContent, StreamContent, Content, (Headers ?? Headers.Empty).Set(name, value));
+            return new Request(Method, Url, CompositeContent, StreamContent, ContentProducer, Content, (Headers ?? Headers.Empty).Set(name, value));
         }
 
         /// <summary>
@@ -194,7 +207,7 @@ namespace Vostok.Clusterclient.Core.Model
         [NotNull]
         public Request WithHeaders([NotNull] Headers headers)
         {
-            return new Request(Method, Url, CompositeContent, StreamContent, Content, headers);
+            return new Request(Method, Url, CompositeContent, StreamContent, ContentProducer,Content, headers);
         }
 
         /// <inheritdoc />
